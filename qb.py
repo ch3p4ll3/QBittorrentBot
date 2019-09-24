@@ -3,13 +3,18 @@ import botogram, os, datetime, json
 from pony.orm import *
 from qbittorrent import Client
 
-bot = botogram.create("xxxxxxxxx")
+with open("login.json") as login_file:
+    data = json.load(login_file)
+    bot = botogram.create(data['token'])
 
-bot.about = "with this bot you can control QBittorrent from telegram"
+bot.about = "with this bot you can control qbittorrent from telegram"
 bot.owner = "@yourusername"
 
 db = Database()
-db.bind(provider='mysql', host='127.0.0.1', user='', passwd='', db='test')
+with open("login.json") as login_file:
+    data = json.load(login_file)['database']
+    db.bind(provider='mysql', host=data['ip'],
+    user=data['user'], passwd=data['password'], db=data['db_name'])
 
 class Qb(db.Entity):
     id = PrimaryKey(int)
@@ -19,9 +24,9 @@ db.generate_mapping(create_tables=True)
 
 def open_login_file():
      with open("login.json", "r") as login_file:
-         data=json.load(login_file)
-         return data['qbittorrent']['ip'], data['qbittorrent']['port'],
-         data['qbittorrent']['user'], data['qbittorrent']['password'], data['id'];
+         data=json.load(login_file)['qbittorrent']
+         return (data['ip'], data['port'],
+         data['user'], data['password']);
 
 def read_database():
     with db_session:
@@ -40,14 +45,14 @@ def convertETA(n):
     return str(datetime.timedelta(seconds = n))
 
 def add_magnet(link):
-    ip, port, user, password, id=open_login_file()
+    ip, port, user, password=open_login_file()
     qb = Client("http://{}:{}".format(ip, port))
     qb.login(user, password)
     qb.download_from_link(link)
     qb.logout()
 
 def add_torrent(file_name):
-    ip, port, user, password, id=open_login_file()
+    ip, port, user, password=open_login_file()
     qb = Client("http://{}:{}".format(ip, port))
     qb.login(user, password)
     torrent_file = open(file_name, 'rb')
@@ -56,79 +61,62 @@ def add_torrent(file_name):
     qb.logout()
 
 def resume_all():
-    ip, port, user, password, id=open_login_file()
+    ip, port, user, password=open_login_file()
     qb = Client("http://{}:{}".format(ip, port))
     qb.login(user, password)
     qb.resume_all()
     qb.logout()
 
 def pause_all():
-    ip, port, user, password, id=open_login_file()
+    ip, port, user, password=open_login_file()
     qb = Client("http://{}:{}".format(ip, port))
     qb.login(user, password)
     qb.pause_all()
     qb.logout()
 
 def resume(id_torrent):
-    ip, port, user, password, id=open_login_file()
+    ip, port, user, password=open_login_file()
     qb = Client("http://{}:{}".format(ip, port))
     qb.login(user, password)
     qb.resume(qb.torrents()[id_torrent-1]['hash'])
     qb.logout()
 
 def pause(id_torrent):
-    ip, port, user, password, id=open_login_file()
+    ip, port, user, password=open_login_file()
     qb = Client("http://{}:{}".format(ip, port))
     qb.login(user, password)
     qb.pause(qb.torrents()[id_torrent-1]['hash'])
     qb.logout()
 
-def delete_one_no_data(id_torrent):
-    ip, port, user, password, id=open_login_file()
+def delete(id_torrent):
+    ip, port, user, password=open_login_file()
     qb=Client("http://{}:{}".format(ip, port))
     qb.login(user, password)
     qb.delete(qb.torrents()[id_torrent-1]['hash'])
     qb.logout()
-	
-def delete_one_data(id_torrent):
-    ip, port, user, password, id=open_login_file()
-    qb=Client("http://{}:{}".format(ip, port))
-    qb.login(user, password)
-    qb.delete_permanently(qb.torrents()[id_torrent-1]['hash'])
-    qb.logout()
 
-def delall_no_data():
+def delall():
     try:
-        ip, port, user, password, id=open_login_file()
+        ip, port, user, password=open_login_file()
         qb = Client("http://{}:{}".format(ip, port))
         qb.login(user, password)
         for i in qb.torrents():
             qb.delete(i['hash']) #scan all torrents and delete them (only torrent, no data)
         qb.logout()
+        return True
     except:
         qb.logout()
-		
-def delall_data():
-    try:
-        ip, port, user, password, id=open_login_file()
-        qb = Client("http://{}:{}".format(ip, port))
-        qb.login(user, password)
-        for i in qb.torrents():
-            qb.delete_permanently(i['hash']) #scan all torrents and delete them (only torrent, no data)
-        qb.logout()
-    except:
-        qb.logout()
+        return False
 
 def listt(n):
     l=""
     a=1
-    ip, port, user, password, id=open_login_file()
+    ip, port, user, password=open_login_file()
     qb = Client("http://{}:{}".format(ip, port))
     qb.login(user, password)
     torrents=qb.torrents()
     if not torrents:
         qb.logout()
-        write_database("None")
         return "empty"
     if n==1:
         for i in torrents:
@@ -156,23 +144,27 @@ def listt(n):
             progress=i['progress']*100
 
             if progress == 0:
-                l+="{}) {}\n[            ] {}% completed\n\n".format(str(a), i['name'], str(round(progress,2)))
+                l+="{}) {}\n[            ] {}% completed\n\n".format(str(a),
+                i['name'], str(round(progress,2)))
 
             elif (progress == 100):
-                l+="{}) {}\n[completed]{}% completed\n\n".format(str(a), i['name'], str(round(progress,2)))
+                l+="{}) {}\n[completed]{}% completed\n\n".format(str(a),
+                i['name'], str(round(progress,2)))
 
             else:
-                l+="{}) {}\n[{}{}] {}% completed\n\n".format(str(a), i['name'], "="*int(progress/10),
-                " "*int(12-(progress/10)), str(round(progress,2)))
+                l+="{}) {}\n[{}{}] {}% completed\n\n".format(str(a),
+                i['name'], "="*int(progress/10), " "*int(12-(progress/10)), str(round(progress,2)))
 
             a+=1
     qb.logout()
     return l
 
 @bot.command("start")
-def start_command(chat, message):
+def greeter_command(chat, message):
     """Start the bot"""
-    if chat.id == open_login_file()[4]:
+    with open("login.json") as login_file:
+        id = json.load(login_file)['id']
+    if chat.id == id:
         btns = botogram.Buttons()
         btns[0].callback("📝 List", "list")
         btns[1].callback("➕ Add Magnet", "add_magnet")
@@ -181,107 +173,59 @@ def start_command(chat, message):
         btns[2].callback("▶️ Resume", "resume")
         btns[3].callback("⏸ Pause All", "pause_all")
         btns[3].callback("▶️ Resume All", "resume_all")
-        btns[4].callback("🗑 Delete", "delete_one")
+        btns[4].callback("🗑 Delete", "delete")
         btns[4].callback("🗑 Delete All", "delete_all")
 
         chat.send("Qbitorrent Control", attach=btns)
 
     else:
-        chat.send("You are not authorized to use this bot. For info contact @yourusername")
+	btns=botogram.Buttons()
+	btns[0].url("GitHub", "https://github.com/ch3p4ll3/botogramQBittorrent/")
+        chat.send("You are not authorized to use this bot.", attach=btns)
 
 @bot.callback("list")
 def list_callback(chat, query, data):
     chat.send(listt(1))
 
 @bot.callback("add_magnet")
-def add_magnet_callback(chat, query, data):
+def list_callback(chat, query, data):
     write_database("magnet")
     query.notify("Send me the magnet link")
 
 @bot.callback("add_torrent")
-def add_torrent_callback(chat, query, data):
+def list_callback(chat, query, data):
     write_database("torrent")
     query.notify("Send me the torrent file")
 
 @bot.callback("pause_all")
-def pause_all_callback(chat, query, data):
+def list_callback(chat, query, data):
     pause_all()
     query.notify("Paused All")
 
 @bot.callback("resume_all")
-def resume_all_callback(chat, query, data):
+def list_callback(chat, query, data):
     resume_all()
     query.notify("Resumed All")
 
 @bot.callback("pause")
-def pause_callback(chat, query, data):
+def list_callback(chat, query, data):
     chat.send(listt(0))
     write_database("pause")
 
 @bot.callback("resume")
-def resume_callback(chat, query, data):
+def list_callback(chat, query, data):
     chat.send(listt(0))
     write_database("resume")
 
-#delete one torrent callback
-@bot.callback("delete_one")
-def delete_callback(chat, message, query, data):
-    btns=botogram.Buttons()
-    btns[0].callback("🗑 Delete Torrent", "delete_one_no_data")
-    btns[1].callback("🗑 Delete Torrent+Data", "delete_one_data")
-    message.edit("Qbitorrent Control", attach=btns)
-
-@bot.callback("delete_one_no_data")
-def delete_no_data_callback(chat, query, data):
-    write_database("delete one no data")
+@bot.callback("delete")
+def list_callback(chat, query, data):
     chat.send(listt(0))
+    write_database("delete")
 
-@bot.callback("delete_one_data")
-def delete_with_data_callback(chat, query, data):
-    write_database("delete one data")
-    chat.send(listt(0))
-
-#delete all callback
 @bot.callback("delete_all")
-def delete_all_callback(message, chat, query, data):
-    btns=botogram.Buttons()
-    btns[0].callback("🗑 Delete All Torrents", "delete_all_no_data")
-    btns[1].callback("🗑 Delete All Torrent+Data", "delete_all_data")
-    message.edit("Qbitorrent Control", attach=btns)
-	
-@bot.callback("delete_all_no_data")
-def delete__all_with_no_data_callback(message, chat, query, data):
-    delall_no_data()
+def list_callback(chat, query, data):
+    delall()
     query.notify("Deleted All")
-    btns = botogram.Buttons()
-    btns[0].callback("📝 List", "list")
-    btns[1].callback("➕ Add Magnet", "add_magnet")
-    btns[1].callback("➕ Add Torrent", "add_torrent")
-    btns[2].callback("⏸ Pause", "pause")
-    btns[2].callback("▶️ Resume", "resume")
-    btns[3].callback("⏸ Pause All", "pause_all")
-    btns[3].callback("▶️ Resume All", "resume_all")
-    btns[4].callback("🗑 Delete", "delete_one")
-    btns[4].callback("🗑 Delete All", "delete_all")
-	
-    message.edit("Qbitorrent Control", attach=btns)
-	
-@bot.callback("delete_all_data")
-def delete_all_with_data_callback(message, chat, query, data):
-    delall_data()
-    query.notify("Deleted All+Torrents")
-    btns = botogram.Buttons()
-    btns[0].callback("📝 List", "list")
-    btns[1].callback("➕ Add Magnet", "add_magnet")
-    btns[1].callback("➕ Add Torrent", "add_torrent")
-    btns[2].callback("⏸ Pause", "pause")
-    btns[2].callback("▶️ Resume", "resume")
-    btns[3].callback("⏸ Pause All", "pause_all")
-    btns[3].callback("▶️ Resume All", "resume_all")
-    btns[4].callback("🗑 Delete", "delete_one")
-    btns[4].callback("🗑 Delete All", "delete_all")
-	
-    message.edit("Qbitorrent Control", attach=btns)
 
 @bot.process_message
 def process_message(chat, message):
@@ -313,42 +257,10 @@ def process_message(chat, message):
             chat.send("wrong id")
         write_database("None")
 
-    elif read_database() == "delete one no data":
+    elif read_database() == "delete":
         try:
             id=int(message.text)
-            delete_one_no_data(id)
-            btns = botogram.Buttons()
-            btns[0].callback("📝 List", "list")
-            btns[1].callback("➕ Add Magnet", "add_magnet")
-            btns[1].callback("➕ Add Torrent", "add_torrent")
-            btns[2].callback("⏸ Pause", "pause")
-            btns[2].callback("▶️ Resume", "resume")
-            btns[3].callback("⏸ Pause All", "pause_all")
-            btns[3].callback("▶️ Resume All", "resume_all")
-            btns[4].callback("🗑 Delete", "delete_one")
-            btns[4].callback("🗑 Delete All", "delete_all")
-	
-            chat.send("Qbitorrent Control", attach=btns)
-        except:
-            chat.send("wrong id")
-        write_database("None")
-		
-    elif read_database() == "delete one data":
-        try:
-            id=int(message.text)
-            delete_one_data(id)
-            btns = botogram.Buttons()
-            btns[0].callback("📝 List", "list")
-            btns[1].callback("➕ Add Magnet", "add_magnet")
-            btns[1].callback("➕ Add Torrent", "add_torrent")
-            btns[2].callback("⏸ Pause", "pause")
-            btns[2].callback("▶️ Resume", "resume")
-            btns[3].callback("⏸ Pause All", "pause_all")
-            btns[3].callback("▶️ Resume All", "resume_all")
-            btns[4].callback("🗑 Delete", "delete_one")
-            btns[4].callback("🗑 Delete All", "delete_all")
-	
-            chat.send("Qbitorrent Control", attach=btns)
+            delete(id)
         except:
             chat.send("wrong id")
         write_database("None")
