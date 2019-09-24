@@ -8,4 +8,4 @@ To use the bot you will need the "qbittorrent" library and the "botogram2" libra
 `pip install -r requirements.txt`
 
 ## Configuration:
-Edit line 8 of the qb.py file by entering the database data. Edit the login.json file by putting the address, port, username and password of the Qbittorrent web UI. Also change the id authorized to use the bot always from the login.json file. Change line 190 and line 9 by putting your Telegram username
+Edit the login.json file by putting the address, port, username and password of the Qbittorrent web UI. Also change the id authorized to use the bot, the token and the database credentials always from the login.json file. Change line 9 by putting your Telegram username.
