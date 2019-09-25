@@ -1,5 +1,5 @@
 #!/usr/local/bin/python3.7
-import botogram, os, datetime, json
+import botogram, os, datetime, json, math
 from pony.orm import *
 from qbittorrent import Client
 
@@ -21,6 +21,15 @@ class Qb(db.Entity):
     qb = Required(str)
 
 db.generate_mapping(create_tables=True)
+
+def convert_size(size_bytes):
+    if size_bytes == 0:
+       return "0B"
+    size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
+    i = int(math.floor(math.log(size_bytes, 1024)))
+    p = math.pow(1024, i)
+    s = round(size_bytes / p, 2)
+    return "%s %s" % (s, size_name[i])
 
 def open_login_file():
      with open("login.json", "r") as login_file:
@@ -124,8 +133,10 @@ def listt(n):
 
             if progress == 0:
                 l+=("{}) {}\n[            ] {}% completed\nState: {}\n"
-                "Download Speed: {}KiB\nETA: {}\n\n").format(str(a), i['name'], str(round(progress,2)),
-                i['state'].capitalize(), str(round(i['dlspeed']/1000, 2)), convertETA(int(i['eta'])))
+                "Download Speed: {}KiB/s\nSize: {}\nETA: {}\n\n").format(str(a),
+                 i['name'], str(round(progress,2)),i['state'].capitalize(),
+                  str(round(i['dlspeed']/1000, 2)), convert_size(i['size'],
+                  convertETA(int(i['eta']))))
 
             elif (progress == 100):
                 l+=("{}) {}\n[completed] {}% completed\nState: {}\n"
@@ -134,9 +145,11 @@ def listt(n):
 
             else:
                 l+=("{}) {}\n[{}{}] {}% completed\nState: {} \n"
-                "Download Speed: {}KiB/s\nETA: {}\n\n").format(str(a), i['name'], "="*int(progress/10),
-                " "*int(12-(progress/10)), str(round(progress,2)), i['state'].capitalize(),
-                str(round(i['dlspeed']/1000, 2)), convertETA(int(i['eta'])))
+                "Download Speed: {}KiB/s\nSize: {}\nETA: {}\n\n").format(str(a),
+                i['name'], "="*int(progress/10)," "*int(12-(progress/10)),
+                str(round(progress,2)), i['state'].capitalize(),
+                str(round(i['dlspeed']/1000, 2)), convert_size(i['size']),
+                convertETA(int(i['eta'])))
             a+=1
 
     else:
@@ -179,8 +192,8 @@ def greeter_command(chat, message):
         chat.send("Qbitorrent Control", attach=btns)
 
     else:
-	btns=botogram.Buttons()
-	btns[0].url("GitHub", "https://github.com/ch3p4ll3/botogramQBittorrent/")
+        btns=botogram.Buttons()
+        btns[0].url("GitHub", "https://github.com/ch3p4ll3/botogramQBittorrent/")
         chat.send("You are not authorized to use this bot.", attach=btns)
 
 @bot.callback("list")
