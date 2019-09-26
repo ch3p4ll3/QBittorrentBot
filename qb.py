@@ -133,22 +133,22 @@ def listt(n):
 
             if progress == 0:
                 l+=("{}) {}\n[            ] {}% completed\nState: {}\n"
-                "Download Speed: {}KiB/s\nSize: {}\nETA: {}\n\n").format(str(a),
+                "Download Speed: {}/s\nSize: {}\nETA: {}\n\n").format(str(a),
                  i['name'], str(round(progress,2)),i['state'].capitalize(),
-                  str(round(i['dlspeed']/1000, 2)), convert_size(i['size'],
+                  convert_size(i['dlspeed']), convert_size(i['size'],
                   convertETA(int(i['eta']))))
 
             elif (progress == 100):
                 l+=("{}) {}\n[completed] {}% completed\nState: {}\n"
-                "Upload Speed: {}KiB/s\n\n").format(str(a), i['name'], str(round(progress,2)),
-                i['state'].capitalize(), str(round(i['upspeed']/1000, 2)))
+                "Upload Speed: {}/s\n\n").format(str(a), i['name'], str(round(progress,2)),
+                i['state'].capitalize(), convert_size(i['upspeed']))
 
             else:
                 l+=("{}) {}\n[{}{}] {}% completed\nState: {} \n"
-                "Download Speed: {}KiB/s\nSize: {}\nETA: {}\n\n").format(str(a),
+                "Download Speed: {}/s\nSize: {}\nETA: {}\n\n").format(str(a),
                 i['name'], "="*int(progress/10)," "*int(12-(progress/10)),
                 str(round(progress,2)), i['state'].capitalize(),
-                str(round(i['dlspeed']/1000, 2)), convert_size(i['size']),
+                convert_size(i['dlspeed']), convert_size(i['size']),
                 convertETA(int(i['eta'])))
             a+=1
 
