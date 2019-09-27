@@ -97,25 +97,42 @@ def pause(id_torrent):
     qb.pause(qb.torrents()[id_torrent-1]['hash'])
     qb.logout()
 
-def delete(id_torrent):
-    ip, port, user, password=open_login_file()
+def delete_one_no_data(id_torrent):
+    ip, port, user, password, id=open_login_file()
     qb=Client("http://{}:{}".format(ip, port))
     qb.login(user, password)
     qb.delete(qb.torrents()[id_torrent-1]['hash'])
     qb.logout()
 
-def delall():
+def delete_one_data(id_torrent):
+    ip, port, user, password, id=open_login_file()
+    qb=Client("http://{}:{}".format(ip, port))
+    qb.login(user, password)
+    qb.delete_permanently(qb.torrents()[id_torrent-1]['hash'])
+    qb.logout()
+
+def delall_no_data():
     try:
-        ip, port, user, password=open_login_file()
+        ip, port, user, password, id=open_login_file()
         qb = Client("http://{}:{}".format(ip, port))
         qb.login(user, password)
         for i in qb.torrents():
             qb.delete(i['hash']) #scan all torrents and delete them (only torrent, no data)
         qb.logout()
-        return True
     except:
         qb.logout()
-        return False
+
+def delall_data():
+    try:
+        ip, port, user, password, id=open_login_file()
+        qb = Client("http://{}:{}".format(ip, port))
+        qb.login(user, password)
+        for i in qb.torrents():
+            qb.delete_permanently(i['hash']) #scan all torrents and delete them (only torrent, no data)
+        qb.logout()
+    except:
+        qb.logout()
+
 
 def listt(n):
     l=""
@@ -186,7 +203,7 @@ def greeter_command(chat, message):
         btns[2].callback("▶️ Resume", "resume")
         btns[3].callback("⏸ Pause All", "pause_all")
         btns[3].callback("▶️ Resume All", "resume_all")
-        btns[4].callback("🗑 Delete", "delete")
+        btns[4].callback("🗑 Delete", "delete_one")
         btns[4].callback("🗑 Delete All", "delete_all")
 
         chat.send("Qbitorrent Control", attach=btns)
@@ -230,15 +247,65 @@ def list_callback(chat, query, data):
     chat.send(listt(0))
     write_database("resume")
 
-@bot.callback("delete")
-def list_callback(chat, query, data):
-    chat.send(listt(0))
-    write_database("delete")
+#delete one torrent callback
+@bot.callback("delete_one")
+def delete_callback(chat, message, query, data):
+    btns=botogram.Buttons()
+    btns[0].callback("🗑 Delete Torrent", "delete_one_no_data")
+    btns[1].callback("🗑 Delete Torrent+Data", "delete_one_data")
+    message.edit("Qbitorrent Control", attach=btns)
 
+@bot.callback("delete_one_no_data")
+def delete_no_data_callback(chat, query, data):
+    write_database("delete one no data")
+    chat.send(listt(0))
+
+@bot.callback("delete_one_data")
+def delete_with_data_callback(chat, query, data):
+    write_database("delete one data")
+    chat.send(listt(0))
+
+#delete all callback
 @bot.callback("delete_all")
-def list_callback(chat, query, data):
-    delall()
+def delete_all_callback(message, chat, query, data):
+    btns=botogram.Buttons()
+    btns[0].callback("🗑 Delete All Torrents", "delete_all_no_data")
+    btns[1].callback("🗑 Delete All Torrent+Data", "delete_all_data")
+    message.edit("Qbitorrent Control", attach=btns)
+
+@bot.callback("delete_all_no_data")
+def delete__all_with_no_data_callback(message, chat, query, data):
+    delall_no_data()
     query.notify("Deleted All")
+    btns = botogram.Buttons()
+    btns[0].callback("📝 List", "list")
+    btns[1].callback("➕ Add Magnet", "add_magnet")
+    btns[1].callback("➕ Add Torrent", "add_torrent")
+    btns[2].callback("⏸ Pause", "pause")
+    btns[2].callback("▶️ Resume", "resume")
+    btns[3].callback("⏸ Pause All", "pause_all")
+    btns[3].callback("▶️ Resume All", "resume_all")
+    btns[4].callback("🗑 Delete", "delete_one")
+    btns[4].callback("🗑 Delete All", "delete_all")
+
+    message.edit("Qbitorrent Control", attach=btns)
+
+@bot.callback("delete_all_data")
+def delete_all_with_data_callback(message, chat, query, data):
+    delall_data()
+    query.notify("Deleted All+Torrents")
+    btns = botogram.Buttons()
+    btns[0].callback("📝 List", "list")
+    btns[1].callback("➕ Add Magnet", "add_magnet")
+    btns[1].callback("➕ Add Torrent", "add_torrent")
+    btns[2].callback("⏸ Pause", "pause")
+    btns[2].callback("▶️ Resume", "resume")
+    btns[3].callback("⏸ Pause All", "pause_all")
+    btns[3].callback("▶️ Resume All", "resume_all")
+    btns[4].callback("🗑 Delete", "delete_one")
+    btns[4].callback("🗑 Delete All", "delete_all")
+
+    message.edit("Qbitorrent Control", attach=btns)
 
 @bot.process_message
 def process_message(chat, message):
@@ -270,10 +337,42 @@ def process_message(chat, message):
             chat.send("wrong id")
         write_database("None")
 
-    elif read_database() == "delete":
+    elif read_database() == "delete one no data":
         try:
             id=int(message.text)
-            delete(id)
+            delete_one_no_data(id)
+            btns = botogram.Buttons()
+            btns[0].callback("📝 List", "list")
+            btns[1].callback("➕ Add Magnet", "add_magnet")
+            btns[1].callback("➕ Add Torrent", "add_torrent")
+            btns[2].callback("⏸ Pause", "pause")
+            btns[2].callback("▶️ Resume", "resume")
+            btns[3].callback("⏸ Pause All", "pause_all")
+            btns[3].callback("▶️ Resume All", "resume_all")
+            btns[4].callback("🗑 Delete", "delete_one")
+            btns[4].callback("🗑 Delete All", "delete_all")
+
+            chat.send("Qbitorrent Control", attach=btns)
+        except:
+            chat.send("wrong id")
+        write_database("None")
+
+    elif read_database() == "delete one data":
+        try:
+            id=int(message.text)
+            delete_one_data(id)
+            btns = botogram.Buttons()
+            btns[0].callback("📝 List", "list")
+            btns[1].callback("➕ Add Magnet", "add_magnet")
+            btns[1].callback("➕ Add Torrent", "add_torrent")
+            btns[2].callback("⏸ Pause", "pause")
+            btns[2].callback("▶️ Resume", "resume")
+            btns[3].callback("⏸ Pause All", "pause_all")
+            btns[3].callback("▶️ Resume All", "resume_all")
+            btns[4].callback("🗑 Delete", "delete_one")
+            btns[4].callback("🗑 Delete All", "delete_all")
+
+            chat.send("Qbitorrent Control", attach=btns)
         except:
             chat.send("wrong id")
         write_database("None")
