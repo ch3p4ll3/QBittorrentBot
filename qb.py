@@ -98,14 +98,14 @@ def pause(id_torrent):
     qb.logout()
 
 def delete_one_no_data(id_torrent):
-    ip, port, user, password, id=open_login_file()
+    ip, port, user, password=open_login_file()
     qb=Client("http://{}:{}".format(ip, port))
     qb.login(user, password)
     qb.delete(qb.torrents()[id_torrent-1]['hash'])
     qb.logout()
 
 def delete_one_data(id_torrent):
-    ip, port, user, password, id=open_login_file()
+    ip, port, user, password=open_login_file()
     qb=Client("http://{}:{}".format(ip, port))
     qb.login(user, password)
     qb.delete_permanently(qb.torrents()[id_torrent-1]['hash'])
@@ -113,7 +113,7 @@ def delete_one_data(id_torrent):
 
 def delall_no_data():
     try:
-        ip, port, user, password, id=open_login_file()
+        ip, port, user, password=open_login_file()
         qb = Client("http://{}:{}".format(ip, port))
         qb.login(user, password)
         for i in qb.torrents():
@@ -124,7 +124,7 @@ def delall_no_data():
 
 def delall_data():
     try:
-        ip, port, user, password, id=open_login_file()
+        ip, port, user, password=open_login_file()
         qb = Client("http://{}:{}".format(ip, port))
         qb.login(user, password)
         for i in qb.torrents():
@@ -190,7 +190,7 @@ def listt(n):
     return l
 
 @bot.command("start")
-def greeter_command(chat, message):
+def start_command(chat, message):
     """Start the bot"""
     with open("login.json") as login_file:
         id = json.load(login_file)['id']
