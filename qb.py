@@ -1,6 +1,5 @@
 #!/usr/local/bin/python3.7
 import botogram, os, datetime, json, math
-from pony.orm import *
 from qbittorrent import Client
 
 with open("login.json") as login_file:
@@ -8,19 +7,11 @@ with open("login.json") as login_file:
     bot = botogram.create(data['token'])
 
 bot.about = "with this bot you can control qbittorrent from telegram"
-bot.owner = "@yourusername"
+bot.owner = "@ch3p4ll3"
 
-db = Database()
-with open("login.json") as login_file:
-    data = json.load(login_file)['database']
-    db.bind(provider='mysql', host=data['ip'],
-    user=data['user'], passwd=data['password'], db=data['db_name'])
-
-class Qb(db.Entity):
-    id = PrimaryKey(int)
-    qb = Required(str)
-
-db.generate_mapping(create_tables=True)
+@bot.prepare_memory
+def prepare_memory(shared):
+    shared['status']="None"
 
 def convert_size(size_bytes):
     if size_bytes == 0:
@@ -36,19 +27,6 @@ def open_login_file():
          data=json.load(login_file)['qbittorrent']
          return (data['ip'], data['port'],
          data['user'], data['password']);
-
-def read_database():
-    with db_session:
-        p = Qb[0]
-        return p.qb
-
-def write_database(status):
-    try:
-        with db_session:
-            Qb[0].qb=status
-    except pony.orm.core.ObjectNotFound:
-        with db_session:
-            qb=Qb(qb=status, id=0)
 
 def convertETA(n):
     return str(datetime.timedelta(seconds = n))
@@ -150,10 +128,10 @@ def listt(n):
 
             if progress == 0:
                 l+=("{}) {}\n[            ] {}% completed\nState: {}\n"
-                    "Download Speed: {}/s\nSize: {}\nETA: {}\n\n").format(str(a),
-                    i['name'], str(round(progress,2)),i['state'].capitalize(),
-                    convert_size(i['dlspeed']), convert_size(i['size']),
-                    convertETA(int(i['eta'])))
+                "Download Speed: {}/s\nSize: {}\nETA: {}\n\n").format(str(a),
+                 i['name'], str(round(progress,2)),i['state'].capitalize(),
+                  convert_size(i['dlspeed']), convert_size(i['size']),
+                  convertETA(int(i['eta'])))
 
             elif (progress == 100):
                 l+=("{}) {}\n[completed] {}% completed\nState: {}\n"
@@ -218,13 +196,13 @@ def list_callback(chat, query, data):
     chat.send(listt(1))
 
 @bot.callback("add_magnet")
-def list_callback(chat, query, data):
-    write_database("magnet")
+def list_callback(shared, chat, query, data):
+    shared['status']="magnet"
     query.notify("Send me the magnet link")
 
 @bot.callback("add_torrent")
-def list_callback(chat, query, data):
-    write_database("torrent")
+def list_callback(shared, chat, query, data):
+    shared['status']="torrent"
     query.notify("Send me the torrent file")
 
 @bot.callback("pause_all")
@@ -238,14 +216,14 @@ def list_callback(chat, query, data):
     query.notify("Resumed All")
 
 @bot.callback("pause")
-def list_callback(chat, query, data):
+def list_callback(shared, chat, query, data):
     chat.send(listt(0))
-    write_database("pause")
+    shared['status']="pause"
 
 @bot.callback("resume")
-def list_callback(chat, query, data):
+def list_callback(shared, chat, query, data):
     chat.send(listt(0))
-    write_database("resume")
+    shared['status']="resume"
 
 #delete one torrent callback
 @bot.callback("delete_one")
@@ -256,13 +234,13 @@ def delete_callback(chat, message, query, data):
     message.edit("Qbitorrent Control", attach=btns)
 
 @bot.callback("delete_one_no_data")
-def delete_no_data_callback(chat, query, data):
-    write_database("delete one no data")
+def delete_no_data_callback(shared, chat, query, data):
+    shared['status']="delete one no data"
     chat.send(listt(0))
 
 @bot.callback("delete_one_data")
-def delete_with_data_callback(chat, query, data):
-    write_database("delete one data")
+def delete_with_data_callback(shared, chat, query, data):
+    shared['status']="delete one data"
     chat.send(listt(0))
 
 #delete all callback
@@ -308,36 +286,36 @@ def delete_all_with_data_callback(message, chat, query, data):
     message.edit("Qbitorrent Control", attach=btns)
 
 @bot.process_message
-def process_message(chat, message):
-    if read_database() == "magnet" and "magnet:?xt" in message.text:
+def process_message(shared, chat, message):
+    if shared['status'] == "magnet" and "magnet:?xt" in message.text:
         magnet_link=message.text.split(" , ")
         add_magnet(magnet_link)
-        write_database("None")
+        shared['status']="None"
 
-    elif read_database() == "torrent" and message.document:
+    elif shared['status'] == "torrent" and message.document:
         if ".torrent" in message.document.file_name:
             name="/tmp/"+message.document.file_name
             message.document.save(name)
             add_torrent(name)
-        write_database("None")
+        shared['status']="None"
 
-    elif read_database() == "resume":
+    elif shared['status'] == "resume":
         try:
             id=int(message.text)
             resume(id)
         except:
             chat.send("wrong id")
-        write_database("None")
+        shared['status']="None"
 
-    elif read_database() == "pause":
+    elif shared['status'] == "pause":
         try:
             id=int(message.text)
             pause(id)
         except:
             chat.send("wrong id")
-        write_database("None")
+        shared['status']="None"
 
-    elif read_database() == "delete one no data":
+    elif shared['status'] == "delete one no data":
         try:
             id=int(message.text)
             delete_one_no_data(id)
@@ -353,11 +331,12 @@ def process_message(chat, message):
             btns[4].callback("🗑 Delete All", "delete_all")
 
             chat.send("Qbitorrent Control", attach=btns)
-        except:
+        except Exception as e:
+            print(e)
             chat.send("wrong id")
-        write_database("None")
+        shared['status']="None"
 
-    elif read_database() == "delete one data":
+    elif shared['status'] == "delete one data":
         try:
             id=int(message.text)
             delete_one_data(id)
@@ -373,10 +352,10 @@ def process_message(chat, message):
             btns[4].callback("🗑 Delete All", "delete_all")
 
             chat.send("Qbitorrent Control", attach=btns)
-        except:
+        except Exception as e:
+            print(e)
             chat.send("wrong id")
-        write_database("None")
+        shared['status']="None"
 
 if __name__ == "__main__":
-    write_database("None")
     bot.run()
