@@ -150,10 +150,10 @@ def listt(n):
 
             if progress == 0:
                 l+=("{}) {}\n[            ] {}% completed\nState: {}\n"
-                "Download Speed: {}/s\nSize: {}\nETA: {}\n\n").format(str(a),
-                 i['name'], str(round(progress,2)),i['state'].capitalize(),
-                  convert_size(i['dlspeed']), convert_size(i['size'],
-                  convertETA(int(i['eta']))))
+                    "Download Speed: {}/s\nSize: {}\nETA: {}\n\n").format(str(a),
+                    i['name'], str(round(progress,2)),i['state'].capitalize(),
+                    convert_size(i['dlspeed']), convert_size(i['size']),
+                    convertETA(int(i['eta'])))
 
             elif (progress == 100):
                 l+=("{}) {}\n[completed] {}% completed\nState: {}\n"
