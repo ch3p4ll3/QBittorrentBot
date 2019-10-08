@@ -1,13 +1,6 @@
 {
   "token": "",
 
-  "database": {
-    "ip": "",
-    "user": "",
-    "password": "",
-    "db_name": ""
-  },
-
   "qbittorrent": {
     "ip": "127.0.0.1",
     "port": "8080",
