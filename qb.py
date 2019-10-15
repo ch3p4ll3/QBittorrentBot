@@ -290,6 +290,18 @@ def process_message(shared, chat, message):
     if shared['status'] == "magnet" and "magnet:?xt" in message.text:
         magnet_link=message.text.split(" , ")
         add_magnet(magnet_link)
+        btns = botogram.Buttons()
+        btns[0].callback("📝 List", "list")
+        btns[1].callback("➕ Add Magnet", "add_magnet")
+        btns[1].callback("➕ Add Torrent", "add_torrent")
+        btns[2].callback("⏸ Pause", "pause")
+        btns[2].callback("▶️ Resume", "resume")
+        btns[3].callback("⏸ Pause All", "pause_all")
+        btns[3].callback("▶️ Resume All", "resume_all")
+        btns[4].callback("🗑 Delete", "delete_one")
+        btns[4].callback("🗑 Delete All", "delete_all")
+
+        chat.send("Qbitorrent Control", attach=btns)
         shared['status']="None"
 
     elif shared['status'] == "torrent" and message.document:
@@ -297,12 +309,36 @@ def process_message(shared, chat, message):
             name="/tmp/"+message.document.file_name
             message.document.save(name)
             add_torrent(name)
+            btns = botogram.Buttons()
+            btns[0].callback("📝 List", "list")
+            btns[1].callback("➕ Add Magnet", "add_magnet")
+            btns[1].callback("➕ Add Torrent", "add_torrent")
+            btns[2].callback("⏸ Pause", "pause")
+            btns[2].callback("▶️ Resume", "resume")
+            btns[3].callback("⏸ Pause All", "pause_all")
+            btns[3].callback("▶️ Resume All", "resume_all")
+            btns[4].callback("🗑 Delete", "delete_one")
+            btns[4].callback("🗑 Delete All", "delete_all")
+
+            chat.send("Qbitorrent Control", attach=btns)
         shared['status']="None"
 
     elif shared['status'] == "resume":
         try:
             id=int(message.text)
             resume(id)
+            btns = botogram.Buttons()
+            btns[0].callback("📝 List", "list")
+            btns[1].callback("➕ Add Magnet", "add_magnet")
+            btns[1].callback("➕ Add Torrent", "add_torrent")
+            btns[2].callback("⏸ Pause", "pause")
+            btns[2].callback("▶️ Resume", "resume")
+            btns[3].callback("⏸ Pause All", "pause_all")
+            btns[3].callback("▶️ Resume All", "resume_all")
+            btns[4].callback("🗑 Delete", "delete_one")
+            btns[4].callback("🗑 Delete All", "delete_all")
+
+            chat.send("Qbitorrent Control", attach=btns)
         except:
             chat.send("wrong id")
         shared['status']="None"
@@ -311,6 +347,18 @@ def process_message(shared, chat, message):
         try:
             id=int(message.text)
             pause(id)
+            btns = botogram.Buttons()
+            btns[0].callback("📝 List", "list")
+            btns[1].callback("➕ Add Magnet", "add_magnet")
+            btns[1].callback("➕ Add Torrent", "add_torrent")
+            btns[2].callback("⏸ Pause", "pause")
+            btns[2].callback("▶️ Resume", "resume")
+            btns[3].callback("⏸ Pause All", "pause_all")
+            btns[3].callback("▶️ Resume All", "resume_all")
+            btns[4].callback("🗑 Delete", "delete_one")
+            btns[4].callback("🗑 Delete All", "delete_all")
+
+            chat.send("Qbitorrent Control", attach=btns)
         except:
             chat.send("wrong id")
         shared['status']="None"
