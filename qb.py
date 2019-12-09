@@ -193,7 +193,7 @@ def start_command(chat, message):
     """Start the bot"""
     with open("login.json") as login_file:
         id = json.load(login_file)['id']
-    if chat.id == id:
+    if chat.id in id:
         btns = botogram.Buttons()
         btns[0].callback("📝 List", "list")
         btns[1].callback("➕ Add Magnet", "add_magnet")
