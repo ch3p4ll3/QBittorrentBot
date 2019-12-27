@@ -1,3 +1,2 @@
-python_qbittorrent==0.3.1
-botogram2==0.6
-qbittorrent==0.1.6
+qbittorrent-api==0.4.2
+botogram2==0.6.1

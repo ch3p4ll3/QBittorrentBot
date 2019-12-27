@@ -1,12 +1,12 @@
 {
-  "token": "",
+  "token": "TG_TOKEN",
 
   "qbittorrent": {
-    "ip": "127.0.0.1",
+    "ip": "localhost",
     "port": "8080",
-    "user": "user",
+    "user": "admin",
     "password": "adminadmin"
   },
   
-  "id": [34546, 78987]
+  "id": [3346, 78987]
 }
