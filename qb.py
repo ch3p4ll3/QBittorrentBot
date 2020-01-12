@@ -2,6 +2,7 @@
 import botogram
 import os
 import datetime
+import psutil
 import json
 import math
 import qbittorrentapi
@@ -42,8 +43,8 @@ def convertETA(n):
 
 def add_magnet(link):
     ip, port, user, password = open_login_file()
-    qbt_client = qbittorrentapi.Client(host='http://{}:{}'.format(ip, port)
-                                       , username=user, password=password)
+    qbt_client = qbittorrentapi.Client(host='http://{}:{}'.format(ip, port),
+                                       username=user, password=password)
     try:
         qbt_client.auth_log_in()
     except qbittorrentapi.LoginFailed as e:
@@ -55,8 +56,8 @@ def add_magnet(link):
 
 def add_torrent(file_name):
     ip, port, user, password = open_login_file()
-    qbt_client = qbittorrentapi.Client(host='http://{}:{}'.format(ip, port)
-                                       , username=user, password=password)
+    qbt_client = qbittorrentapi.Client(host='http://{}:{}'.format(ip, port),
+                                       username=user, password=password)
     try:
         qbt_client.auth_log_in()
     except qbittorrentapi.LoginFailed as e:
@@ -69,8 +70,8 @@ def add_torrent(file_name):
 
 def resume_all():
     ip, port, user, password = open_login_file()
-    qbt_client = qbittorrentapi.Client(host='http://{}:{}'.format(ip, port)
-                                       , username=user, password=password)
+    qbt_client = qbittorrentapi.Client(host='http://{}:{}'.format(ip, port),
+                                       username=user, password=password)
     try:
         qbt_client.auth_log_in()
     except qbittorrentapi.LoginFailed as e:
@@ -82,8 +83,8 @@ def resume_all():
 
 def pause_all():
     ip, port, user, password = open_login_file()
-    qbt_client = qbittorrentapi.Client(host='http://{}:{}'.format(ip, port)
-                                       , username=user, password=password)
+    qbt_client = qbittorrentapi.Client(host='http://{}:{}'.format(ip, port),
+                                       username=user, password=password)
     try:
         qbt_client.auth_log_in()
     except qbittorrentapi.LoginFailed as e:
@@ -95,61 +96,66 @@ def pause_all():
 
 def resume(id_torrent):
     ip, port, user, password = open_login_file()
-    qbt_client = qbittorrentapi.Client(host='http://{}:{}'.format(ip, port)
-                                       , username=user, password=password)
+    qbt_client = qbittorrentapi.Client(host='http://{}:{}'.format(ip, port),
+                                       username=user, password=password)
     try:
         qbt_client.auth_log_in()
     except qbittorrentapi.LoginFailed as e:
         print(e)
 
-    qbt_client.torrents_resume(hashes=qbt_client.torrents_info()[id_torrent - 1].hash)
+    qbt_client.torrents_resume(hashes=qbt_client.torrents_info()[id_torrent
+                                                                 - 1].hash)
     qbt_client.auth_log_out()
 
 
 def pause(id_torrent):
     ip, port, user, password = open_login_file()
-    qbt_client = qbittorrentapi.Client(host='http://{}:{}'.format(ip, port)
-                                       , username=user, password=password)
+    qbt_client = qbittorrentapi.Client(host='http://{}:{}'.format(ip, port),
+                                       username=user, password=password)
     try:
         qbt_client.auth_log_in()
     except qbittorrentapi.LoginFailed as e:
         print(e)
 
-    qbt_client.torrents_pause(hashes=qbt_client.torrents_info()[id_torrent - 1].hash)
+    qbt_client.torrents_pause(hashes=qbt_client.torrents_info()[id_torrent
+                                                                - 1].hash)
     qbt_client.auth_log_out()
 
 
 def delete_one_no_data(id_torrent):
     ip, port, user, password = open_login_file()
-    qbt_client = qbittorrentapi.Client(host='http://{}:{}'.format(ip, port)
-                                       , username=user, password=password)
+    qbt_client = qbittorrentapi.Client(host='http://{}:{}'.format(ip, port),
+                                       username=user, password=password)
     try:
         qbt_client.auth_log_in()
     except qbittorrentapi.LoginFailed as e:
         print(e)
 
     qbt_client.torrents_delete(delete_files=False,
-                               hashes=qbt_client.torrents_info()[id_torrent - 1].hash)
+                               hashes=qbt_client.torrents_info()[id_torrent
+                                                                 - 1].hash)
     qbt_client.auth_log_out()
 
 
 def delete_one_data(id_torrent):
     ip, port, user, password = open_login_file()
-    qbt_client = qbittorrentapi.Client(host='http://{}:{}'.format(ip, port)
-                                       , username=user, password=password)
+    qbt_client = qbittorrentapi.Client(host='http://{}:{}'.format(ip, port),
+                                       username=user, password=password)
     try:
         qbt_client.auth_log_in()
     except qbittorrentapi.LoginFailed as e:
         print(e)
 
     qbt_client.torrents_delete(delete_files=True,
-                               hashes=qbt_client.torrents_info()[id_torrent - 1].hash)
+                               hashes=qbt_client.torrents_info()[id_torrent
+                                                                 - 1].hash)
     qbt_client.auth_log_out()
+
 
 def delall_no_data():
     ip, port, user, password = open_login_file()
-    qbt_client = qbittorrentapi.Client(host='http://{}:{}'.format(ip, port)
-                                       , username=user, password=password)
+    qbt_client = qbittorrentapi.Client(host='http://{}:{}'.format(ip, port),
+                                       username=user, password=password)
     try:
         qbt_client.auth_log_in()
     except qbittorrentapi.LoginFailed as e:
@@ -162,8 +168,8 @@ def delall_no_data():
 
 def delall_data():
     ip, port, user, password = open_login_file()
-    qbt_client = qbittorrentapi.Client(host='http://{}:{}'.format(ip, port)
-                                       , username=user, password=password)
+    qbt_client = qbittorrentapi.Client(host='http://{}:{}'.format(ip, port),
+                                       username=user, password=password)
     try:
         qbt_client.auth_log_in()
     except qbittorrentapi.LoginFailed as e:
@@ -178,8 +184,8 @@ def listt(n):
     text = ""
     a = 1
     ip, port, user, password = open_login_file()
-    qbt_client = qbittorrentapi.Client(host='http://{}:{}'.format(ip, port)
-                                       , username=user, password=password)
+    qbt_client = qbittorrentapi.Client(host='http://{}:{}'.format(ip, port),
+                                       username=user, password=password)
     try:
         qbt_client.auth_log_in()
     except qbittorrentapi.LoginFailed as e:
@@ -250,7 +256,7 @@ def send_menu(message, chat):
     try:
         message.edit("Qbitorrent Control", attach=btns)
 
-    except Exception as e:
+    except Exception:
         chat.send("Qbitorrent Control", attach=btns)
 
 
@@ -278,6 +284,52 @@ def start_command(chat, message):
         btns[0].url("GitHub",
                     "https://github.com/ch3p4ll3/botogramQBittorrent/")
         chat.send("You are not authorized to use this bot.", attach=btns)
+
+
+@bot.command("stats")
+def stats_command(chat, message):
+    with open("login.json") as login_file:
+        id = json.load(login_file)['id']
+    if chat.id in id:
+        ip, port, user, password = open_login_file()
+        qbt_client = qbittorrentapi.Client(host='http://{}:{}'.format(ip,
+                                                                      port),
+                                           username=user, password=password)
+
+        try:
+            qbt_client.auth_log_in()
+        except qbittorrentapi.LoginFailed as e:
+            print(e)
+
+        txt = "*============SYSTEM============*\n" \
+              "*CPU Usage: *{}%\n" \
+              "*Free Memory: *{} of {} ({}%)\n" \
+              "*Disks usage: *{} of {} ({}%)\n" \
+              "*CPU Temp: *{}°C\n" \
+              "\n*=========QBITTORRENT=========*\n" \
+              "*Qbittorrent Version: * {}\n" \
+              "*Qbittorrent Web API Version:* {}\n" \
+              "*Default save path: * {}\n" \
+              "*Active Torrents: *{}\n" \
+              "*Inactive Torrents: *{}"
+
+        txt = txt.format(psutil.cpu_percent(interval=None),
+                         convert_size(psutil.virtual_memory().available),
+                         convert_size(psutil.virtual_memory().total),
+                         psutil.virtual_memory().percent,
+                         convert_size(psutil.disk_usage('/mnt/usb').used),
+                         convert_size(psutil.disk_usage('/mnt/usb').total),
+                         psutil.disk_usage('/mnt/usb').percent,
+                         psutil.sensors_temperatures()['coretemp'][0][1],
+                         qbt_client.app_version(),
+                         qbt_client.app_web_api_version(),
+                         qbt_client.app_default_save_path(),
+                         len(qbt_client.torrents.info.active()),
+                         len(qbt_client.torrents.info.inactive()))
+
+        qbt_client.auth_log_out()
+
+        chat.send(txt, syntax="markdown")
 
 
 @bot.callback("menu")
