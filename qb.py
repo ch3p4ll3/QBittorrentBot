@@ -20,7 +20,7 @@ def prepare_memory(shared):
     shared['status'] = "None"
 
 
-def convert_size(size_bytes):
+def convert_size(size_bytes) -> str:
     if size_bytes == 0:
         return "0B"
     size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
@@ -37,11 +37,11 @@ def open_login_file():
                 data['user'], data['password'])
 
 
-def convertETA(n):
+def convertETA(n) -> str:
     return str(datetime.timedelta(seconds=n))
 
 
-def add_magnet(link):
+def add_magnet(link, category=None) -> None:
     ip, port, user, password = open_login_file()
     qbt_client = qbittorrentapi.Client(host='http://{}:{}'.format(ip, port),
                                        username=user, password=password)
@@ -50,11 +50,18 @@ def add_magnet(link):
     except qbittorrentapi.LoginFailed as e:
         print(e)
 
-    qbt_client.torrents_add(urls=link)
+    cat = category
+    if cat == "None":
+        cat = None
+
+    if category is not None:
+        qbt_client.torrents_add(urls=link, category=cat)
+    else:
+        qbt_client.torrents_add(urls=link)
     qbt_client.auth_log_out()
 
 
-def add_torrent(file_name):
+def add_torrent(file_name, category=None) -> None:
     ip, port, user, password = open_login_file()
     qbt_client = qbittorrentapi.Client(host='http://{}:{}'.format(ip, port),
                                        username=user, password=password)
@@ -63,12 +70,20 @@ def add_torrent(file_name):
     except qbittorrentapi.LoginFailed as e:
         print(e)
 
-    qbt_client.torrents_add(torrent_files=file_name)
+    cat = category
+    if cat == "None":
+        cat = None
+
+    if category is not None:
+        qbt_client.torrents_add(torrent_files=file_name, category=cat)
+    else:
+        qbt_client.torrents_add(torrent_files=file_name)
+
     qbt_client.auth_log_out()
     os.remove(file_name)
 
 
-def resume_all():
+def resume_all() -> None:
     ip, port, user, password = open_login_file()
     qbt_client = qbittorrentapi.Client(host='http://{}:{}'.format(ip, port),
                                        username=user, password=password)
@@ -81,7 +96,7 @@ def resume_all():
     qbt_client.auth_log_out()
 
 
-def pause_all():
+def pause_all() -> None:
     ip, port, user, password = open_login_file()
     qbt_client = qbittorrentapi.Client(host='http://{}:{}'.format(ip, port),
                                        username=user, password=password)
@@ -94,7 +109,7 @@ def pause_all():
     qbt_client.auth_log_out()
 
 
-def resume(id_torrent):
+def resume(id_torrent) -> None:
     ip, port, user, password = open_login_file()
     qbt_client = qbittorrentapi.Client(host='http://{}:{}'.format(ip, port),
                                        username=user, password=password)
@@ -108,7 +123,7 @@ def resume(id_torrent):
     qbt_client.auth_log_out()
 
 
-def pause(id_torrent):
+def pause(id_torrent) -> None:
     ip, port, user, password = open_login_file()
     qbt_client = qbittorrentapi.Client(host='http://{}:{}'.format(ip, port),
                                        username=user, password=password)
@@ -122,7 +137,7 @@ def pause(id_torrent):
     qbt_client.auth_log_out()
 
 
-def delete_one_no_data(id_torrent):
+def delete_one_no_data(id_torrent) -> None:
     ip, port, user, password = open_login_file()
     qbt_client = qbittorrentapi.Client(host='http://{}:{}'.format(ip, port),
                                        username=user, password=password)
@@ -137,7 +152,7 @@ def delete_one_no_data(id_torrent):
     qbt_client.auth_log_out()
 
 
-def delete_one_data(id_torrent):
+def delete_one_data(id_torrent) -> None:
     ip, port, user, password = open_login_file()
     qbt_client = qbittorrentapi.Client(host='http://{}:{}'.format(ip, port),
                                        username=user, password=password)
@@ -152,7 +167,7 @@ def delete_one_data(id_torrent):
     qbt_client.auth_log_out()
 
 
-def delall_no_data():
+def delall_no_data() -> None:
     ip, port, user, password = open_login_file()
     qbt_client = qbittorrentapi.Client(host='http://{}:{}'.format(ip, port),
                                        username=user, password=password)
@@ -166,7 +181,7 @@ def delall_no_data():
     qbt_client.auth_log_out()
 
 
-def delall_data():
+def delall_data() -> None:
     ip, port, user, password = open_login_file()
     qbt_client = qbittorrentapi.Client(host='http://{}:{}'.format(ip, port),
                                        username=user, password=password)
@@ -180,7 +195,7 @@ def delall_data():
     qbt_client.auth_log_out()
 
 
-def listt(n):
+def listt(n) -> str:
     text = ""
     a = 1
     ip, port, user, password = open_login_file()
@@ -242,11 +257,11 @@ def listt(n):
     return text
 
 
-def send_menu(message, chat):
+def send_menu(message, chat) -> None:
     btns = botogram.Buttons()
     btns[0].callback("📝 List", "list")
-    btns[1].callback("➕ Add Magnet", "add_magnet")
-    btns[1].callback("➕ Add Torrent", "add_torrent")
+    btns[1].callback("➕ Add Magnet", "category", "add_magnet")
+    btns[1].callback("➕ Add Torrent", "category", "add_torrent")
     btns[2].callback("⏸ Pause", "pause")
     btns[2].callback("▶️ Resume", "resume")
     btns[3].callback("⏸ Pause All", "pause_all")
@@ -261,15 +276,14 @@ def send_menu(message, chat):
 
 
 @bot.command("start")
-def start_command(chat, message):
+def start_command(chat, message) -> None:
     """Start the bot"""
-    with open("login.json") as login_file:
-        id = json.load(login_file)['id']
+    id = data['id']
     if chat.id in id:
         btns = botogram.Buttons()
         btns[0].callback("📝 List", "list")
-        btns[1].callback("➕ Add Magnet", "add_magnet")
-        btns[1].callback("➕ Add Torrent", "add_torrent")
+        btns[1].callback("➕ Add Magnet", "category", "add_magnet")
+        btns[1].callback("➕ Add Torrent", "category", "add_torrent")
         btns[2].callback("⏸ Pause", "pause")
         btns[2].callback("▶️ Resume", "resume")
         btns[3].callback("⏸ Pause All", "pause_all")
@@ -282,14 +296,13 @@ def start_command(chat, message):
     else:
         btns = botogram.Buttons()
         btns[0].url("GitHub",
-                    "https://github.com/ch3p4ll3/botogramQBittorrent/")
+                    "https://github.com/ch3p4ll3/QBittorrentBot/")
         chat.send("You are not authorized to use this bot.", attach=btns)
 
 
 @bot.command("stats")
-def stats_command(chat, message):
-    with open("login.json") as login_file:
-        id = json.load(login_file)['id']
+def stats_command(chat, message) -> None:
+    id = data['id']
     if chat.id in id:
         ip, port, user, password = open_login_file()
         qbt_client = qbittorrentapi.Client(host='http://{}:{}'.format(ip,
@@ -331,14 +344,44 @@ def stats_command(chat, message):
 
         chat.send(txt, syntax="markdown")
 
+    else:
+        btns = botogram.Buttons()
+        btns[0].url("GitHub",
+                    "https://github.com/ch3p4ll3/QBittorrentBot/")
+        chat.send("You are not authorized to use this bot.", attach=btns)
+
+
+@bot.callback("category")
+def category(chat, message, data):
+    ip, port, user, password = open_login_file()
+    qbt_client = qbittorrentapi.Client(host='http://{}:{}'.format(ip, port),
+                                       username=user, password=password)
+    try:
+        qbt_client.auth_log_in()
+    except qbittorrentapi.LoginFailed as e:
+        print(e)
+
+    j = 0
+    btn = botogram.Buttons()
+
+    for i in qbt_client.torrent_categories.categories:
+        btn[j].callback(i, data, i)
+        j += 1
+    qbt_client.auth_log_out()
+
+    try:
+        message.edit("Choice a category:", attach=btn)
+    except:
+        chat.send("Choice a category:", attach=btn)
+
 
 @bot.callback("menu")
-def menu(query, chat, message):
+def menu(query, chat, message) -> None:
     send_menu(message, chat)
 
 
 @bot.callback("list")
-def list_callback(chat, message, query, data):
+def list_callback(chat, message, query, data) -> None:
     btns = botogram.Buttons()
     btns[0].callback("🔙 Menu", "menu")
     try:
@@ -348,44 +391,44 @@ def list_callback(chat, message, query, data):
 
 
 @bot.callback("add_magnet")
-def addmagnet_callback(shared, chat, query, data):
-    shared['status'] = "magnet"
+def addmagnet_callback(shared, chat, query, data) -> None:
+    shared['status'] = f"magnet#{data}"
     query.notify("Send me the magnet link")
 
 
 @bot.callback("add_torrent")
-def addtorrent_callback(shared, chat, query, data):
-    shared['status'] = "torrent"
+def addtorrent_callback(shared, chat, query, data) -> None:
+    shared['status'] = f"torrent#{data}"
     query.notify("Send me the torrent file")
 
 
 @bot.callback("pause_all")
-def pauseall_callback(chat, query, data):
+def pauseall_callback(chat, query, data) -> None:
     pause_all()
     query.notify("Paused All")
 
 
 @bot.callback("resume_all")
-def resumeall_callback(chat, query, data):
+def resumeall_callback(chat, query, data) -> None:
     resume_all()
     query.notify("Resumed All")
 
 
 @bot.callback("pause")
-def pause_callback(shared, chat, query, data):
+def pause_callback(shared, chat, query, data) -> None:
     chat.send(listt(0))
     shared['status'] = "pause"
 
 
 @bot.callback("resume")
-def resume_callback(shared, chat, query, data):
+def resume_callback(shared, chat, query, data) -> None:
     chat.send(listt(0))
     shared['status'] = "resume"
 
 
 # delete one torrent callback
 @bot.callback("delete_one")
-def delete_callback(chat, message, query, data):
+def delete_callback(chat, message, query, data) -> None:
     btns = botogram.Buttons()
     btns[0].callback("🗑 Delete Torrent", "delete_one_no_data")
     btns[1].callback("🗑 Delete Torrent+Data", "delete_one_data")
@@ -393,20 +436,20 @@ def delete_callback(chat, message, query, data):
 
 
 @bot.callback("delete_one_no_data")
-def delete_no_data_callback(shared, chat, query, data):
+def delete_no_data_callback(shared, chat, query, data) -> None:
     shared['status'] = "delete one no data"
     chat.send(listt(0))
 
 
 @bot.callback("delete_one_data")
-def delete_with_data_callback(shared, chat, query, data):
+def delete_with_data_callback(shared, chat, query, data) -> None:
     shared['status'] = "delete one data"
     chat.send(listt(0))
 
 
 # delete all callback
 @bot.callback("delete_all")
-def delete_all_callback(message, chat, query, data):
+def delete_all_callback(message, chat, query, data) -> None:
     btns = botogram.Buttons()
     btns[0].callback("🗑 Delete All Torrents", "delete_all_no_data")
     btns[1].callback("🗑 Delete All Torrent+Data", "delete_all_data")
@@ -414,32 +457,32 @@ def delete_all_callback(message, chat, query, data):
 
 
 @bot.callback("delete_all_no_data")
-def delete__all_with_no_data_callback(message, chat, query, data):
+def delete__all_with_no_data_callback(message, chat, query, data) -> None:
     delall_no_data()
     query.notify("Deleted All")
     send_menu(message, chat)
 
 
 @bot.callback("delete_all_data")
-def delete_all_with_data_callback(message, chat, query, data):
+def delete_all_with_data_callback(message, chat, query, data) -> None:
     delall_data()
     query.notify("Deleted All+Torrents")
     send_menu(message, chat)
 
 
 @bot.process_message
-def process_message(shared, chat, message):
-    if shared['status'] == "magnet" and "magnet:?xt" in message.text:
+def process_message(shared, chat, message) -> None:
+    if "magnet" in shared['status'] and "magnet:?xt" in message.text:
         magnet_link = message.text.split(" , ")
-        add_magnet(magnet_link)
+        add_magnet(magnet_link, shared['status'].split("#")[1])
         send_menu(message, chat)
         shared['status'] = "None"
 
-    elif shared['status'] == "torrent" and message.document:
+    elif "torrent" in shared['status'] and message.document:
         if ".torrent" in message.document.file_name:
             name = "/tmp/" + message.document.file_name
             message.document.save(name)
-            add_torrent(name)
+            add_torrent(name, shared['status'].split("#")[1])
             send_menu(message, chat)
         shared['status'] = "None"
 
