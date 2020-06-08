@@ -1,22 +1,23 @@
 #!/usr/local/bin/python3.7
-import botogram
-import os
 import datetime
-import psutil
 import json
 import math
+import os
+
+import botogram
+import psutil
 import qbittorrentapi
 
 with open("login.json") as login_file:
     data = json.load(login_file)
     bot = botogram.create(data['token'])
 
-bot.about = "with this bot you can control qbittorrent from telegram"
+bot.about = "with this bot you can control QBittorrent from telegram"
 bot.owner = "@ch3p4ll3"
 
 
 @bot.prepare_memory
-def prepare_memory(shared):
+def prepare_memory(shared) -> None:
     shared['status'] = "None"
 
 
@@ -30,7 +31,7 @@ def convert_size(size_bytes) -> str:
     return "%s %s" % (s, size_name[i])
 
 
-def open_login_file():
+def open_login_file() -> tuple:
     with open("login.json", "r") as login_file:
         data = json.load(login_file)['qbittorrent']
         return (data['ip'], data['port'],
@@ -214,25 +215,27 @@ def listt(n) -> str:
             progress = i.progress * 100
 
             if progress == 0:
-                text += ("{}) {}\n[            ] {}% completed\nState: {}\nD"
-                         "ownload Speed: {}/s\nSize: {}\nETA: {}\n\n").format(
-                    str(a), i.name, str(round(progress, 2)),
-                    i.state.capitalize(), convert_size(i.dlspeed),
-                    convert_size(i.size), convertETA(int(i.eta)))
+                text += f"{a}) {i.name}\n[            ] " \
+                        f"{round(progress, 2)}% completed\n" \
+                        f"State: {i.state.capitalize()}\n" \
+                        f"Download Speed: {convert_size(i.dlspeed)}/s\n" \
+                        f"Size: {convert_size(i.size)}\nETA: " \
+                        f"{convertETA(int(i.eta))}\n\n"
 
             elif progress == 100:
-                text += ("{}) {}\n[completed] {}% completed\nState: {}\n"
-                         "Upload Speed: {}/s\n\n").format(
-                    str(a), i.name, str(round(progress, 2)),
-                    i.state.capitalize(), convert_size(i.upspeed))
+                text += f"{a}) {i.name}\n[completed] " \
+                        f"{round(progress, 2)}% completed\n" \
+                        f"State: {i.state.capitalize()}\n" \
+                        f"Upload Speed: {convert_size(i.upspeed)}/s\n\n"
 
             else:
-                text += ("{}) {}\n[{}{}] {}% completed\nState: {} \n"
-                         "Download Speed: {}/s\nSize: {}\nETA: {}\n\n").format(
-                    str(a), i.name, "=" * int(progress / 10),
-                    " " * int(12 - (progress / 10)), str(round(progress, 2)),
-                    i.state.capitalize(), convert_size(i.dlspeed),
-                    convert_size(i.size), convertETA(int(i.eta)))
+                text += f"{a}) {i.name}\n[{'=' * int(progress / 10)}" \
+                        f"{' ' * int(12 - (progress / 10))}]" \
+                        f" {round(progress, 2)}% completed\n" \
+                        f"State: {i.state.capitalize()} \n" \
+                        f"Download Speed: {convert_size(i.dlspeed)}/s\n" \
+                        f"Size: {convert_size(i.size)}\nETA: " \
+                        f"{convertETA(int(i.eta))}\n\n"
             a += 1
 
     else:
@@ -240,17 +243,17 @@ def listt(n) -> str:
             progress = i['progress'] * 100
 
             if progress == 0:
-                text += "{}) {}\n[            ] {}% completed\n\n".format(
-                    str(a), i.name, str(round(progress, 2)))
+                text += f"{a}) {i.name}\n[            ] " \
+                        f"{round(progress, 2)}% completed\n\n"
 
-            elif (progress == 100):
-                text += "{}) {}\n[completed]{}% completed\n\n".format(
-                    str(a), i.name, str(round(progress, 2)))
+            elif progress == 100:
+                text += f"{a}) {i.name}\n[completed]" \
+                        f"{round(progress, 2)}% completed\n\n"
 
             else:
-                text += "{}) {}\n[{}{}] {}% completed\n\n".format(
-                    str(a), i.name, "=" * int(progress / 10),
-                    " " * int(12 - (progress / 10)), str(round(progress, 2)))
+                text += f"{a}) {i.name}\n[{'=' * int(progress / 10)}" \
+                        f"{' ' * int(12 - (progress / 10))}] " \
+                        f"{round(progress, 2)}% completed\n\n"
 
             a += 1
     qbt_client.auth_log_out()
@@ -276,7 +279,7 @@ def send_menu(message, chat) -> None:
 
 
 @bot.command("start")
-def start_command(chat, message) -> None:
+def start_command(chat) -> None:
     """Start the bot"""
     id = data['id']
     if chat.id in id:
@@ -301,7 +304,7 @@ def start_command(chat, message) -> None:
 
 
 @bot.command("stats")
-def stats_command(chat, message) -> None:
+def stats_command(chat) -> None:
     id = data['id']
     if chat.id in id:
         ip, port, user, password = open_login_file()
@@ -314,31 +317,21 @@ def stats_command(chat, message) -> None:
         except qbittorrentapi.LoginFailed as e:
             print(e)
 
-        txt = "*============SYSTEM============*\n" \
-              "*CPU Usage: *{}%\n" \
-              "*Free Memory: *{} of {} ({}%)\n" \
-              "*Disks usage: *{} of {} ({}%)\n" \
-              "*CPU Temp: *{}°C\n" \
-              "\n*=========QBITTORRENT=========*\n" \
-              "*Qbittorrent Version: * {}\n" \
-              "*Qbittorrent Web API Version:* {}\n" \
-              "*Default save path: * {}\n" \
-              "*Active Torrents: *{}\n" \
-              "*Inactive Torrents: *{}"
-
-        txt = txt.format(psutil.cpu_percent(interval=None),
-                         convert_size(psutil.virtual_memory().available),
-                         convert_size(psutil.virtual_memory().total),
-                         psutil.virtual_memory().percent,
-                         convert_size(psutil.disk_usage('/mnt/usb').used),
-                         convert_size(psutil.disk_usage('/mnt/usb').total),
-                         psutil.disk_usage('/mnt/usb').percent,
-                         psutil.sensors_temperatures()['coretemp'][0][1],
-                         qbt_client.app_version(),
-                         qbt_client.app_web_api_version(),
-                         qbt_client.app_default_save_path(),
-                         len(qbt_client.torrents.info.active()),
-                         len(qbt_client.torrents.info.inactive()))
+        txt = f"""*============SYSTEM============*
+*CPU Usage: *{psutil.cpu_percent(interval=None)}%
+*CPU Temp: *{psutil.sensors_temperatures()['coretemp'][0][1]}°C
+*Free Memory: *{convert_size(psutil.virtual_memory().available)} \
+ of {convert_size(psutil.virtual_memory().total)} \
+ ({psutil.virtual_memory().percent}%)
+*Disks usage: *{convert_size(psutil.disk_usage('/mnt/usb').used)} \
+of {convert_size(psutil.disk_usage('/mnt/usb').total)} \
+({psutil.disk_usage('/mnt/usb').percent}%)
+\n*=========QBITTORRENT=========*
+*Qbittorrent Version: * {qbt_client.app_version()}
+*Qbittorrent Web API Version:* {qbt_client.app_web_api_version()}
+*Default save path: * {qbt_client.app_default_save_path()}
+*Active Torrents: *{len(qbt_client.torrents.info.active())}
+*Inactive Torrents: *{len(qbt_client.torrents.info.inactive())}"""
 
         qbt_client.auth_log_out()
 
@@ -352,7 +345,7 @@ def stats_command(chat, message) -> None:
 
 
 @bot.callback("category")
-def category(chat, message, data):
+def category(chat, message, data, query, shared):
     ip, port, user, password = open_login_file()
     qbt_client = qbittorrentapi.Client(host='http://{}:{}'.format(ip, port),
                                        username=user, password=password)
@@ -369,19 +362,28 @@ def category(chat, message, data):
         j += 1
     qbt_client.auth_log_out()
 
+    if j == 0:
+        if "magnet" in data:
+            addmagnet_callback(shared, query, "#None")
+
+        else:
+            addtorrent_callback(shared, query, "#None")
+
+        return
+
     try:
         message.edit("Choice a category:", attach=btn)
-    except:
+    except Exception:
         chat.send("Choice a category:", attach=btn)
 
 
 @bot.callback("menu")
-def menu(query, chat, message) -> None:
+def menu(chat, message) -> None:
     send_menu(message, chat)
 
 
 @bot.callback("list")
-def list_callback(chat, message, query, data) -> None:
+def list_callback(chat, message) -> None:
     btns = botogram.Buttons()
     btns[0].callback("🔙 Menu", "menu")
     try:
@@ -391,44 +393,44 @@ def list_callback(chat, message, query, data) -> None:
 
 
 @bot.callback("add_magnet")
-def addmagnet_callback(shared, chat, query, data) -> None:
+def addmagnet_callback(shared, query, data) -> None:
     shared['status'] = f"magnet#{data}"
     query.notify("Send me the magnet link")
 
 
 @bot.callback("add_torrent")
-def addtorrent_callback(shared, chat, query, data) -> None:
+def addtorrent_callback(shared, query, data) -> None:
     shared['status'] = f"torrent#{data}"
     query.notify("Send me the torrent file")
 
 
 @bot.callback("pause_all")
-def pauseall_callback(chat, query, data) -> None:
+def pauseall_callback(query) -> None:
     pause_all()
     query.notify("Paused All")
 
 
 @bot.callback("resume_all")
-def resumeall_callback(chat, query, data) -> None:
+def resumeall_callback(query) -> None:
     resume_all()
     query.notify("Resumed All")
 
 
 @bot.callback("pause")
-def pause_callback(shared, chat, query, data) -> None:
+def pause_callback(shared, chat) -> None:
     chat.send(listt(0))
     shared['status'] = "pause"
 
 
 @bot.callback("resume")
-def resume_callback(shared, chat, query, data) -> None:
+def resume_callback(shared, chat) -> None:
     chat.send(listt(0))
     shared['status'] = "resume"
 
 
 # delete one torrent callback
 @bot.callback("delete_one")
-def delete_callback(chat, message, query, data) -> None:
+def delete_callback(message) -> None:
     btns = botogram.Buttons()
     btns[0].callback("🗑 Delete Torrent", "delete_one_no_data")
     btns[1].callback("🗑 Delete Torrent+Data", "delete_one_data")
@@ -436,20 +438,20 @@ def delete_callback(chat, message, query, data) -> None:
 
 
 @bot.callback("delete_one_no_data")
-def delete_no_data_callback(shared, chat, query, data) -> None:
+def delete_no_data_callback(shared, chat) -> None:
     shared['status'] = "delete one no data"
     chat.send(listt(0))
 
 
 @bot.callback("delete_one_data")
-def delete_with_data_callback(shared, chat, query, data) -> None:
+def delete_with_data_callback(shared, chat) -> None:
     shared['status'] = "delete one data"
     chat.send(listt(0))
 
 
 # delete all callback
 @bot.callback("delete_all")
-def delete_all_callback(message, chat, query, data) -> None:
+def delete_all_callback(message) -> None:
     btns = botogram.Buttons()
     btns[0].callback("🗑 Delete All Torrents", "delete_all_no_data")
     btns[1].callback("🗑 Delete All Torrent+Data", "delete_all_data")
@@ -457,14 +459,14 @@ def delete_all_callback(message, chat, query, data) -> None:
 
 
 @bot.callback("delete_all_no_data")
-def delete__all_with_no_data_callback(message, chat, query, data) -> None:
+def delete__all_with_no_data_callback(message, chat, query) -> None:
     delall_no_data()
     query.notify("Deleted All")
     send_menu(message, chat)
 
 
 @bot.callback("delete_all_data")
-def delete_all_with_data_callback(message, chat, query, data) -> None:
+def delete_all_with_data_callback(message, chat, query) -> None:
     delall_data()
     query.notify("Deleted All+Torrents")
     send_menu(message, chat)
