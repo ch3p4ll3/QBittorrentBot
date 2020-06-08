@@ -319,7 +319,7 @@ def stats_command(chat) -> None:
 
         txt = f"""*============SYSTEM============*
 *CPU Usage: *{psutil.cpu_percent(interval=None)}%
-*CPU Temp: *{psutil.sensors_temperatures()['coretemp'][0][1]}°C
+*CPU Temp: *{psutil.sensors_temperatures()['cpu-thermal'][0][1]}°C
 *Free Memory: *{convert_size(psutil.virtual_memory().available)} \
  of {convert_size(psutil.virtual_memory().total)} \
  ({psutil.virtual_memory().percent}%)
