@@ -1,7 +1,7 @@
 #!/usr/local/bin/python3.7
 import datetime
 import json
-from math import log, floor, pow
+from math import log, floor
 
 import botogram
 import psutil
@@ -140,64 +140,6 @@ def delall_data() -> None:
     qbt_client.auth_log_out()
 
 
-"""def listt(n) -> str:
-    text = ""
-    a = 1
-    qbt_client = login()
-    torrents = qbt_client.torrents_info()
-    if not torrents:
-        qbt_client.auth_log_out()
-        return "empty"
-    if n == 1:
-        for i in torrents:
-            progress = i.progress * 100
-
-            if progress == 0:
-                text += f"{a}) {i.name}\n[            ] " \
-                        f"{round(progress, 2)}% completed\n" \
-                        f"State: {i.state.capitalize()}\n" \
-                        f"Download Speed: {convert_size(i.dlspeed)}/s\n" \
-                        f"Size: {convert_size(i.size)}\nETA: " \
-                        f"{convertETA(int(i.eta))}\n\n"
-
-            elif progress == 100:
-                text += f"{a}) {i.name}\n[completed] " \
-                        f"{round(progress, 2)}% completed\n" \
-                        f"State: {i.state.capitalize()}\n" \
-                        f"Upload Speed: {convert_size(i.upspeed)}/s\n\n"
-
-            else:
-                text += f"{a}) {i.name}\n[{'=' * int(progress / 10)}" \
-                        f"{' ' * int(12 - (progress / 10))}]" \
-                        f" {round(progress, 2)}% completed\n" \
-                        f"State: {i.state.capitalize()} \n" \
-                        f"Download Speed: {convert_size(i.dlspeed)}/s\n" \
-                        f"Size: {convert_size(i.size)}\nETA: " \
-                        f"{convertETA(int(i.eta))}\n\n"
-            a += 1
-
-    else:
-        for i in torrents:
-            progress = i['progress'] * 100
-
-            if progress == 0:
-                text += f"{a}) {i.name}\n[            ] " \
-                        f"{round(progress, 2)}% completed\n\n"
-
-            elif progress == 100:
-                text += f"{a}) {i.name}\n[completed]" \
-                        f"{round(progress, 2)}% completed\n\n"
-
-            else:
-                text += f"{a}) {i.name}\n[{'=' * int(progress / 10)}" \
-                        f"{' ' * int(12 - (progress / 10))}] " \
-                        f"{round(progress, 2)}% completed\n\n"
-
-            a += 1
-    qbt_client.auth_log_out()
-    return text"""
-
-
 def list_active_torrents(n, chat, message, shared) -> None:
     qbt_client = login()
     torrents = qbt_client.torrents_info()
@@ -260,22 +202,10 @@ def send_menu(message, chat) -> None:
 
 
 @bot.command("start")
-def start_command(chat) -> None:
-    """Start the bot"""
-    id = data['id']
-    if chat.id in id:
-        btn = botogram.Buttons()
-        btn[0].callback("📝 List", "list")
-        btn[1].callback("➕ Add Magnet", "category", "add_magnet")
-        btn[1].callback("➕ Add Torrent", "category", "add_torrent")
-        btn[2].callback("⏸ Pause", "pause")
-        btn[2].callback("▶️ Resume", "resume")
-        btn[3].callback("⏸ Pause All", "pause_all")
-        btn[3].callback("▶️ Resume All", "resume_all")
-        btn[4].callback("🗑 Delete", "delete_one")
-        btn[4].callback("🗑 Delete All", "delete_all")
-
-        chat.send("Qbitorrent Control", attach=btn)
+def start_command(message, chat) -> None:
+    """Start the bot."""
+    if chat.id in data['id']:
+        send_menu(message, chat)
 
     else:
         btn = botogram.Buttons()
