@@ -344,8 +344,7 @@ def delete_no_data_callback(shared, chat, message, data) -> None:
         list_active_torrents(1, chat, message, shared)
 
     else:
-        id = int(data)
-        delete_one_no_data(id)
+        delete_one_no_data(int(data))
         send_menu(message, chat)
 
 
@@ -386,10 +385,9 @@ def delete_all_with_data_callback(message, chat, query) -> None:
 
 @bot.callback("torrentInfo")
 def torrent_info_callback(message, data) -> None:
-    id = int(data)
     qbt_client = login()
 
-    torrent = qbt_client.torrents_info()[id - 1]
+    torrent = qbt_client.torrents_info()[int(data) - 1]
     progress = torrent.progress * 100
     text = ""
 
