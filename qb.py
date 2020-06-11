@@ -215,8 +215,7 @@ def start_command(message, chat) -> None:
 
 @bot.command("stats")
 def stats_command(chat) -> None:
-    id = data['id']
-    if chat.id in id:
+    if chat.id in data['id']:
         qbt_client = login()
 
         txt = f"""*============SYSTEM============*
@@ -315,8 +314,7 @@ def pause_callback(shared, chat, message, data) -> None:
         shared['status'] = "pause"
 
     else:
-        id = int(data)
-        pause(id)
+        pause(int(data))
         send_menu(message, chat)
 
 
@@ -327,8 +325,7 @@ def resume_callback(shared, chat, message, data) -> None:
         shared['status'] = "resume"
 
     else:
-        id = int(data)
-        resume(id)
+        resume(int(data))
         send_menu(message, chat)
 
 
@@ -359,8 +356,7 @@ def delete_with_data_callback(shared, chat, message, data) -> None:
         list_active_torrents(1, chat, message, shared)
 
     else:
-        id = int(data)
-        delete_one_data(id)
+        delete_one_data(int(data))
         send_menu(message, chat)
 
 
