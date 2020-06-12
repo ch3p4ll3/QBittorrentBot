@@ -1,3 +1,5 @@
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/98aadc6d326c46b9bcb727c7b1ac6764)](https://www.codacy.com/manual/slinucs/QBittorrentBot?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ch3p4ll3/QBittorrentBot&amp;utm_campaign=Badge_Grade)
+
 # QBittorrentBot
 
 With this bot telegram you can manage your qbittorrent with a few simple clicks. Thanks to botogramQBittorrent you can have a list of all the files in download / upload, add torrents and magnets (You can add more magnets at a time by simplifying each link with a space, a comma and another space es. `magnet:?xt= , magnet:?xt= , ...`), pause, resume and delete the files.
