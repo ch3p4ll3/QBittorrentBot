@@ -252,6 +252,8 @@ of {convert_size(psutil.disk_usage('/mnt/usb').total)} \
 @bot.callback("add_category")
 def add_category_callback(chat, message, shared) -> None:
     shared['status'] = "category_name"
+    btn = botogram.Buttons()
+    btn[2].callback("🔙 Menu", "menu")
     try:
         message.edit("Send the category name")
     except Exception:
@@ -412,6 +414,7 @@ def delete_callback(message, data) -> None:
     btn = botogram.Buttons()
     btn[0].callback("🗑 Delete torrent", "delete_one_no_data", data)
     btn[1].callback("🗑 Delete torrent and data", "delete_one_data", data)
+    btn[2].callback("🔙 Menu", "menu")
     message.edit("Qbitorrent Control", attach=btn)
 
 
