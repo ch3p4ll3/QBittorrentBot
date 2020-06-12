@@ -340,7 +340,8 @@ def category(chat, message, data, query, shared) -> None:
 
         return
 
-    btn[j + 1].callback("🔙 Menu", "menu")
+    btn[j + 1].callback("None", data, "None")
+    btn[j + 2].callback("🔙 Menu", "menu")
 
     try:
         message.edit("Choice a category:", attach=btn)
@@ -387,8 +388,8 @@ def resumeall_callback(query) -> None:
 @bot.callback("pause")
 def pause_callback(shared, chat, message, data) -> None:
     if data is None:
-        list_active_torrents(1, chat, message, shared)
         shared['status'] = "pause"
+        list_active_torrents(1, chat, message, shared)
 
     else:
         pause(int(data))
@@ -398,8 +399,8 @@ def pause_callback(shared, chat, message, data) -> None:
 @bot.callback("resume")
 def resume_callback(shared, chat, message, data) -> None:
     if data is None:
-        list_active_torrents(1, chat, message, shared)
         shared['status'] = "resume"
+        list_active_torrents(1, chat, message, shared)
 
     else:
         resume(int(data))
