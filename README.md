@@ -14,11 +14,8 @@ Edit the login.json file by putting the address, port, username and password of 
 On the menu bar, go to **Tools > Options** qBittorrent WEB UI
 
 *   In the new window, choose **Web UI** option
-
 *   Check the **Enable the Web User Interface (Remote control)** option
-
 *   Choose a port (by default 8080)
-
 *   Set username and password (by default username: admin / password: adminadmin)
 
 Click on Ok to save settings.
