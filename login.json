@@ -1,5 +1,5 @@
 {
-  "token": "TG_TOKEN",
+  "token": "YOUR TOKEN",
 
   "qbittorrent": {
     "ip": "localhost",
@@ -8,5 +8,5 @@
     "password": "adminadmin"
   },
   
-  "id": [3346, 78987]
+  "id": [456, 78987]
 }
