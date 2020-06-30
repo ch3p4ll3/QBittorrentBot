@@ -5,7 +5,7 @@ import json
 
 class Qbittorrent(BaseModel):
     ip: str
-    port: str
+    port: int
     user: str
     password: str
 
