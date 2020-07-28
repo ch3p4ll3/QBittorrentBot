@@ -9,4 +9,4 @@ ENV TZ=Europe/Rome
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
-CMD [ "python", "/code/qb.py" ]
+CMD [ "python", "/code/main.py" ]
