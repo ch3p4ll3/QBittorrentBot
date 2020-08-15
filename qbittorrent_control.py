@@ -104,18 +104,15 @@ def delall_data(qbt_client) -> None:
 
 @qbittorrent_login
 def get_categories(qbt_client) -> \
-        qbittorrentapi.responses.TorrentCategoriesDictionary:
+        qbittorrentapi.torrents.TorrentCategoriesDictionary:
     categories = qbt_client.torrent_categories.categories
     if len(categories) > 0:
         return categories
 
-    else:
-        return
-
 
 @qbittorrent_login
 def get_torrent_info(qbt_client, data: str = None) -> \
-        qbittorrentapi.responses.TorrentInfoList:
+        qbittorrentapi.torrents.TorrentDictionary:
     if data is None:
         return qbt_client.torrents_info()
     return qbt_client.torrents_info()[int(data) - 1]

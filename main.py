@@ -56,7 +56,7 @@ def send_menu(message, chat, shared) -> None:
         chat.send("Qbitorrent Control", attach=btn)
 
 
-def list_active_torrents(n, chat, message, callback) -> None:
+def list_active_torrents(list_type, chat, message, callback) -> None:
     torrents = qbittorrent_control.get_torrent_info()
     if not torrents:
         btn = botogram.Buttons()
@@ -69,7 +69,9 @@ def list_active_torrents(n, chat, message, callback) -> None:
 
     btn = botogram.Buttons()
 
-    if n == 1:
+    if list_type == 1:
+        key = 0
+
         for key, i in enumerate(torrents):
             btn[key].callback(i.name, callback, str(key))
 
@@ -81,6 +83,8 @@ def list_active_torrents(n, chat, message, callback) -> None:
             chat.send("Qbitorrent Control", attach=btn)
 
     else:
+        key = 0
+
         for key, i in enumerate(torrents):
             btn[key].callback(i.name, "torrentInfo", str(key))
 
@@ -154,6 +158,8 @@ def remove_category_callback(chat, message, data):
         message.edit("There are no categories", attach=btn)
         return
 
+    key = 0
+
     for key, i in enumerate(categories):
         btn[key].callback(i, "remove_category", i)
 
@@ -182,6 +188,8 @@ def modify_category_callback(chat, message, data, shared):
         message.edit("There are no categories", attach=btn)
         return
 
+    key = 0
+
     for key, i in enumerate(categories):
         btn[key].callback(i, "modify_category", i)
 
@@ -207,6 +215,8 @@ def category(chat, message, data, query, shared) -> None:
             addtorrent_callback(shared, query, "#None")
 
         return
+
+    key = 0
 
     for key, i in enumerate(categories):
         btn[key].callback(i, data, i)
