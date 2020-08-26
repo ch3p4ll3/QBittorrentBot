@@ -52,7 +52,7 @@ def send_menu(message, chat, shared) -> None:
     try:
         message.edit("Qbitorrent Control", attach=btn)
 
-    except Exception:
+    except botogram.api.APIError:
         chat.send("Qbitorrent Control", attach=btn)
 
 
@@ -63,7 +63,7 @@ def list_active_torrents(list_type, chat, message, callback) -> None:
         btn[0].callback("🔙 Menu", "menu")
         try:
             message.edit("There are no torrents", attach=btn)
-        except Exception:
+        except botogram.api.APIError:
             chat.send("There are no torrents", attach=btn)
         return
 
@@ -73,26 +73,28 @@ def list_active_torrents(list_type, chat, message, callback) -> None:
         key = 0
 
         for key, i in enumerate(torrents):
-            btn[key].callback(i.name, callback, str(key))
+            btn[key].callback(f"{i.name[:27]}-{round(i.progress*100, 2)}%",
+                              callback, str(key))
 
         btn[key + 1].callback("🔙 Menu", "menu")
 
         try:
             message.edit_attach(btn)
-        except Exception:
+        except botogram.api.APIError:
             chat.send("Qbitorrent Control", attach=btn)
 
     else:
         key = 0
 
         for key, i in enumerate(torrents):
-            btn[key].callback(i.name, "torrentInfo", str(key))
+            btn[key].callback(f"{i.name[:27]} - {round(i.progress*100, 2)}%",
+                              "torrentInfo", str(key))
 
         btn[key + 1].callback("🔙 Menu", "menu")
 
         try:
             message.edit_attach(btn)
-        except Exception:
+        except botogram.api.APIError:
             chat.send("Qbitorrent Control", attach=btn)
 
 
@@ -137,7 +139,7 @@ def add_category_callback(chat, message, shared) -> None:
     btn[2].callback("🔙 Menu", "menu")
     try:
         message.edit("Send the category name")
-    except Exception:
+    except botogram.api.APIError:
         chat.send("Send the category name")
 
 
@@ -167,7 +169,7 @@ def remove_category_callback(chat, message, data):
 
     try:
         message.edit("Choice a category:", attach=btn)
-    except Exception:
+    except botogram.api.APIError:
         chat.send("Choice a category:", attach=btn)
 
 
@@ -197,7 +199,7 @@ def modify_category_callback(chat, message, data, shared):
 
     try:
         message.edit("Choice a category:", attach=btn)
-    except Exception:
+    except botogram.api.APIError:
         chat.send("Choice a category:", attach=btn)
 
 
@@ -226,7 +228,7 @@ def category(chat, message, data, query, shared) -> None:
 
     try:
         message.edit("Choice a category:", attach=btn)
-    except Exception:
+    except botogram.api.APIError:
         chat.send("Choice a category:", attach=btn)
 
 
@@ -243,9 +245,9 @@ def list_callback(chat, message, shared) -> None:
 
 
 @bot.callback("add_magnet")
-def addmagnet_callback(shared, query, data) -> None:
+def addmagnet_callback(message, shared, data) -> None:
     shared['status'] = f"magnet#{data}"
-    query.notify("Send a magnet link")
+    message.edit("Send a magnet link")
 
 
 @bot.callback("add_torrent")
@@ -272,7 +274,7 @@ def pause_callback(shared, chat, message, data) -> None:
         list_active_torrents(1, chat, message, "pause")
 
     else:
-        qbittorrent_control.pause(id_torrent=int(data))
+        qbittorrent_control.pause(id=int(data))
         send_menu(message, chat, shared)
 
 
@@ -282,7 +284,7 @@ def resume_callback(shared, chat, message, data) -> None:
         list_active_torrents(1, chat, message, "resume")
 
     else:
-        qbittorrent_control.resume(id_torrent=int(data))
+        qbittorrent_control.resume(id=int(data))
         send_menu(message, chat, shared)
 
 
@@ -301,7 +303,7 @@ def delete_no_data_callback(shared, chat, message, data) -> None:
         list_active_torrents(1, chat, message, "delete_one_no_data")
 
     else:
-        qbittorrent_control.delete_one_no_data(id_torrent=int(data))
+        qbittorrent_control.delete_one_no_data(id=int(data))
         send_menu(message, chat, shared)
 
 
@@ -311,7 +313,7 @@ def delete_with_data_callback(shared, chat, message, data) -> None:
         list_active_torrents(1, chat, message, "delete_one_data")
 
     else:
-        qbittorrent_control.delete_one_data(id_torrent=int(data))
+        qbittorrent_control.delete_one_data(id=int(data))
         send_menu(message, chat, shared)
 
 
@@ -340,7 +342,7 @@ def delete_all_with_data_callback(message, chat, query, shared) -> None:
 
 @bot.callback("torrentInfo")
 def torrent_info_callback(message, data) -> None:
-    torrent = qbittorrent_control.get_torrent_info(data=int(data))
+    torrent = qbittorrent_control.get_torrent_info(id=int(data))
     progress = torrent.progress * 100
     text = ""
 

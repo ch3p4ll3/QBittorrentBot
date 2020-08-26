@@ -65,29 +65,25 @@ def pause_all(qbt_client) -> None:
 
 
 @qbittorrent_login
-def resume(qbt_client, id_torrent: int) -> None:
-    qbt_client.torrents_resume(hashes=qbt_client.torrents_info()[id_torrent
-                                                                 - 1].hash)
+def resume(qbt_client, id: int) -> None:
+    qbt_client.torrents_resume(hashes=qbt_client.torrents_info()[id].hash)
 
 
 @qbittorrent_login
-def pause(qbt_client, id_torrent: int) -> None:
-    qbt_client.torrents_pause(hashes=qbt_client.torrents_info()[id_torrent
-                                                                - 1].hash)
+def pause(qbt_client, id: int) -> None:
+    qbt_client.torrents_pause(hashes=qbt_client.torrents_info()[id].hash)
 
 
 @qbittorrent_login
-def delete_one_no_data(qbt_client, id_torrent: int) -> None:
+def delete_one_no_data(qbt_client, id: int) -> None:
     qbt_client.torrents_delete(delete_files=False,
-                               hashes=qbt_client.torrents_info()[id_torrent
-                                                                 - 1].hash)
+                               hashes=qbt_client.torrents_info()[id].hash)
 
 
 @qbittorrent_login
-def delete_one_data(qbt_client, id_torrent: int) -> None:
+def delete_one_data(qbt_client, id: int) -> None:
     qbt_client.torrents_delete(delete_files=True,
-                               hashes=qbt_client.torrents_info()[id_torrent
-                                                                 - 1].hash)
+                               hashes=qbt_client.torrents_info()[id].hash)
 
 
 @qbittorrent_login
@@ -111,11 +107,11 @@ def get_categories(qbt_client) -> \
 
 
 @qbittorrent_login
-def get_torrent_info(qbt_client, data: str = None) -> \
+def get_torrent_info(qbt_client, id: int = None) -> \
         qbittorrentapi.torrents.TorrentDictionary:
-    if data is None:
+    if id is None:
         return qbt_client.torrents_info()
-    return qbt_client.torrents_info()[int(data) - 1]
+    return qbt_client.torrents_info()[id]
 
 
 @qbittorrent_login
