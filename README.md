@@ -1,4 +1,4 @@
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/98aadc6d326c46b9bcb727c7b1ac6764)](https://www.codacy.com/manual/slinucs/QBittorrentBot?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ch3p4ll3/QBittorrentBot&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/259099080ca24e029a910e3249d32041)](https://app.codacy.com/gh/ch3p4ll3/QBittorrentBot?utm_source=github.com&utm_medium=referral&utm_content=ch3p4ll3/QBittorrentBot&utm_campaign=Badge_Grade)
 
 # QBittorrentBot
 
