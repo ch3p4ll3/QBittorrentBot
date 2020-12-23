@@ -9,15 +9,11 @@ import psutil
 
 import qbittorrent_control
 from json_validation import get_configs
+import db_management
 
 bot = botogram.create(get_configs().token)
 bot.about = "with this bot you can control QBittorrent from telegram"
 bot.owner = "@ch3p4ll3"
-
-
-@bot.prepare_memory
-def prepare_memory(shared) -> None:
-    shared['status'] = "None"
 
 
 def convert_size(size_bytes) -> str:
@@ -34,8 +30,8 @@ def convert_eta(n) -> str:
     return str(datetime.timedelta(seconds=n))
 
 
-def send_menu(message, chat, shared) -> None:
-    shared['status'] = "None"
+def send_menu(message, chat) -> None:
+    db_management.write_support("None", chat.id)
     btn = botogram.Buttons()
     btn[0].callback("📝 List", "list")
     btn[1].callback("➕ Add Magnet", "category", "add_magnet")
@@ -56,7 +52,7 @@ def send_menu(message, chat, shared) -> None:
         chat.send("Qbitorrent Control", attach=btn)
 
 
-def list_active_torrents(list_type, chat, message, callback) -> None:
+def list_active_torrents(n, chat, message, callback) -> None:
     torrents = qbittorrent_control.get_torrent_info()
     if not torrents:
         btn = botogram.Buttons()
@@ -69,12 +65,9 @@ def list_active_torrents(list_type, chat, message, callback) -> None:
 
     btn = botogram.Buttons()
 
-    if list_type == 1:
-        key = 0
-
+    if n == 1:
         for key, i in enumerate(torrents):
-            btn[key].callback(f"{i.name[:27]}-{round(i.progress*100, 2)}%",
-                              callback, str(key))
+            btn[key].callback(i.name, callback, str(key))
 
         btn[key + 1].callback("🔙 Menu", "menu")
 
@@ -84,11 +77,8 @@ def list_active_torrents(list_type, chat, message, callback) -> None:
             chat.send("Qbitorrent Control", attach=btn)
 
     else:
-        key = 0
-
         for key, i in enumerate(torrents):
-            btn[key].callback(f"{i.name[:27]} - {round(i.progress*100, 2)}%",
-                              "torrentInfo", str(key))
+            btn[key].callback(i.name, "torrentInfo", str(key))
 
         btn[key + 1].callback("🔙 Menu", "menu")
 
@@ -99,10 +89,10 @@ def list_active_torrents(list_type, chat, message, callback) -> None:
 
 
 @bot.command("start")
-def start_command(message, chat, shared) -> None:
+def start_command(message, chat) -> None:
     """Start the bot."""
     if chat.id in get_configs().id:
-        send_menu(message, chat, shared)
+        send_menu(message, chat)
 
     else:
         btn = botogram.Buttons()
@@ -116,7 +106,7 @@ def stats_command(chat) -> None:
 
         txt = f"""*============SYSTEM============*
 *CPU Usage: *{psutil.cpu_percent(interval=None)}%
-*CPU Temp: *{psutil.sensors_temperatures()['cpu_thermal'][0].current}°C
+*CPU Temp: *{psutil.sensors_temperatures()['cpu-thermal'][0][1]}°C
 *Free Memory: *{convert_size(psutil.virtual_memory().available)} \
  of {convert_size(psutil.virtual_memory().total)} \
  ({psutil.virtual_memory().percent}%)
@@ -133,8 +123,8 @@ of {convert_size(psutil.disk_usage('/mnt/usb').total)} \
 
 
 @bot.callback("add_category")
-def add_category_callback(chat, message, shared) -> None:
-    shared['status'] = "category_name"
+def add_category_callback(chat, message) -> None:
+    db_management.write_support("category_name", chat.id)
     btn = botogram.Buttons()
     btn[2].callback("🔙 Menu", "menu")
     try:
@@ -160,26 +150,24 @@ def remove_category_callback(chat, message, data):
         message.edit("There are no categories", attach=btn)
         return
 
-    key = 0
-
     for key, i in enumerate(categories):
         btn[key].callback(i, "remove_category", i)
 
     btn[key + 1].callback("🔙 Menu", "menu")
 
     try:
-        message.edit("Choice a category:", attach=btn)
+        message.edit("Choose a category:", attach=btn)
     except botogram.api.APIError:
-        chat.send("Choice a category:", attach=btn)
+        chat.send("Choose a category:", attach=btn)
 
 
 @bot.callback("modify_category")
-def modify_category_callback(chat, message, data, shared):
+def modify_category_callback(chat, message, data):
     btn = botogram.Buttons()
 
     if data is not None:
         btn[2].callback("🔙 Menu", "menu")
-        shared['status'] = f"category_dir_modify#{data}"
+        db_management.write_support(f"category_dir_modify#{data}", chat.id)
         message.edit(f"Send new path for category {data}", attach=btn)
         return
 
@@ -190,35 +178,31 @@ def modify_category_callback(chat, message, data, shared):
         message.edit("There are no categories", attach=btn)
         return
 
-    key = 0
-
     for key, i in enumerate(categories):
         btn[key].callback(i, "modify_category", i)
 
     btn[key + 1].callback("🔙 Menu", "menu")
 
     try:
-        message.edit("Choice a category:", attach=btn)
+        message.edit("Choose a category:", attach=btn)
     except botogram.api.APIError:
-        chat.send("Choice a category:", attach=btn)
+        chat.send("Choose a category:", attach=btn)
 
 
 @bot.callback("category")
-def category(chat, message, data, query, shared) -> None:
+def category(chat, message, data, query) -> None:
     btn = botogram.Buttons()
 
     categories = qbittorrent_control.get_categories()
 
     if categories is None:
         if "magnet" in data:
-            addmagnet_callback(shared, query, "#None")
+            addmagnet_callback(query, "#None")
 
         else:
-            addtorrent_callback(shared, query, "#None")
+            addtorrent_callback(query, "#None")
 
         return
-
-    key = 0
 
     for key, i in enumerate(categories):
         btn[key].callback(i, data, i)
@@ -227,32 +211,33 @@ def category(chat, message, data, query, shared) -> None:
     btn[key + 2].callback("🔙 Menu", "menu")
 
     try:
-        message.edit("Choice a category:", attach=btn)
+        message.edit("Choose a category:", attach=btn)
     except botogram.api.APIError:
-        chat.send("Choice a category:", attach=btn)
+        chat.send("Choose a category:", attach=btn)
 
 
 @bot.callback("menu")
-def menu(chat, message, shared) -> None:
-    send_menu(message, chat, shared)
+def menu(chat, message) -> None:
+    send_menu(message, chat)
 
 
 @bot.callback("list")
-def list_callback(chat, message, shared) -> None:
+def list_callback(chat, message) -> None:
     btn = botogram.Buttons()
     btn[0].callback("🔙 Menu", "menu")
-    list_active_torrents(0, chat, message, shared)
+    list_active_torrents(0, chat, message,
+                         db_management.read_support(chat.id))
 
 
 @bot.callback("add_magnet")
-def addmagnet_callback(message, shared, data) -> None:
-    shared['status'] = f"magnet#{data}"
-    message.edit("Send a magnet link")
+def addmagnet_callback(query, data) -> None:
+    db_management.write_support(f"magnet#{data}", query.sender.id)
+    query.notify("Send a magnet link")
 
 
 @bot.callback("add_torrent")
-def addtorrent_callback(shared, query, data) -> None:
-    shared['status'] = f"torrent#{data}"
+def addtorrent_callback(query, data) -> None:
+    db_management.write_support(f"torrent#{data}", query.sender.id)
     query.notify("Send a torrent file")
 
 
@@ -269,23 +254,23 @@ def resumeall_callback(query) -> None:
 
 
 @bot.callback("pause")
-def pause_callback(shared, chat, message, data) -> None:
+def pause_callback(chat, message, data) -> None:
     if data is None:
         list_active_torrents(1, chat, message, "pause")
 
     else:
-        qbittorrent_control.pause(id=int(data))
-        send_menu(message, chat, shared)
+        qbittorrent_control.pause(id_torrent=int(data))
+        send_menu(message, chat)
 
 
 @bot.callback("resume")
-def resume_callback(shared, chat, message, data) -> None:
+def resume_callback(chat, message, data) -> None:
     if data is None:
         list_active_torrents(1, chat, message, "resume")
 
     else:
-        qbittorrent_control.resume(id=int(data))
-        send_menu(message, chat, shared)
+        qbittorrent_control.resume(id_torrent=int(data))
+        send_menu(message, chat)
 
 
 @bot.callback("delete_one")
@@ -298,23 +283,23 @@ def delete_callback(message, data) -> None:
 
 
 @bot.callback("delete_one_no_data")
-def delete_no_data_callback(shared, chat, message, data) -> None:
+def delete_no_data_callback(chat, message, data) -> None:
     if data is None:
         list_active_torrents(1, chat, message, "delete_one_no_data")
 
     else:
-        qbittorrent_control.delete_one_no_data(id=int(data))
-        send_menu(message, chat, shared)
+        qbittorrent_control.delete_one_no_data(id_torrent=int(data))
+        send_menu(message, chat)
 
 
 @bot.callback("delete_one_data")
-def delete_with_data_callback(shared, chat, message, data) -> None:
+def delete_with_data_callback(chat, message, data) -> None:
     if data is None:
         list_active_torrents(1, chat, message, "delete_one_data")
 
     else:
-        qbittorrent_control.delete_one_data(id=int(data))
-        send_menu(message, chat, shared)
+        qbittorrent_control.delete_one_data(id_torrent=int(data))
+        send_menu(message, chat)
 
 
 @bot.callback("delete_all")
@@ -327,22 +312,22 @@ def delete_all_callback(message) -> None:
 
 
 @bot.callback("delete_all_no_data")
-def delete__all_with_no_data_callback(message, chat, query, shared) -> None:
+def delete__all_with_no_data_callback(message, chat, query) -> None:
     qbittorrent_control.delall_no_data()
     query.notify("Deleted only torrents")
-    send_menu(message, chat, shared)
+    send_menu(message, chat)
 
 
 @bot.callback("delete_all_data")
-def delete_all_with_data_callback(message, chat, query, shared) -> None:
+def delete_all_with_data_callback(message, chat, query) -> None:
     qbittorrent_control.delall_data()
     query.notify("Deleted All+Torrents")
-    send_menu(message, chat, shared)
+    send_menu(message, chat)
 
 
 @bot.callback("torrentInfo")
 def torrent_info_callback(message, data) -> None:
-    torrent = qbittorrent_control.get_torrent_info(id=int(data))
+    torrent = qbittorrent_control.get_torrent_info(data=int(data))
     progress = torrent.progress * 100
     text = ""
 
@@ -379,53 +364,71 @@ def torrent_info_callback(message, data) -> None:
 
 
 @bot.process_message
-def process_message(shared, chat, message) -> None:
-    if "magnet" in shared['status']:
+def process_message(chat, message) -> None:
+    action = db_management.read_support(chat.id)
+
+    if action == "magnet":
         if message.text.startswith("magnet:?xt"):
             magnet_link = message.text.split(" , ")
-            category = shared['status'].split("#")[1]
+            category = db_management.read_support(chat.id).split("#")[1]
             qbittorrent_control.add_magnet(magnet_link=magnet_link,
                                            category=category)
-            send_menu(message, chat, shared)
-            shared['status'] = "None"
+            send_menu(message, chat)
+            db_management.write_support("None", chat.id)
 
         else:
             chat.send("This magnet link is invalid! Retry")
 
-    elif "torrent" in shared['status'] and message.document:
+    elif action == "torrent" and message.document:
         if ".torrent" in message.document.file_name:
             with tempfile.TemporaryDirectory() as tempdir:
                 name = f"{tempdir}/{message.document.file_name}"
-                category = shared['status'].split("#")[1]
+                category = db_management.read_support(chat.id).split("#")[1]
                 message.document.save(name)
                 qbittorrent_control.add_torrent(file_name=name,
                                                 category=category)
-            send_menu(message, chat, shared)
-            shared['status'] = "None"
+            send_menu(message, chat)
+            db_management.write_support("None", chat.id)
 
         else:
             chat.send("This is not a torrent file! Retry")
 
-    elif shared['status'] == "category_name":
-        shared['status'] = f"category_dir#{message.text}"
+    elif action == "category_name":
+        db_management.write_support(f"category_dir#{message.text}", chat.id)
         chat.send(f"now send me the path for the category {message.text}")
 
-    elif "category_dir" in shared['status']:
+    elif "category_dir" in action:
         if os.path.exists(message.text):
-            name = shared['status'].split("#")[1]
+            name = db_management.read_support(chat.id).split("#")[1]
 
-            if "modify" in shared['status']:
+            if "modify" in action:
                 qbittorrent_control.edit_category(name=name,
                                                   save_path=message.text)
-                send_menu(message, chat, shared)
+                send_menu(message, chat)
                 return
 
             qbittorrent_control.create_category(name=name,
                                                 save_path=message.text)
-            send_menu(message, chat, shared)
+            send_menu(message, chat)
 
         else:
             chat.send("The path entered does not exist! Retry")
+
+
+@bot.timer(60)
+def torrent_finished():
+    for i in qbittorrent_control.get_torrent_info():
+        if i.progress == 1 and \
+                db_management.read_completed_torrents(i.hash) is None \
+                and get_configs().notify:
+
+            for j in get_configs().id:
+                try:
+                    bot.chat(j).send(f"torrent {i.name} has "
+                                     f"finished downloading!")
+                except botogram.api.ChatUnavailableError:
+                    pass
+            db_management.write_completed_torrents(i.hash)
 
 
 if __name__ == "__main__":

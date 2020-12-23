@@ -14,6 +14,7 @@ class Validator(BaseModel):
     token: str
     qbittorrent: Qbittorrent
     id: List[int] = []
+    notify: bool
 
 
 def get_configs():

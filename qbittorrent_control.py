@@ -1,6 +1,6 @@
 import qbittorrentapi
 
-from json_valation import get_configs
+from json_validation import get_configs
 
 
 def qbittorrent_login(func):
@@ -55,63 +55,68 @@ def add_torrent(qbt_client, file_name: str, category: str = None) -> None:
 
 
 @qbittorrent_login
-def resume_all(qbt_client=None) -> None:
+def resume_all(qbt_client) -> None:
     qbt_client.torrents.resume.all()
 
 
 @qbittorrent_login
-def pause_all(qbt_client=None) -> None:
+def pause_all(qbt_client) -> None:
     qbt_client.torrents.pause.all()
 
 
 @qbittorrent_login
-def resume(qbt_client, id_item: int) -> None:
-    qbt_client.torrents_resume(hashes=qbt_client.torrents_info()[id_item].hash)
+def resume(qbt_client, id_torrent: int) -> None:
+    qbt_client.torrents_resume(hashes=qbt_client.torrents_info()[id_torrent
+                                                                 - 1].hash)
 
 
 @qbittorrent_login
-def pause(qbt_client, id_item: int) -> None:
-    qbt_client.torrents_pause(hashes=qbt_client.torrents_info()[id_item].hash)
+def pause(qbt_client, id_torrent: int) -> None:
+    qbt_client.torrents_pause(hashes=qbt_client.torrents_info()[id_torrent
+                                                                - 1].hash)
 
 
 @qbittorrent_login
-def delete_one_no_data(qbt_client, id_item: int) -> None:
+def delete_one_no_data(qbt_client, id_torrent: int) -> None:
     qbt_client.torrents_delete(delete_files=False,
-                               hashes=qbt_client.torrents_info()[id_item].hash)
+                               hashes=qbt_client.torrents_info()[id_torrent
+                                                                 - 1].hash)
 
 
 @qbittorrent_login
-def delete_one_data(qbt_client, id_item: int) -> None:
+def delete_one_data(qbt_client, id_torrent: int) -> None:
     qbt_client.torrents_delete(delete_files=True,
-                               hashes=qbt_client.torrents_info()[id_item].hash)
+                               hashes=qbt_client.torrents_info()[id_torrent
+                                                                 - 1].hash)
 
 
 @qbittorrent_login
-def delall_no_data(qbt_client=None) -> None:
+def delall_no_data(qbt_client) -> None:
     for i in qbt_client.torrents_info():
         qbt_client.torrents_delete(delete_files=False, hashes=i.hash)
 
 
 @qbittorrent_login
-def delall_data(qbt_client=None) -> None:
+def delall_data(qbt_client) -> None:
     for i in qbt_client.torrents_info():
         qbt_client.torrents_delete(delete_files=True, hashes=i.hash)
 
 
 @qbittorrent_login
-def get_categories(qbt_client=None) -> \
-        qbittorrentapi.torrents.TorrentCategoriesDictionary:
+def get_categories(qbt_client):
     categories = qbt_client.torrent_categories.categories
     if len(categories) > 0:
         return categories
 
+    else:
+        return
+
 
 @qbittorrent_login
-def get_torrent_info(qbt_client, id_item: int = None) -> \
-        qbittorrentapi.torrents.TorrentDictionary:
-    if id_item is None:
+def get_torrent_info(qbt_client, data: str = None):
+    if data is None:
         return qbt_client.torrents_info()
-    return qbt_client.torrents_info()[id_item]
+    return qbt_client.torrents_info()[int(data) - 1]
 
 
 @qbittorrent_login
