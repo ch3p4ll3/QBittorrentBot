@@ -18,15 +18,15 @@ class CompletedTorrents(db.Entity):
 db.generate_mapping(create_tables=True)
 
 
-def read_support(id):
+def read_support(chat_id):
     with db_session:
-        return Support[id].Action
+        return Support[chat_id].Action
 
 
-def write_support(status, id):
+def write_support(status, chat_id):
     with db_session:
         try:
-            Support[id].Action = status
+            Support[chat_id].Action = status
         except ObjectNotFound:
             Support(Action=status, id=id)
 
