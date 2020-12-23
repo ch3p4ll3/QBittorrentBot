@@ -28,7 +28,7 @@ def write_support(status, chat_id):
         try:
             Support[chat_id].Action = status
         except ObjectNotFound:
-            Support(Action=status, id=id)
+            Support(Action=status, id=chat_id)
 
 
 def write_completed_torrents(torrent_hash):
