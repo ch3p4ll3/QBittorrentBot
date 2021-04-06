@@ -10,4 +10,4 @@ pydantic==1.7.3
 qbittorrent-api==2020.12.14
 requests==2.25.0
 six==1.15.0
-urllib3==1.26.3
+urllib3==1.26.4
