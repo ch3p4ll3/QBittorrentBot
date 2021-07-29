@@ -2,15 +2,20 @@
 
 # QBittorrentBot
 
-With this bot telegram you can manage your qbittorrent with a few simple clicks. Thanks to botogramQBittorrent you can have a list of all the files in download / upload, add torrents and magnets (You can add more magnets at a time by simplifying each link with a space, a comma and another space es. `magnet:?xt= , magnet:?xt= , ...`), pause, resume and delete the files.
+With this bot telegram you can manage your qbittorrent with a few simple clicks. Thanks to QBittorrentBot you can have a list of all the files in download / upload, add torrents and magnets.  
+You can add more magnets by simply placing one link per line, e.g. 
+```
+magnet:?xt=...  
+magnet:?xt=...  
+```
+You can also pause, resume, delete and add/remove and modify categories.
 
 ## Installation
-To use the bot you will need the "qbittorrent-api" library and the "botogram2" library and active the QBittorrent web UI interface
-
-`pip install -r requirements.txt`
+install dependencies with `pip install -r requirements.txt`, start the bot with `python3 main.py`
 
 ## Configuration
-Edit the login.json file by putting the address, port, username and password of the Qbittorrent web UI. Also change the id authorized to use the bot and the token taken from botfather. Change line 9 by putting your Telegram username.
+With the change of library to [pyrogram](https://docs.pyrogram.org/) you will need the API_ID and API_HASH. Check [here](https://docs.pyrogram.org/intro/quickstart) to find out how to recover them.  
+Modify the config.py file by inserting all the data for qbittorrent, the token of the bot, the API ID and HASH and the ids authorized to use the bot (you can know your id through [this](https://t.me/myidbot) bot)
 
 ## How to enable the qBittorrent Web UI
 On the menu bar, go to **Tools > Options** qBittorrent WEB UI
