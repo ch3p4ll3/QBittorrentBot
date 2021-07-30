@@ -16,6 +16,7 @@ import db_management
 
 app = Client("qbittorrent_bot", api_id=API_ID, api_hash=API_HASH, bot_token=TG_TOKEN)
 spammer = checkTorrents(app)
+spammer.start()
 
 
 def convert_size(size_bytes) -> str:
@@ -44,8 +45,8 @@ def send_menu(message, chat) -> None:
                [InlineKeyboardButton("🗑 Delete", "delete_one"),
                 InlineKeyboardButton("🗑 Delete All", "delete_all")],
                [InlineKeyboardButton("➕ Add Category", "add_category"),
-                InlineKeyboardButton("🗑 Remove Category", "remove_category")],
-               [InlineKeyboardButton("📝 Modify Category", "modify_category")]]
+                InlineKeyboardButton("🗑 Remove Category", "select_category#remove_category")],
+               [InlineKeyboardButton("📝 Modify Category", "select_category#modify_category")]]
 
     try:
         app.edit_message_text(chat, message, text="Qbittorrent Control", reply_markup=InlineKeyboardMarkup(buttons))
@@ -105,17 +106,15 @@ def start_command(client: Client, message: Message) -> None:
 def stats_command(client: Client, message: Message) -> None:
     if message.from_user.id in AUTHORIZED_IDS:
 
-        txt = f"""*============SYSTEM============*
-*CPU Usage: *{psutil.cpu_percent(interval=None)}%
-*CPU Temp: *{psutil.sensors_temperatures()['cpu-thermal'][0][1]}°C
-*Free Memory: *{convert_size(psutil.virtual_memory().available)} \
- of {convert_size(psutil.virtual_memory().total)} \
- ({psutil.virtual_memory().percent}%)
-*Disks usage: *{convert_size(psutil.disk_usage('/mnt/usb').used)} \
-of {convert_size(psutil.disk_usage('/mnt/usb').total)} \
-({psutil.disk_usage('/mnt/usb').percent}%)"""
+        txt = f"**============SYSTEM============**\n" \
+              f"**CPU Usage:** {psutil.cpu_percent(interval=None)}%\n" \
+              f"**CPU Temp:** {psutil.sensors_temperatures()['coretemp'][0].current}°C\n" \
+              f"**Free Memory:** {convert_size(psutil.virtual_memory().available)} of " \
+              f"{convert_size(psutil.virtual_memory().total)} ({psutil.virtual_memory().percent}%)\n" \
+              f"**Disks usage:** {convert_size(psutil.disk_usage('/mnt').used)} of " \
+              f"{convert_size(psutil.disk_usage('/mnt').total)} ({psutil.disk_usage('/mnt').percent}%)"
 
-        message.reply_text(txt, reply_markup="markdown")
+        message.reply_text(txt, parse_mode="markdown")
 
     else:
         button = InlineKeyboardMarkup([[InlineKeyboardButton("Github",
@@ -134,18 +133,9 @@ def add_category_callback(client: Client, callback_query: CallbackQuery) -> None
         app.send_message(callback_query.from_user.id, "Send the category name", reply_markup=button)
 
 
-@app.on_callback_query(filters=custom_filters.remove_category_filter)
-def remove_category_callback(client: Client, callback_query: CallbackQuery) -> None:
+@app.on_callback_query(filters=custom_filters.select_category_filter)
+def list_categories(client: Client, callback_query: CallbackQuery):
     buttons = []
-
-    if callback_query.data.find("#") != -1:
-        qbittorrent_control.remove_category(data=callback_query.data.split("#")[1])
-        buttons.append([InlineKeyboardButton("🔙 Menu", "menu")])
-        app.edit_message_text(callback_query.from_user.id, callback_query.message.message_id,
-                              f"The category {callback_query.data.split('#')[1]} has been removed",
-                              reply_markup=InlineKeyboardMarkup(buttons))
-        return
-
     categories = qbittorrent_control.get_categories()
 
     if categories is None:
@@ -155,52 +145,35 @@ def remove_category_callback(client: Client, callback_query: CallbackQuery) -> N
         return
 
     for key, i in enumerate(categories):
-        buttons.append([InlineKeyboardButton(i, f"remove_category#{i}")])
+        buttons.append([InlineKeyboardButton(i, f"{callback_query.data.split('#')[1]}#{i}")])
 
     buttons.append([InlineKeyboardButton("🔙 Menu", "menu")])
 
     try:
         app.edit_message_text(callback_query.from_user.id, callback_query.message.message_id,
-                              "Choose a category:")
-        app.edit_message_text(callback_query.from_user.id, callback_query.message.message_id,
                               "Choose a category:", reply_markup=InlineKeyboardMarkup(buttons))
     except MessageIdInvalid:
         app.send_message(callback_query.from_user.id, "Choose a category:", reply_markup=InlineKeyboardMarkup(buttons))
+
+
+@app.on_callback_query(filters=custom_filters.remove_category_filter)
+def remove_category_callback(client: Client, callback_query: CallbackQuery) -> None:
+    buttons = [[InlineKeyboardButton("🔙 Menu", "menu")]]
+
+    qbittorrent_control.remove_category(data=callback_query.data.split("#")[1])
+    app.edit_message_text(callback_query.from_user.id, callback_query.message.message_id,
+                          f"The category {callback_query.data.split('#')[1]} has been removed",
+                          reply_markup=InlineKeyboardMarkup(buttons))
 
 
 @app.on_callback_query(filters=custom_filters.modify_category_filter)
 def modify_category_callback(client: Client, callback_query: CallbackQuery) -> None:
-    buttons = []
+    buttons = [[InlineKeyboardButton("🔙 Menu", "menu")]]
 
-    if callback_query.data.find("#") != -1:
-        buttons.append([InlineKeyboardButton("🔙 Menu", "menu")])
-        db_management.write_support(f"category_dir_modify#{callback_query.data}", callback_query.from_user.id)
-
-        app.edit_message_text(callback_query.from_user.id, callback_query.message.message_id,
-                              f"Send new path for category {callback_query.data.split('#')[1]}",
-                              reply_markup=InlineKeyboardMarkup(buttons))
-        return
-
-    categories = qbittorrent_control.get_categories()
-
-    if categories is None:
-        buttons.append([InlineKeyboardButton("🔙 Menu", "menu")])
-        app.edit_message_text(callback_query.from_user.id, callback_query.message.message_id,
-                              "There are no categories", reply_markup=InlineKeyboardMarkup(buttons))
-        return
-
-    for key, i in enumerate(categories):
-        buttons.append([InlineKeyboardButton(i, f"modify_category#{i}")])
-
-    buttons.append([InlineKeyboardButton("🔙 Menu", "menu")])
-
-    try:
-        app.edit_message_text(callback_query.from_user.id, callback_query.message.message_id,
-                              "Choose a category:")
-        app.edit_message_text(callback_query.from_user.id, callback_query.message.message_id,
-                              "Choose a category:", reply_markup=InlineKeyboardMarkup(buttons))
-    except MessageIdInvalid:
-        app.send_message(callback_query.from_user.id, "Choose a category:", reply_markup=InlineKeyboardMarkup(buttons))
+    db_management.write_support(f"category_dir_modify#{callback_query.data.split('#')[1]}", callback_query.from_user.id)
+    app.edit_message_text(callback_query.from_user.id, callback_query.message.message_id,
+                          f"Send new path for category {callback_query.data.split('#')[1]}",
+                          reply_markup=InlineKeyboardMarkup(buttons))
 
 
 @app.on_callback_query(filters=custom_filters.category_filter)
@@ -244,7 +217,7 @@ def list_callback(client: Client, callback_query: CallbackQuery) -> None:
 
 @app.on_callback_query(filters=custom_filters.add_magnet_filter)
 def addmagnet_callback(client: Client, callback_query: CallbackQuery) -> None:
-    db_management.write_support(f"magnet#{callback_query.data}", callback_query.from_user.id)
+    db_management.write_support(f"magnet#{callback_query.data.split('#')[1]}", callback_query.from_user.id)
     app.answer_callback_query(callback_query.id, "Send a magnet link")
 
 
@@ -268,7 +241,7 @@ def resumeall_callback(client: Client, callback_query: CallbackQuery) -> None:
 
 @app.on_callback_query(filters=custom_filters.pause_filter)
 def pause_callback(client: Client, callback_query: CallbackQuery) -> None:
-    if callback_query.data is None:
+    if callback_query.data.find("#") == -1:
         list_active_torrents(1, callback_query.from_user.id, callback_query.message.message_id, "pause")
 
     else:
@@ -278,7 +251,7 @@ def pause_callback(client: Client, callback_query: CallbackQuery) -> None:
 
 @app.on_callback_query(filters=custom_filters.resume_filter)
 def resume_callback(client: Client, callback_query: CallbackQuery) -> None:
-    if callback_query.data is None:
+    if callback_query.data.find("#") == -1:
         list_active_torrents(1, callback_query.from_user.id, callback_query.message.message_id, "resume")
 
     else:
@@ -288,17 +261,22 @@ def resume_callback(client: Client, callback_query: CallbackQuery) -> None:
 
 @app.on_callback_query(filters=custom_filters.delete_one_filter)
 def delete_callback(client: Client, callback_query: CallbackQuery) -> None:
-    buttons = [[InlineKeyboardButton("🗑 Delete torrent", f"delete_one_no_data#{callback_query.data.split('#')[1]}")],
-               [InlineKeyboardButton("🗑 Delete torrent and data", f"delete_one_data#{callback_query.data.split('#')[1]}")],
-               [InlineKeyboardButton("🔙 Menu", "menu")]]
+    if callback_query.data.find("#") == -1:
+        list_active_torrents(1, callback_query.from_user.id, callback_query.message.message_id, "delete_one")
 
-    app.edit_message_reply_markup(callback_query.from_user.id, callback_query.message.message_id,
-                                  reply_markup=InlineKeyboardMarkup(buttons))
+    else:
+
+        buttons = [[InlineKeyboardButton("🗑 Delete torrent", f"delete_one_no_data#{callback_query.data.split('#')[1]}")],
+                   [InlineKeyboardButton("🗑 Delete torrent and data", f"delete_one_data#{callback_query.data.split('#')[1]}")],
+                   [InlineKeyboardButton("🔙 Menu", "menu")]]
+
+        app.edit_message_reply_markup(callback_query.from_user.id, callback_query.message.message_id,
+                                      reply_markup=InlineKeyboardMarkup(buttons))
 
 
 @app.on_callback_query(filters=custom_filters.delete_one_no_data_filter)
 def delete_no_data_callback(client: Client, callback_query: CallbackQuery) -> None:
-    if callback_query.data is None:
+    if callback_query.data.find("#") == -1:
         list_active_torrents(1, callback_query.from_user.id, callback_query.message.message_id, "delete_one_no_data")
 
     else:
@@ -308,7 +286,7 @@ def delete_no_data_callback(client: Client, callback_query: CallbackQuery) -> No
 
 @app.on_callback_query(filters=custom_filters.delete_one_data_filter)
 def delete_with_data_callback(client: Client, callback_query: CallbackQuery) -> None:
-    if callback_query.data is None:
+    if callback_query.data.find("#") == -1:
         list_active_torrents(1, callback_query.from_user.id, callback_query.message.message_id, "delete_one_data")
 
     else:
@@ -326,7 +304,7 @@ def delete_all_callback(client: Client, callback_query: CallbackQuery) -> None:
 
 
 @app.on_callback_query(filters=custom_filters.delete_all_no_data_filter)
-def delete__all_with_no_data_callback(client: Client, callback_query: CallbackQuery) -> None:
+def delete_all_with_no_data_callback(client: Client, callback_query: CallbackQuery) -> None:
     qbittorrent_control.delall_no_data()
     app.answer_callback_query(callback_query.id, "Deleted only torrents")
     send_menu(callback_query.message.message_id, callback_query.from_user.id)
@@ -343,7 +321,6 @@ def delete_all_with_data_callback(client: Client, callback_query: CallbackQuery)
 def torrent_info_callback(client: Client, callback_query: CallbackQuery) -> None:
     torrent = qbittorrent_control.get_torrent_info(data=int(callback_query.data.split("#")[1]))
     progress = torrent.progress * 100
-    print(torrent)
     text = ""
 
     if progress == 0:
@@ -384,11 +361,11 @@ def torrent_info_callback(client: Client, callback_query: CallbackQuery) -> None
 @app.on_message()
 def on_text(client: Client, message: Message) -> None:
     action = db_management.read_support(message.from_user.id)
-    print(action)
-    if action == "magnet":
+
+    if "magnet" in action:
         if message.text.startswith("magnet:?xt"):
             magnet_link = message.text.split("\n")
-            category = db_management.read_support(message.from_user.id).split("#")[2]
+            category = db_management.read_support(message.from_user.id).split("#")[1]
             qbittorrent_control.add_magnet(magnet_link=magnet_link,
                                            category=category)
             send_menu(message.message_id, message.from_user.id)
@@ -397,11 +374,11 @@ def on_text(client: Client, message: Message) -> None:
         else:
             message.reply_text("This magnet link is invalid! Retry")
 
-    elif action == "torrent" and message.document:
+    elif "torrent" in action and message.document:
         if ".torrent" in message.document.file_name:
             with tempfile.TemporaryDirectory() as tempdir:
                 name = f"{tempdir}/{message.document.file_name}"
-                category = db_management.read_support(message.from_user.id).split("#")[2]
+                category = db_management.read_support(message.from_user.id).split("#")[1]
                 message.download(name)
                 qbittorrent_control.add_torrent(file_name=name,
                                                 category=category)
@@ -418,7 +395,6 @@ def on_text(client: Client, message: Message) -> None:
     elif "category_dir" in action:
         if os.path.exists(message.text):
             name = db_management.read_support(message.from_user.id).split("#")[1]
-            print(name)
 
             if "modify" in action:
                 qbittorrent_control.edit_category(name=name,
@@ -432,21 +408,3 @@ def on_text(client: Client, message: Message) -> None:
 
         else:
             message.reply_text("The path entered does not exist! Retry")
-
-
-"""
-@bot.timer(60)
-def torrent_finished():
-    for i in qbittorrent_control.get_torrent_info():
-        if i.progress == 1 and \
-                db_management.read_completed_torrents(i.hash) is None \
-                and get_configs().notify:
-
-            for j in get_configs().id:
-                try:
-                    bot.chat(j).send(f"torrent {i.name} has "
-                                     f"finished downloading!")
-                except botogram.api.ChatUnavailableError:
-                    pass
-            db_management.write_completed_torrents(i.hash)
-"""

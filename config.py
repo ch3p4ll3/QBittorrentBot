@@ -13,4 +13,4 @@ API_HASH = getenv("API-HASH")
 
 # Bot settings
 NOTIFY = True
-AUTHORIZED_IDS = []
+AUTHORIZED_IDS = [162301507]

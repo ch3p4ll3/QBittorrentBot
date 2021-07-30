@@ -19,3 +19,4 @@ delete_all_filter = filters.create(lambda _, __, query: query.data.split("#")[0]
 delete_all_no_data_filter = filters.create(lambda _, __, query: query.data.startswith("delete_all_no_data"))
 delete_all_data_filter = filters.create(lambda _, __, query: query.data.startswith("delete_all_data"))
 torrentInfo_filter = filters.create(lambda _, __, query: query.data.startswith("torrentInfo"))
+select_category_filter = filters.create(lambda _, __, query: query.data.startswith("select_category"))

@@ -15,9 +15,15 @@ class checkTorrents(Thread):
         self.go = True
 
     def run(self):
+        timer = time.time()
         while self.go:
-            self.torrent_finished()
-            time.sleep(60)
+            if time.time() - timer >= 60:
+                self.torrent_finished()
+                timer = time.time()
+
+            if not self.go:
+                break
+            time.sleep(1)
 
     def torrent_finished(self):
         for i in qbittorrent_control.get_torrent_info():
