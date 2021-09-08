@@ -1,13 +1,13 @@
 async-lru==1.0.2
 certifi==2021.5.30
-charset-normalizer==2.0.3
+charset-normalizer==2.0.4
 idna==3.2
 pony==0.7.14
 psutil==5.8.0
 pyaes==1.6.1
 Pyrogram==1.2.9
 PySocks==1.7.1
-qbittorrent-api==2021.5.22
+qbittorrent-api==2021.8.23
 requests==2.26.0
 six==1.16.0
 TgCrypto==1.2.2
