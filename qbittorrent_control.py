@@ -1,16 +1,16 @@
 import qbittorrentapi
 
-from json_validation import get_configs
+from config import QBITTORRENT_IP, QBITTORRENT_PSW, QBITTORRENT_USER, QBITTORRENT_PORT
 
 
 def qbittorrent_login(func):
     def wrapper(*args, **kwargs):
 
         qbt_client = qbittorrentapi.Client(
-            host=f'http://{get_configs().qbittorrent.ip}:'
-                 f'{get_configs().qbittorrent.port}',
-            username=get_configs().qbittorrent.user,
-            password=get_configs().qbittorrent.password)
+            host=f'http://{QBITTORRENT_IP}:'
+                 f'{QBITTORRENT_PORT}',
+            username=QBITTORRENT_USER,
+            password=QBITTORRENT_PSW)
 
         try:
             qbt_client.auth_log_in()
