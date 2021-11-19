@@ -6,6 +6,7 @@ modify_category_filter = filters.create(lambda _, __, query: query.data.startswi
 category_filter = filters.create(lambda _, __, query: query.data.startswith("category"))
 menu_filter = filters.create(lambda _, __, query: query.data.startswith("menu"))
 list_filter = filters.create(lambda _, __, query: query.data.startswith("list"))
+list_by_status_filter = filters.create(lambda _, __, query: query.data.split("#")[0] == "by_status_list")
 add_magnet_filter = filters.create(lambda _, __, query: query.data.startswith("add_magnet"))
 add_torrent_filter = filters.create(lambda _, __, query: query.data.startswith("add_torrent"))
 pause_all_filter = filters.create(lambda _, __, query: query.data.startswith("pause_all"))

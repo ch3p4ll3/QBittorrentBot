@@ -113,10 +113,10 @@ def get_categories(qbt_client):
 
 
 @qbittorrent_login
-def get_torrent_info(qbt_client, data: str = None):
+def get_torrent_info(qbt_client, data: str = None, status_filter: str = None, ):
     if data is None:
-        return qbt_client.torrents_info()
-    return qbt_client.torrents_info()[int(data) - 1]
+        return qbt_client.torrents_info(status_filter=status_filter)
+    return qbt_client.torrents_info(status_filter=status_filter)[int(data) - 1]
 
 
 @qbittorrent_login
