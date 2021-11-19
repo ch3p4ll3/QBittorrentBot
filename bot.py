@@ -55,17 +55,28 @@ def send_menu(message, chat) -> None:
         app.send_message(chat, text="Qbittorrent Control", reply_markup=InlineKeyboardMarkup(buttons))
 
 
-def list_active_torrents(n, chat, message, callback) -> None:
-    torrents = qbittorrent_control.get_torrent_info()
+def list_active_torrents(n, chat, message, callback, status_filter: str = None) -> None:
+    torrents = qbittorrent_control.get_torrent_info(status_filter=status_filter)
+
+    def render_categories_buttons():
+        return [
+            InlineKeyboardButton(f"⏳ {'*' if status_filter == 'downloading' else ''} Downloading",
+                                 "by_status_list#downloading"),
+            InlineKeyboardButton(f"✔️ {'*' if status_filter == 'completed' else ''} Completed",
+                                 "by_status_list#completed"),
+            InlineKeyboardButton(f"⏸️ {'*' if status_filter == 'paused' else ''} Paused", "by_status_list#paused"),
+        ]
+
+    categories_buttons = render_categories_buttons()
     if not torrents:
-        buttons = [[InlineKeyboardButton("🔙 Menu", "menu")]]
+        buttons = [categories_buttons, [InlineKeyboardButton("🔙 Menu", "menu")]]
         try:
             app.edit_message_text(chat, message, "There are no torrents", reply_markup=InlineKeyboardMarkup(buttons))
         except MessageIdInvalid:
             app.send_message(chat, "There are no torrents", reply_markup=InlineKeyboardMarkup(buttons))
         return
 
-    buttons = []
+    buttons = [categories_buttons]
 
     if n == 1:
         for key, i in enumerate(torrents):
@@ -215,6 +226,12 @@ def list_callback(client: Client, callback_query: CallbackQuery) -> None:
                          db_management.read_support(callback_query.from_user.id))
 
 
+@app.on_callback_query(filters=custom_filters.list_by_status_filter)
+def list_by_status_callback(client: Client, callback_query: CallbackQuery) -> None:
+    status_filter = callback_query.data.split("#")[1]
+    list_active_torrents(0, callback_query.from_user.id, callback_query.message.message_id,
+                         db_management.read_support(callback_query.from_user.id), status_filter=status_filter)
+
 @app.on_callback_query(filters=custom_filters.add_magnet_filter)
 def addmagnet_callback(client: Client, callback_query: CallbackQuery) -> None:
     db_management.write_support(f"magnet#{callback_query.data.split('#')[1]}", callback_query.from_user.id)
@@ -223,7 +240,7 @@ def addmagnet_callback(client: Client, callback_query: CallbackQuery) -> None:
 
 @app.on_callback_query(filters=custom_filters.add_torrent_filter)
 def addtorrent_callback(client: Client, callback_query: CallbackQuery) -> None:
-    db_management.write_support(f"torrent#{callback_query.data}", callback_query.from_user.id)
+    db_management.write_support(f"torrent#{callback_query.data.split('#')[1]}", callback_query.from_user.id)
     app.answer_callback_query(callback_query.id, "Send a torrent file")
 
 
