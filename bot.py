@@ -1,36 +1,24 @@
-import datetime
 import os
 import tempfile
-from math import log, floor
 
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message, CallbackQuery
 from pyrogram.errors.exceptions import MessageIdInvalid
+from pyrogram.enums.parse_mode import ParseMode
 import psutil
 
 import custom_filters
 import qbittorrent_control
-from check_finished_torrents import checkTorrents
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from utils import torrent_finished, convert_size, convert_eta
 from config import API_ID, API_HASH, TG_TOKEN, AUTHORIZED_IDS
 import db_management
 
-app = Client("qbittorrent_bot", api_id=API_ID, api_hash=API_HASH, bot_token=TG_TOKEN)
-spammer = checkTorrents(app)
-spammer.start()
 
+app = Client("qbittorrent_bot", api_id=API_ID, api_hash=API_HASH, bot_token=TG_TOKEN, parse_mode=ParseMode.MARKDOWN)
 
-def convert_size(size_bytes) -> str:
-    if size_bytes == 0:
-        return "0B"
-    size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
-    i = int(floor(log(size_bytes, 1024)))
-    p = pow(1024, i)
-    s = round(size_bytes / p, 2)
-    return "%s %s" % (s, size_name[i])
-
-
-def convert_eta(n) -> str:
-    return str(datetime.timedelta(seconds=n))
+scheduler = AsyncIOScheduler()
+scheduler.add_job(torrent_finished, "interval", args=[app], seconds=10)
 
 
 def send_menu(message, chat) -> None:
@@ -105,7 +93,7 @@ def list_active_torrents(n, chat, message, callback, status_filter: str = None) 
 def start_command(client: Client, message: Message) -> None:
     """Start the bot."""
     if message.from_user.id in AUTHORIZED_IDS:
-        send_menu(message.message_id, message.chat.id)
+        send_menu(message.id, message.chat.id)
 
     else:
         button = InlineKeyboardMarkup([[InlineKeyboardButton("Github",
@@ -125,7 +113,7 @@ def stats_command(client: Client, message: Message) -> None:
               f"**Disks usage:** {convert_size(psutil.disk_usage('/mnt').used)} of " \
               f"{convert_size(psutil.disk_usage('/mnt').total)} ({psutil.disk_usage('/mnt').percent}%)"
 
-        message.reply_text(txt, parse_mode="markdown")
+        message.reply_text(txt)
 
     else:
         button = InlineKeyboardMarkup([[InlineKeyboardButton("Github",
@@ -138,7 +126,7 @@ def add_category_callback(client: Client, callback_query: CallbackQuery) -> None
     db_management.write_support("category_name", callback_query.from_user.id)
     button = InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Menu", "menu")]])
     try:
-        app.edit_message_text(callback_query.from_user.id, callback_query.message.message_id,
+        app.edit_message_text(callback_query.from_user.id, callback_query.message.id,
                               "Send the category name", reply_markup=button)
     except MessageIdInvalid:
         app.send_message(callback_query.from_user.id, "Send the category name", reply_markup=button)
@@ -151,7 +139,7 @@ def list_categories(client: Client, callback_query: CallbackQuery):
 
     if categories is None:
         buttons.append([InlineKeyboardButton("🔙 Menu", "menu")])
-        app.edit_message_text(callback_query.from_user.id, callback_query.message.message_id,
+        app.edit_message_text(callback_query.from_user.id, callback_query.message.id,
                               "There are no categories", reply_markup=InlineKeyboardMarkup(buttons))
         return
 
@@ -161,7 +149,7 @@ def list_categories(client: Client, callback_query: CallbackQuery):
     buttons.append([InlineKeyboardButton("🔙 Menu", "menu")])
 
     try:
-        app.edit_message_text(callback_query.from_user.id, callback_query.message.message_id,
+        app.edit_message_text(callback_query.from_user.id, callback_query.message.id,
                               "Choose a category:", reply_markup=InlineKeyboardMarkup(buttons))
     except MessageIdInvalid:
         app.send_message(callback_query.from_user.id, "Choose a category:", reply_markup=InlineKeyboardMarkup(buttons))
@@ -172,7 +160,7 @@ def remove_category_callback(client: Client, callback_query: CallbackQuery) -> N
     buttons = [[InlineKeyboardButton("🔙 Menu", "menu")]]
 
     qbittorrent_control.remove_category(data=callback_query.data.split("#")[1])
-    app.edit_message_text(callback_query.from_user.id, callback_query.message.message_id,
+    app.edit_message_text(callback_query.from_user.id, callback_query.message.id,
                           f"The category {callback_query.data.split('#')[1]} has been removed",
                           reply_markup=InlineKeyboardMarkup(buttons))
 
@@ -182,7 +170,7 @@ def modify_category_callback(client: Client, callback_query: CallbackQuery) -> N
     buttons = [[InlineKeyboardButton("🔙 Menu", "menu")]]
 
     db_management.write_support(f"category_dir_modify#{callback_query.data.split('#')[1]}", callback_query.from_user.id)
-    app.edit_message_text(callback_query.from_user.id, callback_query.message.message_id,
+    app.edit_message_text(callback_query.from_user.id, callback_query.message.id,
                           f"Send new path for category {callback_query.data.split('#')[1]}",
                           reply_markup=InlineKeyboardMarkup(buttons))
 
@@ -209,7 +197,7 @@ def category(client: Client, callback_query: CallbackQuery) -> None:
     buttons.append([InlineKeyboardButton("🔙 Menu", "menu")])
 
     try:
-        app.edit_message_text(callback_query.from_user.id, callback_query.message.message_id,
+        app.edit_message_text(callback_query.from_user.id, callback_query.message.id,
                               "Choose a category:", reply_markup=InlineKeyboardMarkup(buttons))
     except MessageIdInvalid:
         app.send_message(callback_query.from_user.id, "Choose a category:", reply_markup=InlineKeyboardMarkup(buttons))
@@ -217,19 +205,19 @@ def category(client: Client, callback_query: CallbackQuery) -> None:
 
 @app.on_callback_query(filters=custom_filters.menu_filter)
 def menu_callback(client: Client, callback_query: CallbackQuery) -> None:
-    send_menu(callback_query.message.message_id, callback_query.from_user.id)
+    send_menu(callback_query.message.id, callback_query.from_user.id)
 
 
 @app.on_callback_query(filters=custom_filters.list_filter)
 def list_callback(client: Client, callback_query: CallbackQuery) -> None:
-    list_active_torrents(0, callback_query.from_user.id, callback_query.message.message_id,
+    list_active_torrents(0, callback_query.from_user.id, callback_query.message.id,
                          db_management.read_support(callback_query.from_user.id))
 
 
 @app.on_callback_query(filters=custom_filters.list_by_status_filter)
 def list_by_status_callback(client: Client, callback_query: CallbackQuery) -> None:
     status_filter = callback_query.data.split("#")[1]
-    list_active_torrents(0, callback_query.from_user.id, callback_query.message.message_id,
+    list_active_torrents(0, callback_query.from_user.id, callback_query.message.id,
                          db_management.read_support(callback_query.from_user.id), status_filter=status_filter)
 
 @app.on_callback_query(filters=custom_filters.add_magnet_filter)
@@ -259,27 +247,27 @@ def resumeall_callback(client: Client, callback_query: CallbackQuery) -> None:
 @app.on_callback_query(filters=custom_filters.pause_filter)
 def pause_callback(client: Client, callback_query: CallbackQuery) -> None:
     if callback_query.data.find("#") == -1:
-        list_active_torrents(1, callback_query.from_user.id, callback_query.message.message_id, "pause")
+        list_active_torrents(1, callback_query.from_user.id, callback_query.message.id, "pause")
 
     else:
         qbittorrent_control.pause(id_torrent=int(callback_query.data.split("#")[1]))
-        send_menu(callback_query.message.message_id, callback_query.from_user.id)
+        send_menu(callback_query.message.id, callback_query.from_user.id)
 
 
 @app.on_callback_query(filters=custom_filters.resume_filter)
 def resume_callback(client: Client, callback_query: CallbackQuery) -> None:
     if callback_query.data.find("#") == -1:
-        list_active_torrents(1, callback_query.from_user.id, callback_query.message.message_id, "resume")
+        list_active_torrents(1, callback_query.from_user.id, callback_query.message.id, "resume")
 
     else:
         qbittorrent_control.resume(id_torrent=int(callback_query.data.split("#")[1]))
-        send_menu(callback_query.message.message_id, callback_query.from_user.id)
+        send_menu(callback_query.message.id, callback_query.from_user.id)
 
 
 @app.on_callback_query(filters=custom_filters.delete_one_filter)
 def delete_callback(client: Client, callback_query: CallbackQuery) -> None:
     if callback_query.data.find("#") == -1:
-        list_active_torrents(1, callback_query.from_user.id, callback_query.message.message_id, "delete_one")
+        list_active_torrents(1, callback_query.from_user.id, callback_query.message.id, "delete_one")
 
     else:
 
@@ -287,28 +275,28 @@ def delete_callback(client: Client, callback_query: CallbackQuery) -> None:
                    [InlineKeyboardButton("🗑 Delete torrent and data", f"delete_one_data#{callback_query.data.split('#')[1]}")],
                    [InlineKeyboardButton("🔙 Menu", "menu")]]
 
-        app.edit_message_reply_markup(callback_query.from_user.id, callback_query.message.message_id,
+        app.edit_message_reply_markup(callback_query.from_user.id, callback_query.message.id,
                                       reply_markup=InlineKeyboardMarkup(buttons))
 
 
 @app.on_callback_query(filters=custom_filters.delete_one_no_data_filter)
 def delete_no_data_callback(client: Client, callback_query: CallbackQuery) -> None:
     if callback_query.data.find("#") == -1:
-        list_active_torrents(1, callback_query.from_user.id, callback_query.message.message_id, "delete_one_no_data")
+        list_active_torrents(1, callback_query.from_user.id, callback_query.message.id, "delete_one_no_data")
 
     else:
         qbittorrent_control.delete_one_no_data(id_torrent=int(callback_query.data.split("#")[1]))
-        send_menu(callback_query.message.message_id, callback_query.from_user.id)
+        send_menu(callback_query.message.id, callback_query.from_user.id)
 
 
 @app.on_callback_query(filters=custom_filters.delete_one_data_filter)
 def delete_with_data_callback(client: Client, callback_query: CallbackQuery) -> None:
     if callback_query.data.find("#") == -1:
-        list_active_torrents(1, callback_query.from_user.id, callback_query.message.message_id, "delete_one_data")
+        list_active_torrents(1, callback_query.from_user.id, callback_query.message.id, "delete_one_data")
 
     else:
         qbittorrent_control.delete_one_data(id_torrent=int(callback_query.data.split("#")[1]))
-        send_menu(callback_query.message.message_id, callback_query.from_user.id)
+        send_menu(callback_query.message.id, callback_query.from_user.id)
 
 
 @app.on_callback_query(filters=custom_filters.delete_all_filter)
@@ -316,7 +304,7 @@ def delete_all_callback(client: Client, callback_query: CallbackQuery) -> None:
     buttons = [[InlineKeyboardButton("🗑 Delete all torrents", "delete_all_no_data")],
                [InlineKeyboardButton("🗑 Delete all torrents and data", "delete_all_data")],
                [InlineKeyboardButton("🔙 Menu", "menu")]]
-    app.edit_message_reply_markup(callback_query.from_user.id, callback_query.message.message_id,
+    app.edit_message_reply_markup(callback_query.from_user.id, callback_query.message.id,
                                   reply_markup=InlineKeyboardMarkup(buttons))
 
 
@@ -324,14 +312,14 @@ def delete_all_callback(client: Client, callback_query: CallbackQuery) -> None:
 def delete_all_with_no_data_callback(client: Client, callback_query: CallbackQuery) -> None:
     qbittorrent_control.delall_no_data()
     app.answer_callback_query(callback_query.id, "Deleted only torrents")
-    send_menu(callback_query.message.message_id, callback_query.from_user.id)
+    send_menu(callback_query.message.id, callback_query.from_user.id)
 
 
 @app.on_callback_query(filters=custom_filters.delete_all_data_filter)
 def delete_all_with_data_callback(client: Client, callback_query: CallbackQuery) -> None:
     qbittorrent_control.delall_data()
     app.answer_callback_query(callback_query.id, "Deleted All+Torrents")
-    send_menu(callback_query.message.message_id, callback_query.from_user.id)
+    send_menu(callback_query.message.id, callback_query.from_user.id)
 
 
 @app.on_callback_query(filters=custom_filters.torrentInfo_filter)
@@ -371,7 +359,7 @@ def torrent_info_callback(client: Client, callback_query: CallbackQuery) -> None
                [InlineKeyboardButton("🗑 Delete", f"delete_one#{callback_query.data.split('#')[1]}")],
                [InlineKeyboardButton("🔙 Menu", "menu")]]
 
-    app.edit_message_text(callback_query.from_user.id, callback_query.message.message_id, text=text,
+    app.edit_message_text(callback_query.from_user.id, callback_query.message.id, text=text,
                           reply_markup=InlineKeyboardMarkup(buttons))
 
 
@@ -385,7 +373,7 @@ def on_text(client: Client, message: Message) -> None:
             category = db_management.read_support(message.from_user.id).split("#")[1]
             qbittorrent_control.add_magnet(magnet_link=magnet_link,
                                            category=category)
-            send_menu(message.message_id, message.from_user.id)
+            send_menu(message.id, message.from_user.id)
             db_management.write_support("None", message.from_user.id)
 
         else:
@@ -399,7 +387,7 @@ def on_text(client: Client, message: Message) -> None:
                 message.download(name)
                 qbittorrent_control.add_torrent(file_name=name,
                                                 category=category)
-            send_menu(message.message_id, message.from_user.id)
+            send_menu(message.id, message.from_user.id)
             db_management.write_support("None", message.from_user.id)
 
         else:
@@ -416,12 +404,12 @@ def on_text(client: Client, message: Message) -> None:
             if "modify" in action:
                 qbittorrent_control.edit_category(name=name,
                                                   save_path=message.text)
-                send_menu(message.message_id, message.from_user.id)
+                send_menu(message.id, message.from_user.id)
                 return
 
             qbittorrent_control.create_category(name=name,
                                                 save_path=message.text)
-            send_menu(message.message_id, message.from_user.id)
+            send_menu(message.id, message.from_user.id)
 
         else:
             message.reply_text("The path entered does not exist! Retry")
