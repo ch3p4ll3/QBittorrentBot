@@ -3,7 +3,7 @@ from pony.orm import Database, PrimaryKey, Required, \
 
 
 db = Database()
-db.bind(provider='sqlite', filename='database.sqlite', create_db=True)
+db.bind(provider='sqlite', filename='../database.sqlite', create_db=True)
 
 
 class Support(db.Entity):

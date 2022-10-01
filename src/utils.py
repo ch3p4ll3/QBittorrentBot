@@ -2,22 +2,22 @@ from math import log, floor
 import datetime
 from pyrogram.errors.exceptions import UserIsBlocked
 
-import db_management
-import qbittorrent_control
-from config import AUTHORIZED_IDS, NOTIFY
+from src import db_management
+from src import qbittorrent_control
+from src.config import BOT_CONFIGS
 
 
 async def torrent_finished(app):
     for i in qbittorrent_control.get_torrent_info():
         if i.progress == 1 and \
-                db_management.read_completed_torrents(i.hash) is None \
-                and NOTIFY:
+                db_management.read_completed_torrents(i.hash) is None:
 
-            for user_id in AUTHORIZED_IDS:
-                try:
-                    await app.send_message(user_id, f"torrent {i.name} has finished downloading!")
-                except UserIsBlocked:
-                    pass
+            for user in BOT_CONFIGS.users:
+                if user.notify:
+                    try:
+                        await app.send_message(user.user_id, f"torrent {i.name} has finished downloading!")
+                    except UserIsBlocked:
+                        pass
             db_management.write_completed_torrents(i.hash)
 
 

@@ -10,19 +10,61 @@ magnet:?xt=...
 ```
 You can also pause, resume, delete and add/remove and modify categories.
 
-## Installation
-install dependencies with `pip install -r requirements.txt`, start the bot with `python3 main.py`
-
 ## Configuration
-With the change of library to [pyrogram](https://docs.pyrogram.org/) you will need the API_ID and API_HASH. Check [here](https://docs.pyrogram.org/intro/quickstart) to find out how to recover them.  
-Modify the config.py file by inserting all the data for qbittorrent, the token of the bot, the API ID and HASH and the ids authorized to use the bot (you can know your id through [this](https://t.me/myidbot) bot)
+### Retrieve Telegram API ID and API HASH
+With the change of library to [pyrogram](https://docs.pyrogram.org/) you will need the API_ID and API_HASH. Check [here](https://docs.pyrogram.org/intro/quickstart) to find out how to recover them.
+### JSON Configuration
+Edit the config.json.template file and rename it to config.json. 
+The config file is stored in the mounted /app/config/ volume
+
+```
+{
+    "qbittorrent": {
+        "ip": "192.168.178.102",
+        "port": 8080,
+        "user": "admin",
+        "password": "admin"
+    },
+    "telegram": {
+        "bot_token": "1111111:AAAAAAAA-BBBBBBBBB",
+        "api_id": 1111,
+        "api_hash": "aaaaaaaa"
+    },
+
+    "users": [
+        {
+            "user_id": 123456,
+            "notify": false
+        },
+        {
+            "user_id": 12345678,
+            "notify": true
+        }
+    ]
+}
+```
+Note: If notify is true then the user will receive a notification whenever a torrent has finished downloading
+
+## Running
+### Running with docker
+- Clone this repo ```git clone https://github.com/ch3p4ll3/QBittorrentBot.git```
+- Move in the project directory
+- Run `docker build -t latest . && docker run -d -v /home/user/docker/QBittorrentBot:/app/config --name qbittorrent-bot latest`
+
+### Running without docker
+- Clone this repo `git clone https://github.com/ch3p4ll3/QBittorrentBot.git`
+- Install dependencies with `pip3 install -r requirements.txt`
+- Create a config.json file
+- Edit in the file /src/config.py the location of the file 'config.json'
+- Start the bot with `python3 main.py`
 
 ## How to enable the qBittorrent Web UI
-On the menu bar, go to **Tools > Options** qBittorrent WEB UI
+For the bot to work, it requires qbittorrent to have the web interface active. 
+You can activate it by going on the menu bar, go to **Tools > Options** qBittorrent WEB UI
 
-*   In the new window, choose **Web UI** option
-*   Check the **Enable the Web User Interface (Remote control)** option
-*   Choose a port (by default 8080)
-*   Set username and password (by default username: admin / password: adminadmin)
+- In the new window, choose **Web UI** option
+- Check the **Enable the Web User Interface (Remote control)** option
+- Choose a port (by default 8080)
+- Set username and password (by default username: admin / password: adminadmin)
 
 Click on Ok to save settings.

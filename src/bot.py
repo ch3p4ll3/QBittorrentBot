@@ -7,15 +7,21 @@ from pyrogram.errors.exceptions import MessageIdInvalid
 from pyrogram.enums.parse_mode import ParseMode
 import psutil
 
-import custom_filters
-import qbittorrent_control
+from src import custom_filters
+from src import qbittorrent_control
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from utils import torrent_finished, convert_size, convert_eta
-from config import API_ID, API_HASH, TG_TOKEN, AUTHORIZED_IDS
-import db_management
+from src.utils import torrent_finished, convert_size, convert_eta
+from src.config import BOT_CONFIGS
+from src import db_management
 
 
-app = Client("qbittorrent_bot", api_id=API_ID, api_hash=API_HASH, bot_token=TG_TOKEN, parse_mode=ParseMode.MARKDOWN)
+app = Client(
+    "qbittorrent_bot",
+    api_id=BOT_CONFIGS.telegram.api_id,
+    api_hash=BOT_CONFIGS.telegram.api_hash,
+    bot_token=BOT_CONFIGS.telegram.bot_token,
+    parse_mode=ParseMode.MARKDOWN
+)
 
 scheduler = AsyncIOScheduler()
 scheduler.add_job(torrent_finished, "interval", args=[app], seconds=10)
@@ -92,7 +98,7 @@ def list_active_torrents(n, chat, message, callback, status_filter: str = None) 
 @app.on_message(filters=filters.command("start"))
 def start_command(client: Client, message: Message) -> None:
     """Start the bot."""
-    if message.from_user.id in AUTHORIZED_IDS:
+    if message.from_user.id in [i.user_id for i in BOT_CONFIGS.users]:
         send_menu(message.id, message.chat.id)
 
     else:
@@ -103,7 +109,7 @@ def start_command(client: Client, message: Message) -> None:
 
 @app.on_message(filters=filters.command("stats"))
 def stats_command(client: Client, message: Message) -> None:
-    if message.from_user.id in AUTHORIZED_IDS:
+    if message.from_user.id in [i.user_id for i in BOT_CONFIGS.users]:
 
         txt = f"**============SYSTEM============**\n" \
               f"**CPU Usage:** {psutil.cpu_percent(interval=None)}%\n" \
@@ -219,6 +225,7 @@ def list_by_status_callback(client: Client, callback_query: CallbackQuery) -> No
     status_filter = callback_query.data.split("#")[1]
     list_active_torrents(0, callback_query.from_user.id, callback_query.message.id,
                          db_management.read_support(callback_query.from_user.id), status_filter=status_filter)
+
 
 @app.on_callback_query(filters=custom_filters.add_magnet_filter)
 def addmagnet_callback(client: Client, callback_query: CallbackQuery) -> None:

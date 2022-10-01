@@ -1,16 +1,16 @@
 import qbittorrentapi
 
-from config import QBITTORRENT_IP, QBITTORRENT_PSW, QBITTORRENT_USER, QBITTORRENT_PORT
+from src.config import BOT_CONFIGS
 
 
 def qbittorrent_login(func):
     def wrapper(*args, **kwargs):
 
         qbt_client = qbittorrentapi.Client(
-            host=f'http://{QBITTORRENT_IP}:'
-                 f'{QBITTORRENT_PORT}',
-            username=QBITTORRENT_USER,
-            password=QBITTORRENT_PSW)
+            host=f'http://{BOT_CONFIGS.qbittorrent.ip.network_address}:'
+                 f'{BOT_CONFIGS.qbittorrent.port}',
+            username=BOT_CONFIGS.qbittorrent.user,
+            password=BOT_CONFIGS.qbittorrent.password)
 
         try:
             qbt_client.auth_log_in()
