@@ -49,7 +49,7 @@ Note: If notify is true then the user will receive a notification whenever a tor
 ### Running with docker
 - Clone this repo ```git clone https://github.com/ch3p4ll3/QBittorrentBot.git```
 - Move in the project directory
-- Run `docker build -t latest . && docker run -d -v /home/user/docker/QBittorrentBot:/app/config --name qbittorrent-bot latest`
+- Run `docker build -t qbittorrent-bot:latest . && docker run -d -v /home/user/docker/QBittorrentBot:/app/config --name qbittorrent-bot qbittorrent-bot:latest`
 
 ### Running without docker
 - Clone this repo `git clone https://github.com/ch3p4ll3/QBittorrentBot.git`
