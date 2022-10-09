@@ -46,6 +46,7 @@ The config file is stored in the mounted /app/config/ volume
 Note: If notify is true then the user will receive a notification whenever a torrent has finished downloading
 
 ## Running
+Pull and run the image with: `docker run -d -v /home/user/docker/QBittorrentBot:/app/config --name qbittorrent-bot qbittorrent-bot:latest`
 ### Running with docker
 - Clone this repo ```git clone https://github.com/ch3p4ll3/QBittorrentBot.git```
 - Move in the project directory
