@@ -46,14 +46,16 @@ The config file is stored in the mounted /app/config/ volume
 Note: If notify is true then the user will receive a notification whenever a torrent has finished downloading
 
 ## Running
-Pull and run the image with: `docker run -d -v /home/user/docker/QBittorrentBot:/app/config --name qbittorrent-bot qbittorrent-bot:latest`
-### Running with docker
+Pull and run the image with: `docker run -d -v /home/user/docker/QBittorrentBot:/app/config:rw --name qbittorrent-bot ch3p4ll3/qbittorrent-bot:latest`
+### Build docker
 - Clone this repo ```git clone https://github.com/ch3p4ll3/QBittorrentBot.git```
 - Move in the project directory
-- Run `docker build -t qbittorrent-bot:latest . && docker run -d -v /home/user/docker/QBittorrentBot:/app/config --name qbittorrent-bot qbittorrent-bot:latest`
+- Create a config.json file
+- Run `docker build -t qbittorrent-bot:latest . && docker run -d -v /home/user/docker/QBittorrentBot:/app/config:rw --name qbittorrent-bot qbittorrent-bot:latest`
 
 ### Running without docker
 - Clone this repo `git clone https://github.com/ch3p4ll3/QBittorrentBot.git`
+- Move in the project directory
 - Install dependencies with `pip3 install -r requirements.txt`
 - Create a config.json file
 - Edit in the file /src/config.py the location of the file 'config.json'
