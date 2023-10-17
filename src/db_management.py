@@ -20,7 +20,11 @@ db.generate_mapping(create_tables=True)
 
 def read_support(chat_id):
     with db_session:
-        return Support[chat_id].Action
+        try:
+            return Support[chat_id].Action
+        except ObjectNotFound:
+            created = Support(Action="", id=chat_id)
+            return created.Action
 
 
 def write_support(status, chat_id):
