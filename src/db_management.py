@@ -23,8 +23,7 @@ def read_support(chat_id):
         try:
             return Support[chat_id].Action
         except ObjectNotFound:
-            created = Support(Action="", id=chat_id)
-            return created.Action
+            return ""
 
 
 def write_support(status, chat_id):
