@@ -1,5 +1,4 @@
 import qbittorrentapi
-
 from src.config import BOT_CONFIGS
 
 
@@ -65,29 +64,25 @@ def pause_all(qbt_client) -> None:
 
 
 @qbittorrent_login
-def resume(qbt_client, id_torrent: int) -> None:
-    qbt_client.torrents_resume(hashes=qbt_client.torrents_info()[id_torrent
-                                                                 - 1].hash)
+def resume(qbt_client, torrent_hash: str) -> None:
+    qbt_client.torrents_resume(torrent_hashes=torrent_hash)
 
 
 @qbittorrent_login
-def pause(qbt_client, id_torrent: int) -> None:
-    qbt_client.torrents_pause(hashes=qbt_client.torrents_info()[id_torrent
-                                                                - 1].hash)
+def pause(qbt_client, torrent_hash: str) -> None:
+    qbt_client.torrents_pause(torrent_hashes=torrent_hash)
 
 
 @qbittorrent_login
-def delete_one_no_data(qbt_client, id_torrent: int) -> None:
+def delete_one_no_data(qbt_client, torrent_hash: str) -> None:
     qbt_client.torrents_delete(delete_files=False,
-                               hashes=qbt_client.torrents_info()[id_torrent
-                                                                 - 1].hash)
+                               torrent_hashes=torrent_hash)
 
 
 @qbittorrent_login
-def delete_one_data(qbt_client, id_torrent: int) -> None:
+def delete_one_data(qbt_client, torrent_hash: str) -> None:
     qbt_client.torrents_delete(delete_files=True,
-                               hashes=qbt_client.torrents_info()[id_torrent
-                                                                 - 1].hash)
+                               torrent_hashes=torrent_hash)
 
 
 @qbittorrent_login
@@ -116,7 +111,7 @@ def get_categories(qbt_client):
 def get_torrent_info(qbt_client, data: str = None, status_filter: str = None, ):
     if data is None:
         return qbt_client.torrents_info(status_filter=status_filter)
-    return qbt_client.torrents_info(status_filter=status_filter)[int(data) - 1]
+    return next(iter(qbt_client.torrents_info(status_filter=status_filter, torrent_hashes=data)), None)
 
 
 @qbittorrent_login
