@@ -1,9 +1,10 @@
 from pony.orm import Database, PrimaryKey, Required, \
     db_session, ObjectNotFound
-
+from os import getenv
 
 db = Database()
-db.bind(provider='sqlite', filename='/app/config/database.sqlite', create_db=True)
+db.bind(provider='sqlite', filename=f'{"/app/config/" if getenv("IS_DOCKER", False) else "./"}/database.sqlite',
+        create_db=True)
 
 
 class Support(db.Entity):
