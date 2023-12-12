@@ -1,6 +1,8 @@
 import os
 import tempfile
 
+from tqdm import tqdm
+
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message, CallbackQuery
 from pyrogram.errors.exceptions import MessageIdInvalid
@@ -351,34 +353,26 @@ async def delete_all_with_data_callback(client: Client, callback_query: Callback
 async def torrent_info_callback(client: Client, callback_query: CallbackQuery) -> None:
     with QbittorrentManagement() as qb:
         torrent = qb.get_torrent_info(data=callback_query.data.split("#")[1])
-    progress = torrent.progress * 100
-    text = ""
 
-    if progress == 0:
-        text += f"{torrent.name}\n[            ] " \
-                f"{round(progress, 2)}% completed\n" \
-                f"State: {torrent.state.capitalize()}\n" \
-                f"Download Speed: {convert_size(torrent.dlspeed)}/s\n" \
-                f"Size: {convert_size(torrent.size)}\nETA: " \
-                f"{convert_eta(int(torrent.eta))}\n" \
-                f"Category: {torrent.category}\n"
+    text = f"{torrent.name}\n"
 
-    elif progress == 100:
-        text += f"{torrent.name}\n[completed] " \
-                f"{round(progress, 2)}% completed\n" \
-                f"State: {torrent.state.capitalize()}\n" \
-                f"Upload Speed: {convert_size(torrent.upspeed)}/s\n" \
-                f"Category: {torrent.category}\n"
+    if torrent.progress == 1:
+        text += "**COMPLETED**\n"
 
     else:
-        text += f"{torrent.name}\n[{'=' * int(progress / 10)}" \
-                f"{' ' * int(12 - (progress / 10))}]" \
-                f" {round(progress, 2)}% completed\n" \
-                f"State: {torrent.state.capitalize()} \n" \
-                f"Download Speed: {convert_size(torrent.dlspeed)}/s\n" \
-                f"Size: {convert_size(torrent.size)}\nETA: " \
-                f"{convert_eta(int(torrent.eta))}\n" \
-                f"Category: {torrent.category}\n"
+        text += f"{tqdm.format_meter(torrent.progress, 1, 0, bar_format='{l_bar}{bar}|')}\n"
+
+    if "stalled" not in torrent.state:
+        text += (f"**State:** {torrent.state.capitalize()} \n"
+                 f"**Download Speed:** {convert_size(torrent.dlspeed)}/s\n")
+
+    text += f"**Size:** {convert_size(torrent.size)}\n"
+
+    if "stalled" not in torrent.state:
+        text += f"**ETA:** {convert_eta(int(torrent.eta))}\n"
+
+    if torrent.category:
+        text += f"**Category:** {torrent.category}\n"
 
     buttons = [[InlineKeyboardButton("⏸ Pause", f"pause#{callback_query.data.split('#')[1]}")],
                [InlineKeyboardButton("▶️ Resume", f"resume#{callback_query.data.split('#')[1]}")],
