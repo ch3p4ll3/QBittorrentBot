@@ -7,7 +7,7 @@ from ...config import BOT_CONFIGS
 from .common import send_menu
 
 
-@Client.on_message(filters=filters.command("start"))
+@Client.on_message(filters.command("start"))
 async def start_command(client: Client, message: Message) -> None:
     """Start the bot."""
     if message.from_user.id in [i.user_id for i in BOT_CONFIGS.users]:
@@ -19,7 +19,7 @@ async def start_command(client: Client, message: Message) -> None:
         await client.send_message(message.chat.id, "You are not authorized to use this bot", reply_markup=button)
 
 
-@Client.on_message(filters=filters.command("stats"))
+@Client.on_message(filters.command("stats"))
 async def stats_command(client: Client, message: Message) -> None:
     if message.from_user.id in [i.user_id for i in BOT_CONFIGS.users]:
 

@@ -7,7 +7,7 @@ from ... import custom_filters
 from ....qbittorrent_manager import QbittorrentManagement
 
 
-@Client.on_callback_query(filters=custom_filters.add_category_filter)
+@Client.on_callback_query(custom_filters.add_category_filter)
 async def add_category_callback(client: Client, callback_query: CallbackQuery) -> None:
     db_management.write_support("category_name", callback_query.from_user.id)
     button = InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Menu", "menu")]])

@@ -8,7 +8,7 @@ from ... import db_management
 from .common import send_menu
 
 
-@Client.on_message(filters=~filters.me)
+@Client.on_message(~filters.me)
 async def on_text(client: Client, message: Message) -> None:
     action = db_management.read_support(message.from_user.id)
 

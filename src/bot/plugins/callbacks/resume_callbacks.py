@@ -6,14 +6,14 @@ from ....qbittorrent_manager import QbittorrentManagement
 from ..common import list_active_torrents, send_menu
 
 
-@Client.on_callback_query(filters=custom_filters.resume_all_filter)
+@Client.on_callback_query(custom_filters.resume_all_filter)
 async def resume_all_callback(client: Client, callback_query: CallbackQuery) -> None:
     with QbittorrentManagement() as qb:
         qb.resume_all()
     await client.answer_callback_query(callback_query.id, "Resumed all torrents")
 
 
-@Client.on_callback_query(filters=custom_filters.resume_filter)
+@Client.on_callback_query(custom_filters.resume_filter)
 async def resume_callback(client: Client, callback_query: CallbackQuery) -> None:
     if callback_query.data.find("#") == -1:
         await list_active_torrents(client, 1, callback_query.from_user.id, callback_query.message.id, "resume")
