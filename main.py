@@ -1,9 +1,9 @@
-from src.qbittorrent_bot import app, scheduler
+from src.bot import app, scheduler
 import logging
 from logging import handlers
 
 # Create a file handler
-handler = logging.handlers.TimedRotatingFileHandler('QbittorrentBot.log', when='midnight', backupCount=10)
+handler = logging.handlers.TimedRotatingFileHandler('./logs/QbittorrentBot.log', when='midnight', backupCount=10)
 
 # Create a format
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
