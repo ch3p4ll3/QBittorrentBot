@@ -2,7 +2,8 @@ from pyrogram import Client
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 from pyrogram.errors.exceptions import MessageIdInvalid
 
-from .... import custom_filters, db_management
+from .... import db_management
+from ... import custom_filters
 from ....qbittorrent_manager import QbittorrentManagement
 
 

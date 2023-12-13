@@ -6,9 +6,8 @@ from src.config import BOT_CONFIGS
 
 
 plugins = dict(
-    root=".plugins"
+    root="src.bot.plugins"
 )
-
 
 app = Client(
     "qbittorrent_bot",

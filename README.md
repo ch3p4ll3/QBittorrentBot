@@ -71,3 +71,14 @@ You can activate it by going on the menu bar, go to **Tools > Options** qBittorr
 - Set username and password (by default username: admin / password: adminadmin)
 
 Click on Ok to save settings.
+
+## Contributors
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->

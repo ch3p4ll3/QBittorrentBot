@@ -3,7 +3,7 @@ from tqdm import tqdm
 from pyrogram import Client
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 
-from .... import custom_filters
+from ... import custom_filters
 from ....qbittorrent_manager import QbittorrentManagement
 from ....utils import convert_size, convert_eta
 

@@ -1,6 +1,7 @@
 from pyrogram import Client
 from pyrogram.types import CallbackQuery
-from .... import custom_filters, db_management
+from .... import db_management
+from ... import custom_filters
 
 
 @Client.on_callback_query(filters=custom_filters.add_magnet_filter)
