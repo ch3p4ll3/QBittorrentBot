@@ -3,8 +3,11 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 import psutil
 
 from ...utils import convert_size
-from ...config import BOT_CONFIGS
+from ...configs import Configs
 from .common import send_menu
+
+
+BOT_CONFIGS = Configs.load_config()
 
 
 @Client.on_message(filters.command("start"))

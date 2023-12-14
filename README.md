@@ -10,6 +10,9 @@ magnet:?xt=...
 ```
 You can also pause, resume, delete and add/remove and modify categories.
 
+## Warning!
+Since version V2, the mapping of the configuration file has been changed. Make sure you have modified it correctly before starting the bot
+
 ## Configuration
 ### Retrieve Telegram API ID and API HASH
 With the change of library to [pyrogram](https://docs.pyrogram.org/) you will need the API_ID and API_HASH. Check [here](https://docs.pyrogram.org/intro/quickstart) to find out how to recover them.
@@ -19,8 +22,9 @@ The config file is stored in the mounted /app/config/ volume
 
 ```
 {
-    "qbittorrent": {
-        "ip": "192.168.178.102",
+    "clients": {
+        "type": "qbittorrent",
+        "host": "192.168.178.102",
         "port": 8080,
         "user": "admin",
         "password": "admin"

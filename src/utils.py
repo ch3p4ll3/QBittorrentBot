@@ -4,7 +4,10 @@ from pyrogram.errors.exceptions import UserIsBlocked
 
 from src import db_management
 from src.qbittorrent_manager import QbittorrentManagement
-from src.config import BOT_CONFIGS
+from .configs import Configs
+
+
+BOT_CONFIGS = Configs.load_config()
 
 
 async def torrent_finished(app):

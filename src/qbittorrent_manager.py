@@ -1,19 +1,15 @@
 import qbittorrentapi
 import logging
-from src.config import BOT_CONFIGS
-
+from .configs import Configs
 from typing import Union, List
 
+BOT_CONFIGS = Configs.load_config()
 logger = logging.getLogger(__name__)
 
 
 class QbittorrentManagement:
     def __init__(self):
-        self.qbt_client = qbittorrentapi.Client(
-            host=f'http://{BOT_CONFIGS.qbittorrent.ip.network_address}:'
-                 f'{BOT_CONFIGS.qbittorrent.port}',
-            username=BOT_CONFIGS.qbittorrent.user,
-            password=BOT_CONFIGS.qbittorrent.password)
+        self.qbt_client = qbittorrentapi.Client(**BOT_CONFIGS.clients.connection_string)
 
     def __enter__(self):
         try:

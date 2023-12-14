@@ -1,24 +1,27 @@
 from pyrogram import Client
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from pyrogram.errors.exceptions import MessageIdInvalid
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+
 from ... import db_management
 from ...qbittorrent_manager import QbittorrentManagement
 
 
 async def send_menu(client: Client, message, chat) -> None:
     db_management.write_support("None", chat)
-    buttons = [[InlineKeyboardButton("📝 List", "list")],
-               [InlineKeyboardButton("➕ Add Magnet", "category#add_magnet"),
-                InlineKeyboardButton("➕ Add Torrent", "category#add_torrent")],
-               [InlineKeyboardButton("⏸ Pause", "pause"),
-                InlineKeyboardButton("▶️ Resume", "resume")],
-               [InlineKeyboardButton("⏸ Pause All", "pause_all"),
-                InlineKeyboardButton("▶️ Resume All", "resume_all")],
-               [InlineKeyboardButton("🗑 Delete", "delete_one"),
-                InlineKeyboardButton("🗑 Delete All", "delete_all")],
-               [InlineKeyboardButton("➕ Add Category", "add_category"),
-                InlineKeyboardButton("🗑 Remove Category", "select_category#remove_category")],
-               [InlineKeyboardButton("📝 Modify Category", "select_category#modify_category")]]
+    buttons = [
+        [InlineKeyboardButton("📝 List", "list")],
+        [InlineKeyboardButton("➕ Add Magnet", "category#add_magnet"),
+         InlineKeyboardButton("➕ Add Torrent", "category#add_torrent")],
+        [InlineKeyboardButton("⏸ Pause", "pause"),
+         InlineKeyboardButton("▶️ Resume", "resume")],
+        [InlineKeyboardButton("⏸ Pause All", "pause_all"),
+         InlineKeyboardButton("▶️ Resume All", "resume_all")],
+        [InlineKeyboardButton("🗑 Delete", "delete_one"),
+         InlineKeyboardButton("🗑 Delete All", "delete_all")],
+        [InlineKeyboardButton("➕ Add Category", "add_category"),
+         InlineKeyboardButton("🗑 Remove Category", "select_category#remove_category")],
+        [InlineKeyboardButton("📝 Modify Category", "select_category#modify_category")]
+    ]
 
     try:
         await client.edit_message_text(chat, message, text="Qbittorrent Control",
