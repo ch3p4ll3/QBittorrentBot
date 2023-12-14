@@ -20,7 +20,8 @@ async def send_menu(client: Client, message, chat) -> None:
          InlineKeyboardButton("🗑 Delete All", "delete_all")],
         [InlineKeyboardButton("➕ Add Category", "add_category"),
          InlineKeyboardButton("🗑 Remove Category", "select_category#remove_category")],
-        [InlineKeyboardButton("📝 Modify Category", "select_category#modify_category")]
+        [InlineKeyboardButton("📝 Modify Category", "select_category#modify_category")],
+        [InlineKeyboardButton("⚙️ Settings", "settings")]
     ]
 
     try:

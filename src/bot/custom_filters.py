@@ -21,3 +21,7 @@ delete_all_no_data_filter = filters.create(lambda _, __, query: query.data.start
 delete_all_data_filter = filters.create(lambda _, __, query: query.data.startswith("delete_all_data"))
 torrentInfo_filter = filters.create(lambda _, __, query: query.data.startswith("torrentInfo"))
 select_category_filter = filters.create(lambda _, __, query: query.data.startswith("select_category"))
+settings_filter = filters.create(lambda _, __, query: query.data == "settings")
+get_users_filter = filters.create(lambda _, __, query: query.data == "get_users")
+user_info_filter = filters.create(lambda _, __, query: query.data.startswith("user_info"))
+edit_user_filter = filters.create(lambda _, __, query: query.data.startswith("edit_user"))

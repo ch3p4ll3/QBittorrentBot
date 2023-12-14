@@ -5,6 +5,7 @@ from pyrogram.errors.exceptions import UserIsBlocked
 from src import db_management
 from src.qbittorrent_manager import QbittorrentManagement
 from .configs import Configs
+from .configs.user import User
 
 
 BOT_CONFIGS = Configs.load_config()
@@ -22,6 +23,14 @@ async def torrent_finished(app):
                         except UserIsBlocked:
                             pass
                 db_management.write_completed_torrents(i.hash)
+
+
+def get_user_from_config(user_id: int) -> User:
+    return next(
+        iter(
+            [i for i in BOT_CONFIGS.users if i.user_id == user_id]
+        )
+    )
 
 
 def convert_size(size_bytes) -> str:

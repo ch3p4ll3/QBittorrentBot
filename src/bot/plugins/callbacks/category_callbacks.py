@@ -2,6 +2,7 @@ from pyrogram import Client
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 from pyrogram.errors.exceptions import MessageIdInvalid
 
+from . import add_magnet_callback, add_torrent_callback
 from .... import db_management
 from ... import custom_filters
 from ....qbittorrent_manager import QbittorrentManagement
@@ -18,7 +19,7 @@ async def add_category_callback(client: Client, callback_query: CallbackQuery) -
         await client.send_message(callback_query.from_user.id, "Send the category name", reply_markup=button)
 
 
-@Client.on_callback_query(filters=custom_filters.select_category_filter)
+@Client.on_callback_query(custom_filters.select_category_filter)
 async def list_categories(client: Client, callback_query: CallbackQuery):
     buttons = []
 
@@ -44,7 +45,7 @@ async def list_categories(client: Client, callback_query: CallbackQuery):
                                   reply_markup=InlineKeyboardMarkup(buttons))
 
 
-@Client.on_callback_query(filters=custom_filters.remove_category_filter)
+@Client.on_callback_query(custom_filters.remove_category_filter)
 async def remove_category_callback(client: Client, callback_query: CallbackQuery) -> None:
     buttons = [[InlineKeyboardButton("🔙 Menu", "menu")]]
 
@@ -56,7 +57,7 @@ async def remove_category_callback(client: Client, callback_query: CallbackQuery
                                    reply_markup=InlineKeyboardMarkup(buttons))
 
 
-@Client.on_callback_query(filters=custom_filters.modify_category_filter)
+@Client.on_callback_query(custom_filters.modify_category_filter)
 async def modify_category_callback(client: Client, callback_query: CallbackQuery) -> None:
     buttons = [[InlineKeyboardButton("🔙 Menu", "menu")]]
 
@@ -66,7 +67,7 @@ async def modify_category_callback(client: Client, callback_query: CallbackQuery
                                    reply_markup=InlineKeyboardMarkup(buttons))
 
 
-@Client.on_callback_query(filters=custom_filters.category_filter)
+@Client.on_callback_query(custom_filters.category_filter)
 async def category(client: Client, callback_query: CallbackQuery) -> None:
     buttons = []
 

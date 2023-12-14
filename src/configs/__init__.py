@@ -5,9 +5,11 @@ from typing import Union
 
 
 class Configs:
+    config_path = f'{ "/app/config/" if getenv("IS_DOCKER", False) else "./"}config.json'
+
     @classmethod
     def load_config(cls) -> Union[MainConfig, None]:
-        with open(f'{ "/app/config/" if getenv("IS_DOCKER", False) else "./"}config.json', 'r') as config_json:
+        with open(cls.config_path, 'r') as config_json:
             configs = MainConfig(**(load(config_json)))
 
         return configs

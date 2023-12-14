@@ -2,6 +2,6 @@ from pydantic import BaseModel
 from typing import Optional
 
 
-class Users(BaseModel):
+class User(BaseModel):
     user_id: int
     notify: Optional[bool] = True
