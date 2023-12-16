@@ -9,7 +9,6 @@ from .common import send_menu
 from ...configs import Configs
 from ...utils import get_user_from_config, convert_type_from_string
 
-BOT_CONFIGS = Configs.config
 logger = logging.getLogger(__name__)
 
 
@@ -72,7 +71,7 @@ async def on_text(client: Client, message: Message) -> None:
             await client.send_message(message.from_user.id, "The path entered does not exist! Retry")
 
     elif "edit_user" in action:
-        data = db_management.read_support(message.from_user.id).split("#")[1]
+        data = action.split("#")[1]
         user_id = int(data.split("-")[0])
         field_to_edit = data.split("-")[1]
         data_type = convert_type_from_string(data.split("-")[2].replace("<class ", "").replace(">", ""))
@@ -81,22 +80,43 @@ async def on_text(client: Client, message: Message) -> None:
             new_value = data_type(message.text)
 
             user_info = get_user_from_config(user_id)
-            user_from_configs = BOT_CONFIGS.users.index(user_info)
+            user_from_configs = Configs.config.users.index(user_info)
 
             if user_from_configs == -1:
                 return
 
-            setattr(BOT_CONFIGS.users[user_from_configs], field_to_edit, new_value)
-            Configs.update_config(BOT_CONFIGS)
+            setattr(Configs.config.users[user_from_configs], field_to_edit, new_value)
+            Configs.update_config(Configs.config)
+            Configs.reload_config()
             logger.debug(f"Updating User #{user_id} {field_to_edit} settings to {new_value}")
             db_management.write_support("None", message.from_user.id)
 
-            await send_menu(client, message, message.chat)
-        except Exception:
+            await send_menu(client, message.id, message.from_user.id)
+        except Exception as e:
             await message.reply_text(
-                f"Error: unable to convert value \"{message.text}\" to type \"{data_type}\""
+                f"Error: {e}"
             )
             logger.exception(f"Error converting value \"{message.text}\" to type \"{data_type}\"", exc_info=True)
 
+    elif "edit_clt" in action:
+        data = action.split("#")[1]
+        field_to_edit = data.split("-")[0]
+        data_type = convert_type_from_string(data.split("-")[1])
+
+        try:
+            new_value = data_type(message.text)
+
+            setattr(Configs.config.clients, field_to_edit, new_value)
+            Configs.update_config(Configs.config)
+            Configs.reload_config()
+            logger.debug(f"Updating Client field \"{field_to_edit}\" to \"{new_value}\"")
+            db_management.write_support("None", message.from_user.id)
+
+            await send_menu(client, message.id, message.from_user.id)
+        except Exception as e:
+            await message.reply_text(
+                f"Error: {e}"
+            )
+            logger.exception(f"Error converting value \"{message.text}\" to type \"{data_type}\"", exc_info=True)
     else:
         await client.send_message(message.from_user.id, "The command does not exist")

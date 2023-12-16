@@ -26,3 +26,6 @@ get_users_filter = filters.create(lambda _, __, query: query.data == "get_users"
 user_info_filter = filters.create(lambda _, __, query: query.data.startswith("user_info"))
 edit_user_filter = filters.create(lambda _, __, query: query.data.startswith("edit_user"))
 toggle_user_var_filter = filters.create(lambda _, __, query: query.data.startswith("toggle_user_var"))
+edit_client_settings_filter = filters.create(lambda _, __, query: query.data == "edit_client")
+edit_client_setting_filter = filters.create(lambda _, __, query: query.data.startswith("edit_clt"))
+reload_settings_filter = filters.create(lambda _, __, query: query.data == "reload_settings")

@@ -11,15 +11,12 @@ from .configs.enums import ClientTypeEnum
 from .configs.user import User
 
 
-BOT_CONFIGS = Configs.config
-
-
 async def torrent_finished(app):
     with QbittorrentManagement() as qb:
         for i in qb.get_torrent_info(status_filter="completed"):
             if db_management.read_completed_torrents(i.hash) is None:
 
-                for user in BOT_CONFIGS.users:
+                for user in Configs.config.users:
                     if user.notify:
                         try:
                             await app.send_message(user.user_id, f"torrent {i.name} has finished downloading!")
@@ -31,7 +28,7 @@ async def torrent_finished(app):
 def get_user_from_config(user_id: int) -> User:
     return next(
         iter(
-            [i for i in BOT_CONFIGS.users if i.user_id == user_id]
+            [i for i in Configs.config.users if i.user_id == user_id]
         )
     )
 

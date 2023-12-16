@@ -8,14 +8,12 @@ from .....configs import Configs
 from .....db_management import write_support
 from .....utils import get_user_from_config
 
-BOT_CONFIGS = Configs.config
-
 
 @Client.on_callback_query(custom_filters.get_users_filter)
 async def get_users_callback(client: Client, callback_query: CallbackQuery) -> None:
     users = [
         [InlineKeyboardButton(f"User #{i.user_id}", f"user_info#{i.user_id}")]
-        for i in BOT_CONFIGS.users
+        for i in Configs.config.users
     ]
 
     await callback_query.edit_message_text(
@@ -24,7 +22,7 @@ async def get_users_callback(client: Client, callback_query: CallbackQuery) -> N
             users +
             [
                 [
-                    InlineKeyboardButton("🔙 Menu", "menu")
+                    InlineKeyboardButton("🔙 Menu", "settings")
                 ]
             ]
         )
@@ -90,7 +88,7 @@ async def edit_user_callback(client: Client, callback_query: CallbackQuery) -> N
     write_support(callback_query.data, callback_query.from_user.id)
 
     await callback_query.edit_message_text(
-        f"Send the new value for {field_to_edit} for user #{user_id}. \n\n**Note:** the field type is {data_type}",
+        f"Send the new value for field \"{field_to_edit}\" for user #{user_id}. \n\n**Note:** the field type is \"{data_type}\"",
         reply_markup=InlineKeyboardMarkup(
             [
                 [
@@ -108,13 +106,13 @@ async def toggle_user_var(client: Client, callback_query: CallbackQuery) -> None
     field_to_edit = data.split("-")[1]
 
     user_info = get_user_from_config(user_id)
-    user_from_configs = BOT_CONFIGS.users.index(user_info)
+    user_from_configs = Configs.config.users.index(user_info)
 
     if user_from_configs == -1:
         return
 
-    BOT_CONFIGS.users[user_from_configs].notify = not BOT_CONFIGS.users[user_from_configs].notify
-    Configs.update_config(BOT_CONFIGS)
+    Configs.config.users[user_from_configs].notify = not Configs.config.users[user_from_configs].notify
+    Configs.update_config(Configs.config)
 
     await callback_query.edit_message_text(
         f"Edit User #{user_id} {field_to_edit} Field",
@@ -122,7 +120,7 @@ async def toggle_user_var(client: Client, callback_query: CallbackQuery) -> None
             [
                 [
                     InlineKeyboardButton(
-                        f"{'✅' if BOT_CONFIGS.users[user_from_configs].notify else '❌'} Toggle",
+                        f"{'✅' if Configs.config.users[user_from_configs].notify else '❌'} Toggle",
                         f"toggle_user_var#{user_id}-{field_to_edit}")
                 ],
                 [

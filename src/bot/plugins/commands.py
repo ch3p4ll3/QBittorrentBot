@@ -7,13 +7,10 @@ from ...configs import Configs
 from .common import send_menu
 
 
-BOT_CONFIGS = Configs.config
-
-
 @Client.on_message(filters.command("start"))
 async def start_command(client: Client, message: Message) -> None:
     """Start the bot."""
-    if message.from_user.id in [i.user_id for i in BOT_CONFIGS.users]:
+    if message.from_user.id in [i.user_id for i in Configs.config.users]:
         await send_menu(client, message.id, message.chat.id)
 
     else:
@@ -24,7 +21,7 @@ async def start_command(client: Client, message: Message) -> None:
 
 @Client.on_message(filters.command("stats"))
 async def stats_command(client: Client, message: Message) -> None:
-    if message.from_user.id in [i.user_id for i in BOT_CONFIGS.users]:
+    if message.from_user.id in [i.user_id for i in Configs.config.users]:
 
         stats_text = f"**============SYSTEM============**\n" \
                      f"**CPU Usage:** {psutil.cpu_percent(interval=None)}%\n" \

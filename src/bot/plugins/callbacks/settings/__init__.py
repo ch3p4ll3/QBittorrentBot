@@ -13,13 +13,13 @@ async def settings_callback(client: Client, callback_query: CallbackQuery) -> No
                     InlineKeyboardButton("🫂 Users Settings", "get_users")
                 ],
                 [
-                    InlineKeyboardButton("📥 Client Settings", "menu")
+                    InlineKeyboardButton("📥 Client Settings", "edit_client")
                 ],
                 [
                     InlineKeyboardButton("🇮🇹 Language Settings", "menu")
                 ],
                 [
-                    InlineKeyboardButton("🔄 Reload Settings", "menu")
+                    InlineKeyboardButton("🔄 Reload Settings", "reload_settings")
                 ],
                 [
                     InlineKeyboardButton("🔙 Menu", "menu")
