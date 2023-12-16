@@ -13,6 +13,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: "Set current date as env variable"
+        run: |
+          echo "builddate=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+        id: version  # this is used on variable path
+
       - name: Checkout 
         uses: actions/checkout@v3
       -
@@ -36,4 +41,6 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/qbittorrent-bot:latest
+          tags: |
+            ${{ secrets.DOCKER_HUB_USERNAME }}/qbittorrent-bot:${{ steps.version.outputs.builddate }}
+            ${{ secrets.DOCKER_HUB_USERNAME }}/qbittorrent-bot:latest
