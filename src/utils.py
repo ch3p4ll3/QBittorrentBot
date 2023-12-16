@@ -7,7 +7,7 @@ from pyrogram.errors.exceptions import UserIsBlocked
 from src import db_management
 from src.qbittorrent_manager import QbittorrentManagement
 from .configs import Configs
-from .configs.enums import ClientTypeEnum
+from .configs.enums import ClientTypeEnum, UserRolesEnum
 from .configs.user import User
 
 
@@ -54,5 +54,7 @@ def convert_type_from_string(input_type: str):
         return IPvAnyAddress
     elif "ClientTypeEnum" in input_type:
         return ClientTypeEnum
+    elif "UserRolesEnum" in input_type:
+        return UserRolesEnum
     elif "str" in input_type:
         return str

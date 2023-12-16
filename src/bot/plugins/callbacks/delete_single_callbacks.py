@@ -6,7 +6,7 @@ from ....qbittorrent_manager import QbittorrentManagement
 from ..common import list_active_torrents, send_menu
 
 
-@Client.on_callback_query(custom_filters.delete_one_filter)
+@Client.on_callback_query(custom_filters.delete_one_filter & custom_filters.check_user_filter & custom_filters.user_is_administrator)
 async def delete_callback(client: Client, callback_query: CallbackQuery) -> None:
     if callback_query.data.find("#") == -1:
         await list_active_torrents(client, 1, callback_query.from_user.id, callback_query.message.id, "delete_one")
@@ -22,7 +22,7 @@ async def delete_callback(client: Client, callback_query: CallbackQuery) -> None
                                                reply_markup=InlineKeyboardMarkup(buttons))
 
 
-@Client.on_callback_query(custom_filters.delete_one_no_data_filter)
+@Client.on_callback_query(custom_filters.delete_one_no_data_filter & custom_filters.check_user_filter & custom_filters.user_is_administrator)
 async def delete_no_data_callback(client: Client, callback_query: CallbackQuery) -> None:
     if callback_query.data.find("#") == -1:
         await list_active_torrents(client, 1, callback_query.from_user.id, callback_query.message.id, "delete_one_no_data")
@@ -33,7 +33,7 @@ async def delete_no_data_callback(client: Client, callback_query: CallbackQuery)
         await send_menu(client, callback_query.message.id, callback_query.from_user.id)
 
 
-@Client.on_callback_query(custom_filters.delete_one_data_filter)
+@Client.on_callback_query(custom_filters.delete_one_data_filter & custom_filters.check_user_filter & custom_filters.user_is_administrator)
 async def delete_with_data_callback(client: Client, callback_query: CallbackQuery) -> None:
     if callback_query.data.find("#") == -1:
         await list_active_torrents(client, 1, callback_query.from_user.id, callback_query.message.id, "delete_one_data")

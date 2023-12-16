@@ -8,11 +8,13 @@ from ... import db_management
 from .common import send_menu
 from ...configs import Configs
 from ...utils import get_user_from_config, convert_type_from_string
+from .. import custom_filters
+
 
 logger = logging.getLogger(__name__)
 
 
-@Client.on_message(~filters.me)
+@Client.on_message(~filters.me & custom_filters.check_user_filter)
 async def on_text(client: Client, message: Message) -> None:
     action = db_management.read_support(message.from_user.id)
 

@@ -3,7 +3,7 @@ from pyrogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardBu
 from .... import custom_filters
 
 
-@Client.on_callback_query(custom_filters.settings_filter)
+@Client.on_callback_query(custom_filters.settings_filter & custom_filters.check_user_filter & custom_filters.user_is_administrator)
 async def settings_callback(client: Client, callback_query: CallbackQuery) -> None:
     await callback_query.edit_message_text(
         "QBittorrentBot Settings",

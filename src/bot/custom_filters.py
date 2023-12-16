@@ -1,4 +1,15 @@
 from pyrogram import filters
+from ..configs import Configs
+from ..utils import get_user_from_config
+from ..configs.enums import UserRolesEnum
+
+
+# Authorization filters
+check_user_filter = filters.create(lambda _, __, message: message.from_user.id in [i.user_id for i in Configs.config.users])
+
+user_is_reader = filters.create(lambda _, __, query: get_user_from_config(query.from_user.id).role == UserRolesEnum.Reader)
+user_is_manager = filters.create(lambda _, __, query: get_user_from_config(query.from_user.id).role == UserRolesEnum.Manager)
+user_is_administrator = filters.create(lambda _, __, query: get_user_from_config(query.from_user.id).role == UserRolesEnum.Administrator)
 
 # Categories filters
 add_category_filter = filters.create(lambda _, __, query: query.data == "add_category")

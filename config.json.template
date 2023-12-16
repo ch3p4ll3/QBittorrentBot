@@ -15,7 +15,8 @@
     "users": [
         {
             "user_id": 123456,
-            "notify": false
+            "notify": false,
+            "role": "administrator"
         }
     ]
 }

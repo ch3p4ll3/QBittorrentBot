@@ -8,7 +8,7 @@ from ... import custom_filters
 from ....qbittorrent_manager import QbittorrentManagement
 
 
-@Client.on_callback_query(custom_filters.add_category_filter)
+@Client.on_callback_query(custom_filters.add_category_filter & custom_filters.check_user_filter & (custom_filters.user_is_administrator | custom_filters.user_is_manager))
 async def add_category_callback(client: Client, callback_query: CallbackQuery) -> None:
     db_management.write_support("category_name", callback_query.from_user.id)
     button = InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Menu", "menu")]])
@@ -19,7 +19,7 @@ async def add_category_callback(client: Client, callback_query: CallbackQuery) -
         await client.send_message(callback_query.from_user.id, "Send the category name", reply_markup=button)
 
 
-@Client.on_callback_query(custom_filters.select_category_filter)
+@Client.on_callback_query(custom_filters.select_category_filter & custom_filters.check_user_filter & (custom_filters.user_is_administrator | custom_filters.user_is_manager))
 async def list_categories(client: Client, callback_query: CallbackQuery):
     buttons = []
 
@@ -45,7 +45,7 @@ async def list_categories(client: Client, callback_query: CallbackQuery):
                                   reply_markup=InlineKeyboardMarkup(buttons))
 
 
-@Client.on_callback_query(custom_filters.remove_category_filter)
+@Client.on_callback_query(custom_filters.remove_category_filter & custom_filters.check_user_filter & custom_filters.user_is_administrator)
 async def remove_category_callback(client: Client, callback_query: CallbackQuery) -> None:
     buttons = [[InlineKeyboardButton("🔙 Menu", "menu")]]
 
@@ -57,7 +57,7 @@ async def remove_category_callback(client: Client, callback_query: CallbackQuery
                                    reply_markup=InlineKeyboardMarkup(buttons))
 
 
-@Client.on_callback_query(custom_filters.modify_category_filter)
+@Client.on_callback_query(custom_filters.modify_category_filter & custom_filters.check_user_filter & custom_filters.user_is_administrator)
 async def modify_category_callback(client: Client, callback_query: CallbackQuery) -> None:
     buttons = [[InlineKeyboardButton("🔙 Menu", "menu")]]
 
@@ -67,7 +67,7 @@ async def modify_category_callback(client: Client, callback_query: CallbackQuery
                                    reply_markup=InlineKeyboardMarkup(buttons))
 
 
-@Client.on_callback_query(custom_filters.category_filter)
+@Client.on_callback_query(custom_filters.category_filter & custom_filters.check_user_filter & (custom_filters.user_is_administrator | custom_filters.user_is_manager))
 async def category(client: Client, callback_query: CallbackQuery) -> None:
     buttons = []
 

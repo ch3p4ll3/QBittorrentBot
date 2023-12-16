@@ -9,7 +9,7 @@ from .....db_management import write_support
 from .....utils import get_user_from_config
 
 
-@Client.on_callback_query(custom_filters.get_users_filter)
+@Client.on_callback_query(custom_filters.get_users_filter & custom_filters.check_user_filter & custom_filters.user_is_administrator)
 async def get_users_callback(client: Client, callback_query: CallbackQuery) -> None:
     users = [
         [InlineKeyboardButton(f"User #{i.user_id}", f"user_info#{i.user_id}")]
@@ -29,7 +29,7 @@ async def get_users_callback(client: Client, callback_query: CallbackQuery) -> N
     )
 
 
-@Client.on_callback_query(custom_filters.user_info_filter)
+@Client.on_callback_query(custom_filters.user_info_filter & custom_filters.check_user_filter & custom_filters.user_is_administrator)
 async def get_user_info_callback(client: Client, callback_query: CallbackQuery) -> None:
     user_id = int(callback_query.data.split("#")[1])
 
@@ -59,7 +59,7 @@ async def get_user_info_callback(client: Client, callback_query: CallbackQuery) 
     )
 
 
-@Client.on_callback_query(custom_filters.edit_user_filter)
+@Client.on_callback_query(custom_filters.edit_user_filter & custom_filters.check_user_filter & custom_filters.user_is_administrator)
 async def edit_user_callback(client: Client, callback_query: CallbackQuery) -> None:
     data = callback_query.data.split("#")[1]
     user_id = int(data.split("-")[0])
@@ -101,7 +101,7 @@ async def edit_user_callback(client: Client, callback_query: CallbackQuery) -> N
     )
 
 
-@Client.on_callback_query(custom_filters.toggle_user_var_filter)
+@Client.on_callback_query(custom_filters.toggle_user_var_filter & custom_filters.check_user_filter & custom_filters.user_is_administrator)
 async def toggle_user_var(client: Client, callback_query: CallbackQuery) -> None:
     data = callback_query.data.split("#")[1]
     user_id = int(data.split("-")[0])

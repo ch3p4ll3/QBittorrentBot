@@ -5,7 +5,7 @@ from .... import custom_filters
 from .....configs import Configs
 
 
-@Client.on_callback_query(custom_filters.reload_settings_filter)
+@Client.on_callback_query(custom_filters.reload_settings_filter & custom_filters.check_user_filter & custom_filters.user_is_administrator)
 async def reload_settings_callback(client: Client, callback_query: CallbackQuery) -> None:
     # TO FIX reload
     Configs.reload_config()

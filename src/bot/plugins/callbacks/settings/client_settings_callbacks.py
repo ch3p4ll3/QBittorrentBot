@@ -8,7 +8,7 @@ from .....utils import convert_type_from_string
 from .....db_management import write_support
 
 
-@Client.on_callback_query(custom_filters.edit_client_settings_filter)
+@Client.on_callback_query(custom_filters.edit_client_settings_filter & custom_filters.check_user_filter & custom_filters.user_is_administrator)
 async def edit_client_settings_callback(client: Client, callback_query: CallbackQuery) -> None:
     confs = '\n- '.join(iter([f"**{key.capitalize()}:** {item}" for key, item in Configs.config.clients.model_dump().items()]))
 

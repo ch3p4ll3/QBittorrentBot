@@ -8,7 +8,7 @@ from ....qbittorrent_manager import QbittorrentManagement
 from ....utils import convert_size, convert_eta
 
 
-@Client.on_callback_query(custom_filters.torrentInfo_filter)
+@Client.on_callback_query(custom_filters.torrentInfo_filter & custom_filters.check_user_filter)
 async def torrent_info_callback(client: Client, callback_query: CallbackQuery) -> None:
     with QbittorrentManagement() as qb:
         torrent = qb.get_torrent_info(callback_query.data.split("#")[1])
