@@ -1,11 +1,16 @@
+import logging
 import os
 import tempfile
-
 from pyrogram import Client, filters
 from pyrogram.types import Message
 from ...qbittorrent_manager import QbittorrentManagement
 from ... import db_management
 from .common import send_menu
+from ...configs import Configs
+from ...utils import get_user_from_config, convert_type_from_string
+
+BOT_CONFIGS = Configs.config
+logger = logging.getLogger(__name__)
 
 
 @Client.on_message(~filters.me)
@@ -65,6 +70,33 @@ async def on_text(client: Client, message: Message) -> None:
 
         else:
             await client.send_message(message.from_user.id, "The path entered does not exist! Retry")
+
+    elif "edit_user" in action:
+        data = db_management.read_support(message.from_user.id).split("#")[1]
+        user_id = int(data.split("-")[0])
+        field_to_edit = data.split("-")[1]
+        data_type = convert_type_from_string(data.split("-")[2].replace("<class ", "").replace(">", ""))
+
+        try:
+            new_value = data_type(message.text)
+
+            user_info = get_user_from_config(user_id)
+            user_from_configs = BOT_CONFIGS.users.index(user_info)
+
+            if user_from_configs == -1:
+                return
+
+            setattr(BOT_CONFIGS.users[user_from_configs], field_to_edit, new_value)
+            Configs.update_config(BOT_CONFIGS)
+            logger.debug(f"Updating User #{user_id} {field_to_edit} settings to {new_value}")
+            db_management.write_support("None", message.from_user.id)
+
+            await send_menu(client, message, message.chat)
+        except Exception:
+            await message.reply_text(
+                f"Error: unable to convert value \"{message.text}\" to type \"{data_type}\""
+            )
+            logger.exception(f"Error converting value \"{message.text}\" to type \"{data_type}\"", exc_info=True)
 
     else:
         await client.send_message(message.from_user.id, "The command does not exist")

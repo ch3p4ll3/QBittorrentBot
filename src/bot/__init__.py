@@ -5,7 +5,7 @@ from src.utils import torrent_finished
 from ..configs import Configs
 
 
-BOT_CONFIGS = Configs.load_config()
+BOT_CONFIGS = Configs.config
 
 
 plugins = dict(

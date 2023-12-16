@@ -1,14 +1,17 @@
 from math import log, floor
 import datetime
+
+from pydantic import IPvAnyAddress
 from pyrogram.errors.exceptions import UserIsBlocked
 
 from src import db_management
 from src.qbittorrent_manager import QbittorrentManagement
 from .configs import Configs
+from .configs.enums import ClientTypeEnum
 from .configs.user import User
 
 
-BOT_CONFIGS = Configs.load_config()
+BOT_CONFIGS = Configs.config
 
 
 async def torrent_finished(app):
@@ -45,3 +48,14 @@ def convert_size(size_bytes) -> str:
 
 def convert_eta(n) -> str:
     return str(datetime.timedelta(seconds=n))
+
+
+def convert_type_from_string(input_type: str):
+    if "int" in input_type:
+        return int
+    elif "IPvAnyAddress" in input_type:
+        return IPvAnyAddress
+    elif "ClientTypeEnum" in input_type:
+        return ClientTypeEnum
+    elif "str" in input_type:
+        return str

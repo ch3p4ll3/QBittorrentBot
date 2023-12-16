@@ -7,7 +7,7 @@ from ...configs import Configs
 from .common import send_menu
 
 
-BOT_CONFIGS = Configs.load_config()
+BOT_CONFIGS = Configs.config
 
 
 @Client.on_message(filters.command("start"))

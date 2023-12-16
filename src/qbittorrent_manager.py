@@ -3,7 +3,7 @@ import logging
 from .configs import Configs
 from typing import Union, List
 
-BOT_CONFIGS = Configs.load_config()
+BOT_CONFIGS = Configs.config
 logger = logging.getLogger(__name__)
 
 
