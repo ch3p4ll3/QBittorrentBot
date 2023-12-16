@@ -22,7 +22,7 @@ async def get_users_callback(client: Client, callback_query: CallbackQuery) -> N
             users +
             [
                 [
-                    InlineKeyboardButton("🔙 Menu", "settings")
+                    InlineKeyboardButton("🔙 Settings", "settings")
                 ]
             ]
         )
@@ -44,13 +44,15 @@ async def get_user_info_callback(client: Client, callback_query: CallbackQuery) 
         for key, item in user_info.model_fields.items()
     ]
 
+    confs = '\n- '.join(iter([f"**{key.capitalize()}:** {item}" for key, item in user_info.model_dump().items()]))
+
     await callback_query.edit_message_text(
-        f"Edit User #{user_id}",
+        f"Edit User #{user_id}\n\n**Current Settings:**\n- {confs}",
         reply_markup=InlineKeyboardMarkup(
             fields +
             [
                 [
-                    InlineKeyboardButton("🔙 Menu", "menu")
+                    InlineKeyboardButton(f"🔙 Users", f"get_users")
                 ]
             ]
         )
@@ -77,7 +79,7 @@ async def edit_user_callback(client: Client, callback_query: CallbackQuery) -> N
                             f"toggle_user_var#{user_id}-{field_to_edit}")
                     ],
                     [
-                        InlineKeyboardButton("🔙 Menu", f"user_info#{user_id}")
+                        InlineKeyboardButton(f"🔙 User#{user_id} info", f"user_info#{user_id}")
                     ]
                 ]
             )
@@ -92,7 +94,7 @@ async def edit_user_callback(client: Client, callback_query: CallbackQuery) -> N
         reply_markup=InlineKeyboardMarkup(
             [
                 [
-                    InlineKeyboardButton("🔙 Menu", f"user_info#{user_id}")
+                    InlineKeyboardButton(f"🔙 User#{user_id} info", f"user_info#{user_id}")
                 ]
             ]
         )
@@ -124,7 +126,7 @@ async def toggle_user_var(client: Client, callback_query: CallbackQuery) -> None
                         f"toggle_user_var#{user_id}-{field_to_edit}")
                 ],
                 [
-                    InlineKeyboardButton("🔙 Menu", f"user_info#{user_id}")
+                    InlineKeyboardButton(f"🔙 User#{user_id} info", f"user_info#{user_id}")
                 ]
             ]
         )

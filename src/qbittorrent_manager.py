@@ -111,3 +111,7 @@ class QbittorrentManagement:
     def remove_category(self, name: str) -> None:
         logger.debug(f"Removing category {name}")
         self.qbt_client.torrents_remove_categories(categories=name)
+
+    def check_connection(self) -> str:
+        logger.debug("Checking Qbt Connection")
+        return self.qbt_client.app.version
