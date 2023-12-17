@@ -1,0 +1,11 @@
+input: .
+output: .retype
+url: # Add your website address here
+branding:
+  title: QBittorrentBot
+  label: Docs
+links:
+- text: Getting Started
+  link: getting_started/
+footer:
+  copyright: "&copy; Copyright {{ year }}. All rights reserved."

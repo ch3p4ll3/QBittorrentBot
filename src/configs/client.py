@@ -1,4 +1,3 @@
-import ipaddress
 from pydantic import BaseModel, field_validator, IPvAnyAddress
 from .enums import ClientTypeEnum
 

@@ -22,7 +22,7 @@ The config file is stored in the mounted /app/config/ volume
 
 ```
 {
-    "clients": {
+    "client": {
         "type": "qbittorrent",
         "host": "192.168.178.102",
         "port": 8080,

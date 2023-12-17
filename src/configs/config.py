@@ -6,6 +6,6 @@ from .telegram import Telegram
 
 
 class MainConfig(BaseModel):
-    clients: Client
+    client: Client
     telegram: Telegram
     users: list[User]
