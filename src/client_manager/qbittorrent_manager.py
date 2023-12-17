@@ -1,3 +1,5 @@
+from io import BytesIO
+
 import qbittorrentapi
 import logging
 from src.configs import Configs
@@ -139,3 +141,14 @@ class QbittorrentManager(ClientManager):
         logger.debug("Checking Qbt Connection")
         with qbittorrentapi.Client(**Configs.config.client.connection_string) as qbt_client:
             return qbt_client.app.version
+
+    @classmethod
+    def export_torrent(cls, torrent_hash: str) -> BytesIO:
+        logger.debug(f"Exporting torrent with hash {torrent_hash}")
+        with qbittorrentapi.Client(**Configs.config.client.connection_string) as qbt_client:
+            torrent_bytes = qbt_client.torrents_export(torrent_hash=torrent_hash)
+            torrent_name = qbt_client.torrents_info(torrent_hashes=torrent_hash)[0].name
+
+            file_to_return = BytesIO(torrent_bytes)
+            file_to_return.name = f"{torrent_name}.torrent"
+            return file_to_return

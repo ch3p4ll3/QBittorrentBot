@@ -53,6 +53,7 @@ reload_settings_filter = filters.create(lambda _, __, query: query.data == "relo
 
 
 # Other
+export_filter = filters.create(lambda _, __, query: query.data.startswith("export"))
 torrentInfo_filter = filters.create(lambda _, __, query: query.data.startswith("torrentInfo"))
 menu_filter = filters.create(lambda _, __, query: query.data == "menu")
 list_filter = filters.create(lambda _, __, query: query.data.startswith("list"))

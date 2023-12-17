@@ -1,3 +1,4 @@
+from io import BytesIO
 from typing import Union, List
 from abc import ABC
 
@@ -81,4 +82,9 @@ class ClientManager(ABC):
     @classmethod
     def check_connection(cls) -> str:
         """Check connection with Client"""
+        raise NotImplementedError
+
+    @classmethod
+    def export_torrent(cls, torrent_hash: str) -> BytesIO:
+        """Export a .torrent file for the torrent."""
         raise NotImplementedError

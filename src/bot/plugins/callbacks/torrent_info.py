@@ -34,10 +34,34 @@ async def torrent_info_callback(client: Client, callback_query: CallbackQuery) -
     if torrent.category:
         text += f"**Category:** {torrent.category}\n"
 
-    buttons = [[InlineKeyboardButton("⏸ Pause", f"pause#{callback_query.data.split('#')[1]}")],
-               [InlineKeyboardButton("▶️ Resume", f"resume#{callback_query.data.split('#')[1]}")],
-               [InlineKeyboardButton("🗑 Delete", f"delete_one#{callback_query.data.split('#')[1]}")],
-               [InlineKeyboardButton("🔙 Menu", "menu")]]
+    buttons = [
+        [
+            InlineKeyboardButton("💾 Export torrent", f"export#{callback_query.data.split('#')[1]}")
+        ],
+        [
+           InlineKeyboardButton("⏸ Pause", f"pause#{callback_query.data.split('#')[1]}")
+        ],
+        [
+           InlineKeyboardButton("▶️ Resume", f"resume#{callback_query.data.split('#')[1]}")
+        ],
+        [
+           InlineKeyboardButton("🗑 Delete", f"delete_one#{callback_query.data.split('#')[1]}")
+        ],
+        [
+           InlineKeyboardButton("🔙 Menu", "menu")
+        ]
+    ]
 
     await client.edit_message_text(callback_query.from_user.id, callback_query.message.id, text=text,
                                    reply_markup=InlineKeyboardMarkup(buttons))
+
+
+@Client.on_callback_query(custom_filters.export_filter & custom_filters.check_user_filter)
+async def export_callback(client: Client, callback_query: CallbackQuery) -> None:
+    repository = ClientRepo.get_client_manager(Configs.config.client.type)
+    file_bytes = repository.export_torrent(torrent_hash=callback_query.data.split("#")[1])
+
+    await client.send_document(
+        callback_query.from_user.id,
+        file_bytes
+    )
