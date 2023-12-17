@@ -23,7 +23,7 @@ async def on_text(client: Client, message: Message) -> None:
             magnet_link = message.text.split("\n")
             category = db_management.read_support(message.from_user.id).split("#")[1]
 
-            repository = ClientRepo.get_client_manager(Configs.config.clients.type)
+            repository = ClientRepo.get_client_manager(Configs.config.client.type)
             repository.add_magnet(
                 magnet_link=magnet_link,
                 category=category
@@ -42,7 +42,7 @@ async def on_text(client: Client, message: Message) -> None:
                 category = db_management.read_support(message.from_user.id).split("#")[1]
                 await message.download(name)
 
-                repository = ClientRepo.get_client_manager(Configs.config.clients.type)
+                repository = ClientRepo.get_client_manager(Configs.config.client.type)
                 repository.add_torrent(file_name=name, category=category)
 
             await send_menu(client, message.id, message.from_user.id)
@@ -59,7 +59,7 @@ async def on_text(client: Client, message: Message) -> None:
         if os.path.exists(message.text):
             name = db_management.read_support(message.from_user.id).split("#")[1]
 
-            repository = ClientRepo.get_client_manager(Configs.config.clients.type)
+            repository = ClientRepo.get_client_manager(Configs.config.client.type)
 
             if "modify" in action:
                 repository.edit_category(name=name, save_path=message.text)
@@ -110,7 +110,7 @@ async def on_text(client: Client, message: Message) -> None:
         try:
             new_value = data_type(message.text)
 
-            setattr(Configs.config.clients, field_to_edit, new_value)
+            setattr(Configs.config.client, field_to_edit, new_value)
             Configs.update_config(Configs.config)
             Configs.reload_config()
             logger.debug(f"Updating Client field \"{field_to_edit}\" to \"{new_value}\"")

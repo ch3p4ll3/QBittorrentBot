@@ -18,3 +18,59 @@ You can find more information [here](configuration_file/#enums)
 ## Changed names
 
 There are 2 changes to the field names, the first is the name of the `qbittorrent` section which has been renamed to `client`. While the second is the `ip` field inside che `client` section which has been renamed to `host`
+
+## V1 vs V2
+configurations in comparison
+
+||| V1
+
+```json
+{
+    "qbittorrent": {
+        "ip": "192.168.178.102",
+        "port": 8080,
+        "user": "admin",
+        "password": "admin"
+    },
+    "telegram": {
+        "bot_token": "1111111:AAAAAAAA-BBBBBBBBB",
+        "api_id": 1111,
+        "api_hash": "aaaaaaaa"
+    },
+
+    "users": [
+        {
+            "user_id": 123456,
+            "notify": false
+        }
+    ]
+}
+```
+
+||| V2
+
+```json
+{
+    "client": {
+        "type": "qbittorrent",
+        "host": "192.168.178.102",
+        "port": 8080,
+        "user": "admin",
+        "password": "admin"
+    },
+    "telegram": {
+        "bot_token": "1111111:AAAAAAAA-BBBBBBBBB",
+        "api_id": 1111,
+        "api_hash": "aaaaaaaa"
+    },
+
+    "users": [
+        {
+            "user_id": 123456,
+            "notify": false,
+            "role": "administrator"
+        }
+    ]
+}
+```
+|||

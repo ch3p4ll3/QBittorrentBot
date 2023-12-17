@@ -8,15 +8,16 @@ This means that you can add, remove, pause, resume, and delete torrents, as well
 A lot has changed from version 2, if you have any errors, please take a look [here](getting_started/migrating_to_v2).
 !!!
 
-## What can this bot do?
+## Features
 Here are some of the things you can do with QBittorrentBot:
 
 - **Add torrents**: You can add torrents to your qBittorrent download queue by sending magnet links or torrent files to the bot.
 - **List active downloads**: You can get a list of your current downloads, including their progress, status, and estimated completion time.
 - **Pause/Resume downloads**: You can pause or resume ongoing downloads with a single command.
 - **Delete torrents**: You can remove unwanted downloads from your queue with a single command.
-- **Add/Remove categories**: You can categorize your torrents for better organization and accessibility.
+- **Add/Remove/Edit categories**: You can categorize your torrents for better organization and accessibility.
 - **Edit settings**: You can edit user and torrent client settings directly from the bot
+- **Check client connection**: You can check the connection with the client directly from the bot
 
 ## Benefits
 

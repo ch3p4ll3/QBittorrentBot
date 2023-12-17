@@ -10,7 +10,7 @@ from .....db_management import write_support
 
 @Client.on_callback_query(custom_filters.edit_client_settings_filter & custom_filters.check_user_filter & custom_filters.user_is_administrator)
 async def edit_client_settings_callback(client: Client, callback_query: CallbackQuery) -> None:
-    confs = '\n- '.join(iter([f"**{key.capitalize()}:** {item}" for key, item in Configs.config.clients.model_dump().items()]))
+    confs = '\n- '.join(iter([f"**{key.capitalize()}:** {item}" for key, item in Configs.config.client.model_dump().items()]))
 
     await callback_query.edit_message_text(
         f"Edit Qbittorrent Client Settings \n\n**Current Settings:**\n- {confs}",
@@ -33,7 +33,7 @@ async def edit_client_settings_callback(client: Client, callback_query: Callback
 @Client.on_callback_query(custom_filters.check_connection_filter)
 async def check_connection_callback(client: Client, callback_query: CallbackQuery) -> None:
     try:
-        repository = ClientRepo.get_client_manager(Configs.config.clients.type)
+        repository = ClientRepo.get_client_manager(Configs.config.client.type)
         version = repository.check_connection()
 
         await callback_query.answer(f"✅ The connection works. QBittorrent version: {version}", show_alert=True)
@@ -47,7 +47,7 @@ async def list_client_settings_callback(client: Client, callback_query: Callback
     fields = [
         [InlineKeyboardButton(f"Edit {key.replace('_', ' ').capitalize()}",
                               f"edit_clt#{key}-{item.annotation}")]
-        for key, item in Configs.config.clients.model_fields.items()
+        for key, item in Configs.config.client.model_fields.items()
     ]
 
     await callback_query.edit_message_text(

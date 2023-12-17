@@ -42,7 +42,7 @@ async def send_menu(client: Client, message_id: int, chat_id: int) -> None:
 
 
 async def list_active_torrents(client: Client, chat_id, message_id, callback: Optional[str] = None, status_filter: str = None) -> None:
-    repository = ClientRepo.get_client_manager(Configs.config.clients.type)
+    repository = ClientRepo.get_client_manager(Configs.config.client.type)
     torrents = repository.get_torrent_info(status_filter=status_filter)
 
     def render_categories_buttons():

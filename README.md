@@ -38,11 +38,13 @@ The config file is stored in the mounted /app/config/ volume
     "users": [
         {
             "user_id": 123456,
-            "notify": false
+            "notify": false,
+            "role": "administrator"
         },
         {
             "user_id": 12345678,
-            "notify": true
+            "notify": true,
+            "role": "manager"
         }
     ]
 }
@@ -62,7 +64,6 @@ Pull and run the image with: `docker run -d -v /home/user/docker/QBittorrentBot:
 - Move in the project directory
 - Install dependencies with `pip3 install -r requirements.txt`
 - Create a config.json file
-- Edit in the file /src/config.py the location of the file 'config.json'
 - Start the bot with `python3 main.py`
 
 ## How to enable the qBittorrent Web UI

@@ -24,7 +24,7 @@ async def add_category_callback(client: Client, callback_query: CallbackQuery) -
 async def list_categories(client: Client, callback_query: CallbackQuery):
     buttons = []
 
-    repository = ClientRepo.get_client_manager(Configs.config.clients.type)
+    repository = ClientRepo.get_client_manager(Configs.config.client.type)
     categories = repository.get_categories()
 
     if categories is None:
@@ -50,7 +50,7 @@ async def list_categories(client: Client, callback_query: CallbackQuery):
 async def remove_category_callback(client: Client, callback_query: CallbackQuery) -> None:
     buttons = [[InlineKeyboardButton("🔙 Menu", "menu")]]
 
-    repository = ClientRepo.get_client_manager(Configs.config.clients.type)
+    repository = ClientRepo.get_client_manager(Configs.config.client.type)
     repository.remove_category(callback_query.data.split("#")[1])
 
     await client.edit_message_text(callback_query.from_user.id, callback_query.message.id,
@@ -72,7 +72,7 @@ async def modify_category_callback(client: Client, callback_query: CallbackQuery
 async def category(client: Client, callback_query: CallbackQuery) -> None:
     buttons = []
 
-    repository = ClientRepo.get_client_manager(Configs.config.clients.type)
+    repository = ClientRepo.get_client_manager(Configs.config.client.type)
     categories = repository.get_categories()
 
     if categories is None:

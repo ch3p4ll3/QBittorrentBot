@@ -11,7 +11,7 @@ from ....utils import convert_size, convert_eta
 
 @Client.on_callback_query(custom_filters.torrentInfo_filter & custom_filters.check_user_filter)
 async def torrent_info_callback(client: Client, callback_query: CallbackQuery) -> None:
-    repository = ClientRepo.get_client_manager(Configs.config.clients.type)
+    repository = ClientRepo.get_client_manager(Configs.config.client.type)
     torrent = repository.get_torrent_info(callback_query.data.split("#")[1])
 
     text = f"{torrent.name}\n"

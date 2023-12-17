@@ -29,7 +29,7 @@ async def delete_no_data_callback(client: Client, callback_query: CallbackQuery)
         await list_active_torrents(client, callback_query.from_user.id, callback_query.message.id, "delete_one_no_data")
 
     else:
-        repository = ClientRepo.get_client_manager(Configs.config.clients.type)
+        repository = ClientRepo.get_client_manager(Configs.config.client.type)
         repository.delete_one_no_data(torrent_hash=callback_query.data.split("#")[1])
 
         await send_menu(client, callback_query.message.id, callback_query.from_user.id)
@@ -41,7 +41,7 @@ async def delete_with_data_callback(client: Client, callback_query: CallbackQuer
         await list_active_torrents(client, callback_query.from_user.id, callback_query.message.id, "delete_one_data")
 
     else:
-        repository = ClientRepo.get_client_manager(Configs.config.clients.type)
+        repository = ClientRepo.get_client_manager(Configs.config.client.type)
         repository.delete_one_data(torrent_hash=callback_query.data.split("#")[1])
 
         await send_menu(client, callback_query.message.id, callback_query.from_user.id)
