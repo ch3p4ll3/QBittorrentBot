@@ -1,10 +1,10 @@
 from pyrogram import Client
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 
-from ... import custom_filters
-from ....client_manager import ClientRepo
-from ..common import send_menu
-from ....configs import Configs
+from .... import custom_filters
+from .....client_manager import ClientRepo
+from ...common import send_menu
+from .....configs import Configs
 
 
 @Client.on_callback_query(custom_filters.delete_all_filter & custom_filters.check_user_filter & custom_filters.user_is_administrator)

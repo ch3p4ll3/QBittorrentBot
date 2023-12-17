@@ -2,11 +2,11 @@ from pyrogram import Client
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 from pyrogram.errors.exceptions import MessageIdInvalid
 
-from . import add_magnet_callback, add_torrent_callback
-from .... import db_management
-from ... import custom_filters
-from ....client_manager import ClientRepo
-from ....configs import Configs
+from ...callbacks import add_magnet_callback, add_torrent_callback
+from ..... import db_management
+from .... import custom_filters
+from .....client_manager import ClientRepo
+from .....configs import Configs
 
 
 @Client.on_callback_query(custom_filters.add_category_filter & custom_filters.check_user_filter & (custom_filters.user_is_administrator | custom_filters.user_is_manager))

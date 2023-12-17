@@ -12,6 +12,7 @@ user_is_manager = filters.create(lambda _, __, query: get_user_from_config(query
 user_is_administrator = filters.create(lambda _, __, query: get_user_from_config(query.from_user.id).role == UserRolesEnum.Administrator)
 
 # Categories filters
+menu_category_filter = filters.create(lambda _, __, query: query.data == "menu_categories")
 add_category_filter = filters.create(lambda _, __, query: query.data == "add_category")
 remove_category_filter = filters.create(lambda _, __, query: query.data.startswith("remove_category"))
 modify_category_filter = filters.create(lambda _, __, query: query.data.startswith("modify_category"))
@@ -23,12 +24,14 @@ add_magnet_filter = filters.create(lambda _, __, query: query.data.startswith("a
 add_torrent_filter = filters.create(lambda _, __, query: query.data.startswith("add_torrent"))
 
 # Pause/Resume filters
+menu_pause_resume_filter = filters.create(lambda _, __, query: query.data == "menu_pause_resume")
 pause_all_filter = filters.create(lambda _, __, query: query.data.startswith("pause_all"))
 resume_all_filter = filters.create(lambda _, __, query: query.data.startswith("resume_all"))
 pause_filter = filters.create(lambda _, __, query: query.data.startswith("pause"))
 resume_filter = filters.create(lambda _, __, query: query.data.startswith("resume"))
 
 # Delete filers
+menu_delete_filter = filters.create(lambda _, __, query: query.data == "menu_delete")
 delete_one_filter = filters.create(lambda _, __, query: query.data.split("#")[0] == "delete_one")
 delete_one_no_data_filter = filters.create(lambda _, __, query: query.data.startswith("delete_one_no_data"))
 delete_one_data_filter = filters.create(lambda _, __, query: query.data.startswith("delete_one_data"))
@@ -51,6 +54,6 @@ reload_settings_filter = filters.create(lambda _, __, query: query.data == "relo
 
 # Other
 torrentInfo_filter = filters.create(lambda _, __, query: query.data.startswith("torrentInfo"))
-menu_filter = filters.create(lambda _, __, query: query.data.startswith("menu"))
+menu_filter = filters.create(lambda _, __, query: query.data == "menu")
 list_filter = filters.create(lambda _, __, query: query.data.startswith("list"))
 list_by_status_filter = filters.create(lambda _, __, query: query.data.split("#")[0] == "by_status_list")

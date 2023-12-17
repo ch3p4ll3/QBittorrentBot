@@ -19,19 +19,13 @@ async def send_menu(client: Client, message_id: int, chat_id: int) -> None:
         buttons += [
             [InlineKeyboardButton("➕ Add Magnet", "category#add_magnet"),
              InlineKeyboardButton("➕ Add Torrent", "category#add_torrent")],
-            [InlineKeyboardButton("⏸ Pause", "pause"),
-             InlineKeyboardButton("▶️ Resume", "resume")],
-            [InlineKeyboardButton("⏸ Pause All", "pause_all"),
-             InlineKeyboardButton("▶️ Resume All", "resume_all")],
+            [InlineKeyboardButton("⏯ Pause/Resume", "menu_pause_resume")]
         ]
 
     if user.role == UserRolesEnum.Administrator:
         buttons += [
-            [InlineKeyboardButton("🗑 Delete", "delete_one"),
-             InlineKeyboardButton("🗑 Delete All", "delete_all")],
-            [InlineKeyboardButton("➕ Add Category", "add_category"),
-             InlineKeyboardButton("🗑 Remove Category", "select_category#remove_category")],
-            [InlineKeyboardButton("📝 Modify Category", "select_category#modify_category")],
+            [InlineKeyboardButton("🗑 Delete", "menu_delete")],
+            [InlineKeyboardButton("📂 Categories", "menu_categories")],
             [InlineKeyboardButton("⚙️ Settings", "settings")]
         ]
 
