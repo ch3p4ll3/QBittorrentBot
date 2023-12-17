@@ -2,8 +2,9 @@ from pyrogram import Client
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 
 from ... import custom_filters
-from ....qbittorrent_manager import QbittorrentManagement
+from ....client_manager import ClientRepo
 from ..common import send_menu
+from ....configs import Configs
 
 
 @Client.on_callback_query(custom_filters.delete_all_filter & custom_filters.check_user_filter & custom_filters.user_is_administrator)
@@ -17,15 +18,17 @@ async def delete_all_callback(client: Client, callback_query: CallbackQuery) -> 
 
 @Client.on_callback_query(custom_filters.delete_all_no_data_filter & custom_filters.check_user_filter & custom_filters.user_is_administrator)
 async def delete_all_with_no_data_callback(client: Client, callback_query: CallbackQuery) -> None:
-    with QbittorrentManagement() as qb:
-        qb.delete_all_no_data()
+    repository = ClientRepo.get_client_manager(Configs.config.clients.type)
+    repository.delete_all_no_data()
+
     await client.answer_callback_query(callback_query.id, "Deleted only torrents")
     await send_menu(client, callback_query.message.id, callback_query.from_user.id)
 
 
 @Client.on_callback_query(custom_filters.delete_all_data_filter & custom_filters.check_user_filter & custom_filters.user_is_administrator)
 async def delete_all_with_data_callback(client: Client, callback_query: CallbackQuery) -> None:
-    with QbittorrentManagement() as qb:
-        qb.delete_all_data()
+    repository = ClientRepo.get_client_manager(Configs.config.clients.type)
+    repository.delete_all_data()
+
     await client.answer_callback_query(callback_query.id, "Deleted All+Torrents")
     await send_menu(client, callback_query.message.id, callback_query.from_user.id)

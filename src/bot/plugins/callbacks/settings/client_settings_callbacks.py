@@ -3,7 +3,7 @@ from pyrogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardBu
 
 from .... import custom_filters
 from .....configs import Configs
-from .....qbittorrent_manager import QbittorrentManagement
+from .....client_manager import ClientRepo
 from .....utils import convert_type_from_string
 from .....db_management import write_support
 
@@ -33,9 +33,10 @@ async def edit_client_settings_callback(client: Client, callback_query: Callback
 @Client.on_callback_query(custom_filters.check_connection_filter)
 async def check_connection_callback(client: Client, callback_query: CallbackQuery) -> None:
     try:
-        with QbittorrentManagement() as qb:
-            version = qb.check_connection()
-            await callback_query.answer(f"✅ The connection works. QBittorrent version: {version}", show_alert=True)
+        repository = ClientRepo.get_client_manager(Configs.config.clients.type)
+        version = repository.check_connection()
+
+        await callback_query.answer(f"✅ The connection works. QBittorrent version: {version}", show_alert=True)
     except Exception:
         await callback_query.answer("❌ Unable to establish connection with QBittorrent", show_alert=True)
 

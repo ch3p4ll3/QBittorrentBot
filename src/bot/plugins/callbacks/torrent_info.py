@@ -4,14 +4,15 @@ from pyrogram import Client
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 
 from ... import custom_filters
-from ....qbittorrent_manager import QbittorrentManagement
+from ....client_manager import ClientRepo
+from ....configs import Configs
 from ....utils import convert_size, convert_eta
 
 
 @Client.on_callback_query(custom_filters.torrentInfo_filter & custom_filters.check_user_filter)
 async def torrent_info_callback(client: Client, callback_query: CallbackQuery) -> None:
-    with QbittorrentManagement() as qb:
-        torrent = qb.get_torrent_info(callback_query.data.split("#")[1])
+    repository = ClientRepo.get_client_manager(Configs.config.clients.type)
+    torrent = repository.get_torrent_info(callback_query.data.split("#")[1])
 
     text = f"{torrent.name}\n"
 

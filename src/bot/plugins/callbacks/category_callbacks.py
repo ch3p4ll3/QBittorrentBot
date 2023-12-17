@@ -5,7 +5,8 @@ from pyrogram.errors.exceptions import MessageIdInvalid
 from . import add_magnet_callback, add_torrent_callback
 from .... import db_management
 from ... import custom_filters
-from ....qbittorrent_manager import QbittorrentManagement
+from ....client_manager import ClientRepo
+from ....configs import Configs
 
 
 @Client.on_callback_query(custom_filters.add_category_filter & custom_filters.check_user_filter & (custom_filters.user_is_administrator | custom_filters.user_is_manager))
@@ -23,8 +24,8 @@ async def add_category_callback(client: Client, callback_query: CallbackQuery) -
 async def list_categories(client: Client, callback_query: CallbackQuery):
     buttons = []
 
-    with QbittorrentManagement() as qb:
-        categories = qb.get_categories()
+    repository = ClientRepo.get_client_manager(Configs.config.clients.type)
+    categories = repository.get_categories()
 
     if categories is None:
         buttons.append([InlineKeyboardButton("🔙 Menu", "menu")])
@@ -49,8 +50,8 @@ async def list_categories(client: Client, callback_query: CallbackQuery):
 async def remove_category_callback(client: Client, callback_query: CallbackQuery) -> None:
     buttons = [[InlineKeyboardButton("🔙 Menu", "menu")]]
 
-    with QbittorrentManagement() as qb:
-        qb.remove_category(callback_query.data.split("#")[1])
+    repository = ClientRepo.get_client_manager(Configs.config.clients.type)
+    repository.remove_category(callback_query.data.split("#")[1])
 
     await client.edit_message_text(callback_query.from_user.id, callback_query.message.id,
                                    f"The category {callback_query.data.split('#')[1]} has been removed",
@@ -71,8 +72,8 @@ async def modify_category_callback(client: Client, callback_query: CallbackQuery
 async def category(client: Client, callback_query: CallbackQuery) -> None:
     buttons = []
 
-    with QbittorrentManagement() as qb:
-        categories = qb.get_categories()
+    repository = ClientRepo.get_client_manager(Configs.config.clients.type)
+    categories = repository.get_categories()
 
     if categories is None:
         if "magnet" in callback_query.data:

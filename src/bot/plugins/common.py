@@ -3,7 +3,8 @@ from pyrogram.errors.exceptions import MessageIdInvalid
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from ... import db_management
-from ...qbittorrent_manager import QbittorrentManagement
+from ...configs import Configs
+from ...client_manager import ClientRepo
 from ...utils import get_user_from_config
 from ...configs.enums import UserRolesEnum
 
@@ -45,8 +46,8 @@ async def send_menu(client: Client, message_id: int, chat_id: int) -> None:
 
 
 async def list_active_torrents(client: Client, n, chat, message, callback, status_filter: str = None) -> None:
-    with QbittorrentManagement() as qb:
-        torrents = qb.get_torrent_info(status_filter=status_filter)
+    repository = ClientRepo.get_client_manager(Configs.config.clients.type)
+    torrents = repository.get_torrent_info(status_filter=status_filter)
 
     def render_categories_buttons():
         return [

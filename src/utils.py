@@ -5,14 +5,14 @@ from pydantic import IPvAnyAddress
 from pyrogram.errors.exceptions import UserIsBlocked
 
 from src import db_management
-from src.qbittorrent_manager import QbittorrentManagement
+from src.client_manager.qbittorrent_manager import QbittorrentManager
 from .configs import Configs
 from .configs.enums import ClientTypeEnum, UserRolesEnum
 from .configs.user import User
 
 
 async def torrent_finished(app):
-    with QbittorrentManagement() as qb:
+    with QbittorrentManager() as qb:
         for i in qb.get_torrent_info(status_filter="completed"):
             if db_management.read_completed_torrents(i.hash) is None:
 

@@ -3,7 +3,7 @@ import os
 import tempfile
 from pyrogram import Client, filters
 from pyrogram.types import Message
-from ...qbittorrent_manager import QbittorrentManagement
+from ...client_manager import ClientRepo
 from ... import db_management
 from .common import send_menu
 from ...configs import Configs
@@ -23,9 +23,11 @@ async def on_text(client: Client, message: Message) -> None:
             magnet_link = message.text.split("\n")
             category = db_management.read_support(message.from_user.id).split("#")[1]
 
-            with QbittorrentManagement() as qb:
-                qb.add_magnet(magnet_link=magnet_link,
-                              category=category)
+            repository = ClientRepo.get_client_manager(Configs.config.clients.type)
+            repository.add_magnet(
+                magnet_link=magnet_link,
+                category=category
+            )
 
             await send_menu(client, message.id, message.from_user.id)
             db_management.write_support("None", message.from_user.id)
@@ -40,9 +42,9 @@ async def on_text(client: Client, message: Message) -> None:
                 category = db_management.read_support(message.from_user.id).split("#")[1]
                 await message.download(name)
 
-                with QbittorrentManagement() as qb:
-                    qb.add_torrent(file_name=name,
-                                   category=category)
+                repository = ClientRepo.get_client_manager(Configs.config.clients.type)
+                repository.add_torrent(file_name=name, category=category)
+
             await send_menu(client, message.id, message.from_user.id)
             db_management.write_support("None", message.from_user.id)
 
@@ -57,16 +59,16 @@ async def on_text(client: Client, message: Message) -> None:
         if os.path.exists(message.text):
             name = db_management.read_support(message.from_user.id).split("#")[1]
 
+            repository = ClientRepo.get_client_manager(Configs.config.clients.type)
+
             if "modify" in action:
-                with QbittorrentManagement() as qb:
-                    qb.edit_category(name=name,
-                                     save_path=message.text)
+                repository.edit_category(name=name, save_path=message.text)
+
                 await send_menu(client, message.id, message.from_user.id)
                 return
 
-            with QbittorrentManagement() as qb:
-                qb.create_category(name=name,
-                                   save_path=message.text)
+            repository.create_category(name=name, save_path=message.text)
+
             await send_menu(client, message.id, message.from_user.id)
 
         else:
