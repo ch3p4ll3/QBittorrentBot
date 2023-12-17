@@ -10,7 +10,7 @@ from .....configs import Configs
 @Client.on_callback_query(custom_filters.delete_one_filter & custom_filters.check_user_filter & custom_filters.user_is_administrator)
 async def delete_callback(client: Client, callback_query: CallbackQuery) -> None:
     if callback_query.data.find("#") == -1:
-        await list_active_torrents(client, 1, callback_query.from_user.id, callback_query.message.id, "delete_one")
+        await list_active_torrents(client, callback_query.from_user.id, callback_query.message.id, "delete_one")
 
     else:
 
@@ -26,7 +26,7 @@ async def delete_callback(client: Client, callback_query: CallbackQuery) -> None
 @Client.on_callback_query(custom_filters.delete_one_no_data_filter & custom_filters.check_user_filter & custom_filters.user_is_administrator)
 async def delete_no_data_callback(client: Client, callback_query: CallbackQuery) -> None:
     if callback_query.data.find("#") == -1:
-        await list_active_torrents(client, 1, callback_query.from_user.id, callback_query.message.id, "delete_one_no_data")
+        await list_active_torrents(client, callback_query.from_user.id, callback_query.message.id, "delete_one_no_data")
 
     else:
         repository = ClientRepo.get_client_manager(Configs.config.clients.type)
@@ -38,7 +38,7 @@ async def delete_no_data_callback(client: Client, callback_query: CallbackQuery)
 @Client.on_callback_query(custom_filters.delete_one_data_filter & custom_filters.check_user_filter & custom_filters.user_is_administrator)
 async def delete_with_data_callback(client: Client, callback_query: CallbackQuery) -> None:
     if callback_query.data.find("#") == -1:
-        await list_active_torrents(client, 1, callback_query.from_user.id, callback_query.message.id, "delete_one_data")
+        await list_active_torrents(client, callback_query.from_user.id, callback_query.message.id, "delete_one_data")
 
     else:
         repository = ClientRepo.get_client_manager(Configs.config.clients.type)

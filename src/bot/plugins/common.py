@@ -2,6 +2,8 @@ from pyrogram import Client
 from pyrogram.errors.exceptions import MessageIdInvalid
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
+from typing import Optional
+
 from ... import db_management
 from ...configs import Configs
 from ...client_manager import ClientRepo
@@ -39,7 +41,7 @@ async def send_menu(client: Client, message_id: int, chat_id: int) -> None:
         await client.send_message(chat_id, text="Qbittorrent Control", reply_markup=InlineKeyboardMarkup(buttons))
 
 
-async def list_active_torrents(client: Client, n, chat, message, callback, status_filter: str = None) -> None:
+async def list_active_torrents(client: Client, chat_id, message_id, callback: Optional[str] = None, status_filter: str = None) -> None:
     repository = ClientRepo.get_client_manager(Configs.config.clients.type)
     torrents = repository.get_torrent_info(status_filter=status_filter)
 
@@ -56,24 +58,24 @@ async def list_active_torrents(client: Client, n, chat, message, callback, statu
     if not torrents:
         buttons = [categories_buttons, [InlineKeyboardButton("🔙 Menu", "menu")]]
         try:
-            await client.edit_message_text(chat, message, "There are no torrents",
+            await client.edit_message_text(chat_id, message_id, "There are no torrents",
                                            reply_markup=InlineKeyboardMarkup(buttons))
         except MessageIdInvalid:
-            await client.send_message(chat, "There are no torrents", reply_markup=InlineKeyboardMarkup(buttons))
+            await client.send_message(chat_id, "There are no torrents", reply_markup=InlineKeyboardMarkup(buttons))
         return
 
     buttons = [categories_buttons]
 
-    if n == 1:
+    if callback is not None:
         for key, i in enumerate(torrents):
             buttons.append([InlineKeyboardButton(i.name, f"{callback}#{i.info.hash}")])
 
         buttons.append([InlineKeyboardButton("🔙 Menu", "menu")])
 
         try:
-            await client.edit_message_reply_markup(chat, message, reply_markup=InlineKeyboardMarkup(buttons))
+            await client.edit_message_reply_markup(chat_id, message_id, reply_markup=InlineKeyboardMarkup(buttons))
         except MessageIdInvalid:
-            await client.send_message(chat, "Qbittorrent Control", reply_markup=InlineKeyboardMarkup(buttons))
+            await client.send_message(chat_id, "Qbittorrent Control", reply_markup=InlineKeyboardMarkup(buttons))
 
     else:
         for key, i in enumerate(torrents):
@@ -82,6 +84,6 @@ async def list_active_torrents(client: Client, n, chat, message, callback, statu
         buttons.append([InlineKeyboardButton("🔙 Menu", "menu")])
 
         try:
-            await client.edit_message_reply_markup(chat, message, reply_markup=InlineKeyboardMarkup(buttons))
+            await client.edit_message_reply_markup(chat_id, message_id, reply_markup=InlineKeyboardMarkup(buttons))
         except MessageIdInvalid:
-            await client.send_message(chat, "Qbittorrent Control", reply_markup=InlineKeyboardMarkup(buttons))
+            await client.send_message(chat_id, "Qbittorrent Control", reply_markup=InlineKeyboardMarkup(buttons))
