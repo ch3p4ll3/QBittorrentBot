@@ -16,6 +16,7 @@ def load_config() -> Union[MainConfig, None, int]:
 
 class Configs:
     config_path = config_path
+    log_folder = "/app/config/logs" if getenv("IS_DOCKER", False) else "./logs"
     config = load_config()
 
     @classmethod

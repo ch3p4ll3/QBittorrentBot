@@ -166,3 +166,4 @@ config.json
 *.session-journal
 
 *.sqlite
+/docker_folder
