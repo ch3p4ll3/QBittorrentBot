@@ -1,3 +1,6 @@
+---
+order: -20
+---
 # Managing users roles
 
 QBittorrentBot provides a user role management system to control access to different actions and functionalities within the bot. The system defines three roles: Reader, Manager, and Admin, each with increasing permissions and capabilities.

@@ -1,3 +1,6 @@
+---
+order: 0
+---
 # Add new client manager
 
 Adding a new client manager to QBittorrentBot involves creating a new class that implements the `ClientManager` interface. This interface defines the methods that the bot uses to interact with the client, such as adding, removing, pausing, and resuming torrents.
