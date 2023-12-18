@@ -13,6 +13,9 @@ magnet:?xt=...
 ```
 You can also pause, resume, delete and add/remove and modify categories.
 
+## Warning!
+Since version V2, the mapping of the configuration file has been changed. Make sure you have modified it correctly before starting the bot
+
 ## Configuration
 ### Retrieve Telegram API ID and API HASH
 With the change of library to [pyrogram](https://docs.pyrogram.org/) you will need the API_ID and API_HASH. Check [here](https://docs.pyrogram.org/intro/quickstart) to find out how to recover them.
@@ -22,8 +25,9 @@ The config file is stored in the mounted /app/config/ volume
 
 ```
 {
-    "qbittorrent": {
-        "ip": "192.168.178.102",
+    "client": {
+        "type": "qbittorrent",
+        "host": "192.168.178.102",
         "port": 8080,
         "user": "admin",
         "password": "admin"
@@ -37,11 +41,13 @@ The config file is stored in the mounted /app/config/ volume
     "users": [
         {
             "user_id": 123456,
-            "notify": false
+            "notify": false,
+            "role": "administrator"
         },
         {
             "user_id": 12345678,
-            "notify": true
+            "notify": true,
+            "role": "manager"
         }
     ]
 }
@@ -61,7 +67,6 @@ Pull and run the image with: `docker run -d -v /home/user/docker/QBittorrentBot:
 - Move in the project directory
 - Install dependencies with `pip3 install -r requirements.txt`
 - Create a config.json file
-- Edit in the file /src/config.py the location of the file 'config.json'
 - Start the bot with `python3 main.py`
 
 ## How to enable the qBittorrent Web UI
@@ -92,7 +97,6 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
-
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
