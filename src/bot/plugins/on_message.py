@@ -24,10 +24,14 @@ async def on_text(client: Client, message: Message) -> None:
             category = db_management.read_support(message.from_user.id).split("#")[1]
 
             repository = ClientRepo.get_client_manager(Configs.config.client.type)
-            repository.add_magnet(
+            response = repository.add_magnet(
                 magnet_link=magnet_link,
                 category=category
             )
+
+            if not response:
+                await message.reply_text("Unable to add magnet link")
+                return
 
             await send_menu(client, message.id, message.from_user.id)
             db_management.write_support("None", message.from_user.id)
@@ -43,7 +47,11 @@ async def on_text(client: Client, message: Message) -> None:
                 await message.download(name)
 
                 repository = ClientRepo.get_client_manager(Configs.config.client.type)
-                repository.add_torrent(file_name=name, category=category)
+                response = repository.add_torrent(file_name=name, category=category)
+
+                if not response:
+                    await message.reply_text("Unable to add magnet link")
+                    return
 
             await send_menu(client, message.id, message.from_user.id)
             db_management.write_support("None", message.from_user.id)

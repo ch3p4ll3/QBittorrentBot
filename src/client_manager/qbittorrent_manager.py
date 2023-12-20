@@ -11,23 +11,26 @@ logger = logging.getLogger(__name__)
 
 class QbittorrentManager(ClientManager):
     @classmethod
-    def add_magnet(cls, magnet_link: Union[str, List[str]], category: str = None) -> None:
+    def add_magnet(cls, magnet_link: Union[str, List[str]], category: str = None) -> bool:
         if category == "None":
             category = None
 
         with qbittorrentapi.Client(**Configs.config.client.connection_string) as qbt_client:
             logger.debug(f"Adding magnet with category {category}")
-            qbt_client.torrents_add(urls=magnet_link, category=category)
+            result = qbt_client.torrents_add(urls=magnet_link, category=category)
+
+        return result == "Ok."
 
     @classmethod
-    def add_torrent(cls, file_name: str, category: str = None) -> None:
+    def add_torrent(cls, file_name: str, category: str = None) -> bool:
         if category == "None":
             category = None
 
         try:
             with qbittorrentapi.Client(**Configs.config.client.connection_string) as qbt_client:
                 logger.debug(f"Adding torrent with category {category}")
-                qbt_client.torrents_add(torrent_files=file_name, category=category)
+                result = qbt_client.torrents_add(torrent_files=file_name, category=category)
+            return result == "Ok."
 
         except qbittorrentapi.exceptions.UnsupportedMediaType415Error:
             pass

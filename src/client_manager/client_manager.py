@@ -5,13 +5,13 @@ from abc import ABC
 
 class ClientManager(ABC):
     @classmethod
-    def add_magnet(cls, magnet_link: Union[str, List[str]], category: str = None) -> None:
-        """Add one or multiple magnet links with or without a category"""
+    def add_magnet(cls, magnet_link: Union[str, List[str]], category: str = None) -> bool:
+        """Add one or multiple magnet links with or without a category, return true if successful"""
         raise NotImplementedError
 
     @classmethod
-    def add_torrent(cls, file_name: str, category: str = None) -> None:
-        """Add one torrent file with or without a category"""
+    def add_torrent(cls, file_name: str, category: str = None) -> bool:
+        """Add one torrent file with or without a category, return true if successful"""
         raise NotImplementedError
 
     @classmethod

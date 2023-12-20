@@ -3,6 +3,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 import psutil
 
 from .. import custom_filters
+from ...db_management import write_support
 from ...utils import convert_size
 from ...configs import Configs
 from .common import send_menu
@@ -18,6 +19,7 @@ async def access_denied_message(client: Client, message: Message) -> None:
 @Client.on_message(filters.command("start") & custom_filters.check_user_filter)
 async def start_command(client: Client, message: Message) -> None:
     """Start the bot."""
+    write_support("None", message.chat.id)
     await send_menu(client, message.id, message.chat.id)
 
 
