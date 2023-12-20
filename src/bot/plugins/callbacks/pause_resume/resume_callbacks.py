@@ -23,4 +23,3 @@ async def resume_callback(client: Client, callback_query: CallbackQuery) -> None
         repository = ClientRepo.get_client_manager(Configs.config.client.type)
         repository.resume(torrent_hash=callback_query.data.split("#")[1])
         await callback_query.answer("Torrent Resumed")
-        await send_menu(client, callback_query.message.id, callback_query.from_user.id)

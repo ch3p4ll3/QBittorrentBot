@@ -23,4 +23,3 @@ async def pause_callback(client: Client, callback_query: CallbackQuery) -> None:
         repository = ClientRepo.get_client_manager(Configs.config.client.type)
         repository.pause(torrent_hash=callback_query.data.split("#")[1])
         await callback_query.answer("Torrent Paused")
-        await send_menu(client, callback_query.message.id, callback_query.from_user.id)
