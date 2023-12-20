@@ -155,3 +155,14 @@ class QbittorrentManager(ClientManager):
             file_to_return = BytesIO(torrent_bytes)
             file_to_return.name = f"{torrent_name}.torrent"
             return file_to_return
+
+    @classmethod
+    def get_speed_limit_mode(cls) -> bool:
+        with qbittorrentapi.Client(**Configs.config.client.connection_string) as qbt_client:
+            return qbt_client.transfer.speedLimitsMode == "1"
+
+    @classmethod
+    def toggle_speed_limit(cls) -> bool:
+        with qbittorrentapi.Client(**Configs.config.client.connection_string) as qbt_client:
+            qbt_client.transfer.setSpeedLimitsMode()
+            return qbt_client.transfer.speedLimitsMode == "1"

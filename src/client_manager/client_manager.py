@@ -88,3 +88,13 @@ class ClientManager(ABC):
     def export_torrent(cls, torrent_hash: str) -> BytesIO:
         """Export a .torrent file for the torrent."""
         raise NotImplementedError
+
+    @classmethod
+    def get_speed_limit_mode(cls) -> bool:
+        """Get speed limit of the client, returns True if speed limit is active"""
+        raise NotImplementedError
+
+    @classmethod
+    def toggle_speed_limit(cls) -> bool:
+        """Toggle speed limit of the client, returns True if speed limit is active"""
+        raise NotImplementedError

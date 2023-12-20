@@ -50,6 +50,7 @@ list_client_settings_filter = filters.regex(r"^lst_client$")
 check_connection_filter = filters.regex(r"^check_connection$")
 edit_client_setting_filter = filters.regex(r'^edit_clt(#.+|$)?$')
 reload_settings_filter = filters.regex(r"^reload_settings$")
+toggle_speed_limit_filter = filters.regex(r"^toggle_speed_limit$")
 
 
 # Other
