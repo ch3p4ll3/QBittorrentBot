@@ -1,6 +1,7 @@
 {
-    "qbittorrent": {
-        "ip": "192.168.178.102",
+    "client": {
+        "type": "qbittorrent",
+        "host": "192.168.178.102",
         "port": 8080,
         "user": "admin",
         "password": "admin"
@@ -14,7 +15,8 @@
     "users": [
         {
             "user_id": 123456,
-            "notify": false
+            "notify": false,
+            "role": "administrator"
         }
     ]
 }

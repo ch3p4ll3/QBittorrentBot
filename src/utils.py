@@ -1,24 +1,36 @@
 from math import log, floor
 import datetime
+
+from pydantic import IPvAnyAddress
 from pyrogram.errors.exceptions import UserIsBlocked
 
 from src import db_management
-from src.qbittorrent_manager import QbittorrentManagement
-from src.config import BOT_CONFIGS
+from src.client_manager.qbittorrent_manager import QbittorrentManager
+from .configs import Configs
+from .configs.enums import ClientTypeEnum, UserRolesEnum
+from .configs.user import User
 
 
 async def torrent_finished(app):
-    with QbittorrentManagement() as qb:
+    with QbittorrentManager() as qb:
         for i in qb.get_torrent_info(status_filter="completed"):
             if db_management.read_completed_torrents(i.hash) is None:
 
-                for user in BOT_CONFIGS.users:
+                for user in Configs.config.users:
                     if user.notify:
                         try:
                             await app.send_message(user.user_id, f"torrent {i.name} has finished downloading!")
                         except UserIsBlocked:
                             pass
                 db_management.write_completed_torrents(i.hash)
+
+
+def get_user_from_config(user_id: int) -> User:
+    return next(
+        iter(
+            [i for i in Configs.config.users if i.user_id == user_id]
+        )
+    )
 
 
 def convert_size(size_bytes) -> str:
@@ -33,3 +45,16 @@ def convert_size(size_bytes) -> str:
 
 def convert_eta(n) -> str:
     return str(datetime.timedelta(seconds=n))
+
+
+def convert_type_from_string(input_type: str):
+    if "int" in input_type:
+        return int
+    elif "IPvAnyAddress" in input_type:
+        return IPvAnyAddress
+    elif "ClientTypeEnum" in input_type:
+        return ClientTypeEnum
+    elif "UserRolesEnum" in input_type:
+        return UserRolesEnum
+    elif "str" in input_type:
+        return str

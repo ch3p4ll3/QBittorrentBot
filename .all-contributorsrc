@@ -1,0 +1,29 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributors": [
+    {
+      "login": "bushig",
+      "name": "Bogdan",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2815779?v=4",
+      "profile": "https://github.com/bushig",
+      "contributions": [
+        "code"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "skipCi": true,
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "projectName": "QBittorrentBot",
+  "projectOwner": "ch3p4ll3"
+}
+  "projectName": "QBittorrentBot",
+  "projectOwner": "ch3p4ll3"
+}
