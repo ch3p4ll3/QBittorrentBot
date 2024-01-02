@@ -6,7 +6,7 @@ from pyrogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardBu
 from .... import custom_filters
 from .....configs import Configs
 from .....db_management import write_support
-from .....utils import get_user_from_config
+from .....utils import get_user_from_config, convert_type_from_string
 
 
 @Client.on_callback_query(custom_filters.get_users_filter & custom_filters.check_user_filter & custom_filters.user_is_administrator)
@@ -52,7 +52,7 @@ async def get_user_info_callback(client: Client, callback_query: CallbackQuery) 
             fields +
             [
                 [
-                    InlineKeyboardButton(f"🔙 Users", f"get_users")
+                    InlineKeyboardButton("🔙 Users", "get_users")
                 ]
             ]
         )
@@ -64,7 +64,7 @@ async def edit_user_callback(client: Client, callback_query: CallbackQuery) -> N
     data = callback_query.data.split("#")[1]
     user_id = int(data.split("-")[0])
     field_to_edit = data.split("-")[1]
-    data_type = eval(data.split("-")[2].replace("<class ", "").replace(">", ""))
+    data_type = convert_type_from_string(data.split("-")[2])
 
     user_info = get_user_from_config(user_id)
 

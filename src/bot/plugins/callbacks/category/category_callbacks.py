@@ -2,7 +2,7 @@ from pyrogram import Client
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 from pyrogram.errors.exceptions import MessageIdInvalid
 
-from ...callbacks import add_magnet_callback, add_torrent_callback
+from ..add_torrents_callbacks import add_magnet_callback, add_torrent_callback
 from ..... import db_management
 from .... import custom_filters
 from .....client_manager import ClientRepo
@@ -33,7 +33,7 @@ async def list_categories(client: Client, callback_query: CallbackQuery):
                                        "There are no categories", reply_markup=InlineKeyboardMarkup(buttons))
         return
 
-    for key, i in enumerate(categories):
+    for _, i in enumerate(categories):
         buttons.append([InlineKeyboardButton(i, f"{callback_query.data.split('#')[1]}#{i}")])
 
     buttons.append([InlineKeyboardButton("🔙 Menu", "menu")])

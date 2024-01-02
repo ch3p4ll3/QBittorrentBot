@@ -67,7 +67,7 @@ async def list_active_torrents(client: Client, chat_id, message_id, callback: Op
     buttons = [categories_buttons]
 
     if callback is not None:
-        for key, i in enumerate(torrents):
+        for _, i in enumerate(torrents):
             buttons.append([InlineKeyboardButton(i.name, f"{callback}#{i.info.hash}")])
 
         buttons.append([InlineKeyboardButton("🔙 Menu", "menu")])
