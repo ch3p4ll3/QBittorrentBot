@@ -10,7 +10,7 @@ if not exists(Configs.log_folder):
     mkdir(Configs.log_folder)
 
 # Create a file handler
-handler = logging.handlers.TimedRotatingFileHandler(
+handler = handlers.TimedRotatingFileHandler(
     f'{Configs.log_folder}/QbittorrentBot.log',
     when='midnight',
     backupCount=10

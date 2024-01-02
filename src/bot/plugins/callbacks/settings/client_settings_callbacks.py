@@ -89,7 +89,7 @@ async def list_client_settings_callback(client: Client, callback_query: Callback
     ]
 
     await callback_query.edit_message_text(
-        f"Edit Qbittorrent Client",
+        "Edit Qbittorrent Client",
         reply_markup=InlineKeyboardMarkup(
             fields +
             [

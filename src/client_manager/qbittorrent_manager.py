@@ -79,14 +79,14 @@ class QbittorrentManager(ClientManager):
 
     @classmethod
     def delete_all_no_data(cls) -> None:
-        logger.debug(f"Deleting all torrents")
+        logger.debug("Deleting all torrents")
         with qbittorrentapi.Client(**Configs.config.client.connection_string) as qbt_client:
             for i in qbt_client.torrents_info():
                 qbt_client.torrents_delete(delete_files=False, hashes=i.hash)
 
     @classmethod
     def delete_all_data(cls) -> None:
-        logger.debug(f"Deleting all torrent + files")
+        logger.debug("Deleting all torrent + files")
         with qbittorrentapi.Client(**Configs.config.client.connection_string) as qbt_client:
             for i in qbt_client.torrents_info():
                 qbt_client.torrents_delete(delete_files=True, hashes=i.hash)

@@ -5,24 +5,25 @@ from pydantic import IPvAnyAddress
 from pyrogram.errors.exceptions import UserIsBlocked
 
 from src import db_management
-from src.client_manager.qbittorrent_manager import QbittorrentManager
+from src.client_manager import ClientRepo
 from .configs import Configs
 from .configs.enums import ClientTypeEnum, UserRolesEnum
 from .configs.user import User
 
 
 async def torrent_finished(app):
-    with QbittorrentManager() as qb:
-        for i in qb.get_torrent_info(status_filter="completed"):
-            if db_management.read_completed_torrents(i.hash) is None:
+    repository = ClientRepo.get_client_manager(Configs.config.client.type)
 
-                for user in Configs.config.users:
-                    if user.notify:
-                        try:
-                            await app.send_message(user.user_id, f"torrent {i.name} has finished downloading!")
-                        except UserIsBlocked:
-                            pass
-                db_management.write_completed_torrents(i.hash)
+    for i in repository.get_torrent_info(status_filter="completed"):
+        if db_management.read_completed_torrents(i.hash) is None:
+
+            for user in Configs.config.users:
+                if user.notify:
+                    try:
+                        await app.send_message(user.user_id, f"torrent {i.name} has finished downloading!")
+                    except UserIsBlocked:
+                        pass
+            db_management.write_completed_torrents(i.hash)
 
 
 def get_user_from_config(user_id: int) -> User:
