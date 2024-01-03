@@ -9,59 +9,96 @@ from ...configs import Configs
 from ...client_manager import ClientRepo
 from ...utils import get_user_from_config
 from ...configs.enums import UserRolesEnum
+from ...translator import Translator, Strings
 
 
 async def send_menu(client: Client, message_id: int, chat_id: int) -> None:
     user = get_user_from_config(chat_id)
     buttons = [
-        [InlineKeyboardButton("📝 List", "list")]
+        [InlineKeyboardButton(Translator.translate(Strings.MenuList, user.locale), "list")]
     ]
 
     if user.role in [UserRolesEnum.Manager, UserRolesEnum.Administrator]:
         buttons += [
-            [InlineKeyboardButton("➕ Add Magnet", "category#add_magnet"),
-             InlineKeyboardButton("➕ Add Torrent", "category#add_torrent")],
-            [InlineKeyboardButton("⏯ Pause/Resume", "menu_pause_resume")]
+            [InlineKeyboardButton(Translator.translate(Strings.AddMagnet, user.locale), "category#add_magnet"),
+             InlineKeyboardButton(Translator.translate(Strings.AddTorrent, user.locale), "category#add_torrent")],
+            [InlineKeyboardButton(Translator.translate(Strings.PauseResume, user.locale), "menu_pause_resume")]
         ]
 
     if user.role == UserRolesEnum.Administrator:
         buttons += [
-            [InlineKeyboardButton("🗑 Delete", "menu_delete")],
-            [InlineKeyboardButton("📂 Categories", "menu_categories")],
-            [InlineKeyboardButton("⚙️ Settings", "settings")]
+            [InlineKeyboardButton(Translator.translate(Strings.Delete, user.locale), "menu_delete")],
+            [InlineKeyboardButton(Translator.translate(Strings.Categories, user.locale), "menu_categories")],
+            [InlineKeyboardButton(Translator.translate(Strings.Settings, user.locale), "settings")]
         ]
 
     db_management.write_support("None", chat_id)
 
     try:
-        await client.edit_message_text(chat_id, message_id, text="Qbittorrent Control",
+        await client.edit_message_text(chat_id, message_id, text=Translator.translate(Strings.Menu, user.locale),
                                        reply_markup=InlineKeyboardMarkup(buttons))
 
     except MessageIdInvalid:
-        await client.send_message(chat_id, text="Qbittorrent Control", reply_markup=InlineKeyboardMarkup(buttons))
+        await client.send_message(
+            chat_id,
+            text=Translator.translate(Strings.Menu, user.locale),
+            reply_markup=InlineKeyboardMarkup(buttons)
+        )
 
 
-async def list_active_torrents(client: Client, chat_id, message_id, callback: Optional[str] = None, status_filter: str = None) -> None:
+async def list_active_torrents(client: Client, chat_id: int, message_id: int, callback: Optional[str] = None, status_filter: str = None) -> None:
+    user = get_user_from_config(chat_id)
     repository = ClientRepo.get_client_manager(Configs.config.client.type)
     torrents = repository.get_torrent_info(status_filter=status_filter)
 
     def render_categories_buttons():
         return [
-            InlineKeyboardButton(f"⏳ {'*' if status_filter == 'downloading' else ''} Downloading",
-                                 "by_status_list#downloading"),
-            InlineKeyboardButton(f"✔️ {'*' if status_filter == 'completed' else ''} Completed",
-                                 "by_status_list#completed"),
-            InlineKeyboardButton(f"⏸️ {'*' if status_filter == 'paused' else ''} Paused", "by_status_list#paused"),
+            InlineKeyboardButton(
+                Translator.translate(
+                    Strings.ListFilterDownloading, user.locale, active='*' if status_filter == 'downloading' else ''
+                ),
+                "by_status_list#downloading"
+            ),
+
+            InlineKeyboardButton(
+                Translator.translate(
+                    Strings.ListFilterCompleted, user.locale, active='*' if status_filter == 'completed' else ''
+                ),
+                "by_status_list#completed"
+            ),
+
+            InlineKeyboardButton(
+                Translator.translate(
+                    Strings.ListFilterPaused, user.locale, active='*' if status_filter == 'paused' else ''
+                ),
+                "by_status_list#paused"
+            ),
         ]
 
     categories_buttons = render_categories_buttons()
     if not torrents:
-        buttons = [categories_buttons, [InlineKeyboardButton("🔙 Menu", "menu")]]
+        buttons = [
+            categories_buttons,
+            [
+                InlineKeyboardButton(Translator.translate(Strings.BackToMenu, user.locale), "menu")
+            ]
+        ]
+
         try:
-            await client.edit_message_text(chat_id, message_id, "There are no torrents",
-                                           reply_markup=InlineKeyboardMarkup(buttons))
+            await client.edit_message_text(
+                chat_id,
+                message_id,
+                Translator.translate(Strings.NoTorrents, user.locale),
+                reply_markup=InlineKeyboardMarkup(buttons)
+            )
+
         except MessageIdInvalid:
-            await client.send_message(chat_id, "There are no torrents", reply_markup=InlineKeyboardMarkup(buttons))
+            await client.send_message(
+                chat_id,
+                Translator.translate(Strings.NoTorrents, user.locale),
+                reply_markup=InlineKeyboardMarkup(buttons)
+            )
+
         return
 
     buttons = [categories_buttons]
@@ -70,20 +107,21 @@ async def list_active_torrents(client: Client, chat_id, message_id, callback: Op
         for key, i in enumerate(torrents):
             buttons.append([InlineKeyboardButton(i.name, f"{callback}#{i.info.hash}")])
 
-        buttons.append([InlineKeyboardButton("🔙 Menu", "menu")])
-
-        try:
-            await client.edit_message_reply_markup(chat_id, message_id, reply_markup=InlineKeyboardMarkup(buttons))
-        except MessageIdInvalid:
-            await client.send_message(chat_id, "Qbittorrent Control", reply_markup=InlineKeyboardMarkup(buttons))
-
     else:
-        for key, i in enumerate(torrents):
+        for _, i in enumerate(torrents):
             buttons.append([InlineKeyboardButton(i.name, f"torrentInfo#{i.info.hash}")])
 
-        buttons.append([InlineKeyboardButton("🔙 Menu", "menu")])
+    buttons.append(
+        [
+            InlineKeyboardButton(Translator.translate(Strings.BackToMenu, user.locale), "menu")
+        ]
+    )
 
-        try:
-            await client.edit_message_reply_markup(chat_id, message_id, reply_markup=InlineKeyboardMarkup(buttons))
-        except MessageIdInvalid:
-            await client.send_message(chat_id, "Qbittorrent Control", reply_markup=InlineKeyboardMarkup(buttons))
+    try:
+        await client.edit_message_reply_markup(chat_id, message_id, reply_markup=InlineKeyboardMarkup(buttons))
+    except MessageIdInvalid:
+        await client.send_message(
+            chat_id,
+            Translator.translate(Strings.Menu, user.locale),
+            reply_markup=InlineKeyboardMarkup(buttons)
+        )

@@ -1,5 +1,6 @@
 from math import log, floor
 import datetime
+from typing import Dict
 
 from pydantic import IPvAnyAddress
 from pyrogram.errors.exceptions import UserIsBlocked
@@ -58,3 +59,12 @@ def convert_type_from_string(input_type: str):
         return UserRolesEnum
     elif "str" in input_type:
         return str
+
+
+def get_value(locales_dict: Dict, key_string: str) -> str:
+    """Function to get value from dictionary using key strings like 'on_message.error_adding_magnet'"""
+    if '.' not in key_string:
+        return locales_dict[key_string]
+    else:
+        head, tail = key_string.split('.', 1)
+        return get_value(locales_dict[head], tail)

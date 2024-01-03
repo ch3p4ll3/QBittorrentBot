@@ -9,6 +9,7 @@ from .common import send_menu
 from ...configs import Configs
 from ...utils import get_user_from_config, convert_type_from_string
 from .. import custom_filters
+from ...translator import Translator, Strings
 
 
 logger = logging.getLogger(__name__)
@@ -17,6 +18,7 @@ logger = logging.getLogger(__name__)
 @Client.on_message(~filters.me & custom_filters.check_user_filter)
 async def on_text(client: Client, message: Message) -> None:
     action = db_management.read_support(message.from_user.id)
+    user = get_user_from_config(message.from_user.id)
 
     if "magnet" in action:
         if message.text.startswith("magnet:?xt"):
@@ -30,14 +32,17 @@ async def on_text(client: Client, message: Message) -> None:
             )
 
             if not response:
-                await message.reply_text("Unable to add magnet link")
+                await message.reply_text(Translator.translate(Strings.UnableToAddMagnet, locale=user.locale))
                 return
 
             await send_menu(client, message.id, message.from_user.id)
             db_management.write_support("None", message.from_user.id)
 
         else:
-            await client.send_message(message.from_user.id, "This magnet link is invalid! Retry")
+            await client.send_message(
+                message.from_user.id,
+                Translator.translate(Strings.InvalidMagnet, locale=user.locale)
+            )
 
     elif "torrent" in action and message.document:
         if ".torrent" in message.document.file_name:
@@ -50,18 +55,24 @@ async def on_text(client: Client, message: Message) -> None:
                 response = repository.add_torrent(file_name=name, category=category)
 
                 if not response:
-                    await message.reply_text("Unable to add magnet link")
+                    await message.reply_text(Translator.translate(Strings.UnableToAddTorrent, locale=user.locale))
                     return
 
             await send_menu(client, message.id, message.from_user.id)
             db_management.write_support("None", message.from_user.id)
 
         else:
-            await client.send_message(message.from_user.id, "This is not a torrent file! Retry")
+            await client.send_message(
+                message.from_user.id,
+                Translator.translate(Strings.InvalidTorrent, locale=user.locale)
+            )
 
     elif action == "category_name":
         db_management.write_support(f"category_dir#{message.text}", message.from_user.id)
-        await client.send_message(message.from_user.id, f"now send me the path for the category {message.text}")
+        await client.send_message(
+            message.from_user.id,
+            Translator.translate(Strings.CategoryPath, category_name=message.text)
+        )
 
     elif "category_dir" in action:
         if os.path.exists(message.text):
@@ -80,7 +91,9 @@ async def on_text(client: Client, message: Message) -> None:
             await send_menu(client, message.id, message.from_user.id)
 
         else:
-            await client.send_message(message.from_user.id, "The path entered does not exist! Retry")
+            await client.send_message(
+                message.from_user.id, Translator.translate(Strings.PathNotValid,locale=user.locale)
+            )
 
     elif "edit_user" in action:
         data = action.split("#")[1]
@@ -91,8 +104,7 @@ async def on_text(client: Client, message: Message) -> None:
         try:
             new_value = data_type(message.text)
 
-            user_info = get_user_from_config(user_id)
-            user_from_configs = Configs.config.users.index(user_info)
+            user_from_configs = Configs.config.users.index(user)
 
             if user_from_configs == -1:
                 return
@@ -105,9 +117,7 @@ async def on_text(client: Client, message: Message) -> None:
 
             await send_menu(client, message.id, message.from_user.id)
         except Exception as e:
-            await message.reply_text(
-                f"Error: {e}"
-            )
+            await message.reply_text(Translator.translate(Strings.GenericError, locale=user.locale, error=e))
             logger.exception(f"Error converting value \"{message.text}\" to type \"{data_type}\"", exc_info=True)
 
     elif "edit_clt" in action:
@@ -126,9 +136,10 @@ async def on_text(client: Client, message: Message) -> None:
 
             await send_menu(client, message.id, message.from_user.id)
         except Exception as e:
-            await message.reply_text(
-                f"Error: {e}"
-            )
+            await message.reply_text(Translator.translate(Strings.GenericError, locale=user.locale, error=e))
             logger.exception(f"Error converting value \"{message.text}\" to type \"{data_type}\"", exc_info=True)
     else:
-        await client.send_message(message.from_user.id, "The command does not exist")
+        await client.send_message(
+            message.from_user.id,
+            Translator.translate(Strings.CommandDoesNotExist, locale=user.locale)
+        )

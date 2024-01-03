@@ -1,0 +1,38 @@
+{
+  "errors": {
+    "path_not_valid": "The path entered does not exist! Retry",
+    "error": "Error: ${error}",
+    "command_does_not_exist": "The command does not exist"
+  },
+
+  "on_message": {
+    "error_adding_magnet": "Unable to add magnet link",
+    "invalid_magnet": "This magnet link is invalid! Retry",
+    "error_adding_torrent": "Unable to add torrent file",
+    "invalid_torrent": "This is not a torrent file! Retry",
+    "send_category_path": "Please, send the path for the category ${category_name}"
+  },
+
+
+  "common": {
+    "menu": "Welcome to QBittorrent Bot",
+    "menu_btn": {
+      "menu_list": "\uD83D\uDCDD List",
+      "add_magnet": "➕ Add Magnet",
+      "add_torrent": "➕ Add Torrent",
+      "pause_resume": "⏯ Pause/Resume",
+      "delete": "\uD83D\uDDD1 Delete",
+      "categories": "\uD83D\uDCC2 Categories",
+      "settings": "⚙\uFE0F Settings"
+    },
+
+    "list_filter": {
+      "downloading": "⏳ ${active} Downloading",
+      "completed": "✔\uFE0F ${active} Completed",
+      "paused": "⏸\uFE0F ${active} Paused"
+    },
+
+    "no_torrents": "There are no torrents",
+    "back_to_menu_btn": "\uD83D\uDD19 Menu"
+  }
+}
