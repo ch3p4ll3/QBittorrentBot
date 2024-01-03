@@ -5,7 +5,6 @@ import psutil
 from .. import custom_filters
 from ...db_management import write_support
 from ...utils import convert_size
-from ...configs import Configs
 from .common import send_menu
 
 

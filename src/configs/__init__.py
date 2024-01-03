@@ -1,6 +1,6 @@
 from .config import MainConfig
 from os import getenv
-from json import load, dumps
+from json import load
 from typing import Union
 
 

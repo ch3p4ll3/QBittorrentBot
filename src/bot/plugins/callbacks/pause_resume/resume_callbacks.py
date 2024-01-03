@@ -3,7 +3,7 @@ from pyrogram.types import CallbackQuery
 
 from .... import custom_filters
 from .....client_manager import ClientRepo
-from ...common import list_active_torrents, send_menu
+from ...common import list_active_torrents
 from .....configs import Configs
 
 
