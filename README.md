@@ -27,8 +27,7 @@ The config file is stored in the mounted /app/config/ volume
 {
     "client": {
         "type": "qbittorrent",
-        "host": "192.168.178.102",
-        "port": 8080,
+        "host": "http://192.168.178.102",
         "user": "admin",
         "password": "admin"
     },

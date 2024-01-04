@@ -8,8 +8,7 @@ Below you can find an example of the configuration file:
 {
     "client": {
         "type": "qbittorrent",
-        "host": "192.168.178.102",
-        "port": 8080,
+        "host": "http://192.168.178.102",
         "user": "admin",
         "password": "admin"
     },
@@ -42,10 +41,9 @@ Here's a brief overview of the configuration file and its key sections:
 This section defines the configuration for the qBittorrent client that the bot will be interacting with.
 
 Name     | Type                              | Value
----      | ---                               | ---
+---      |-----------------------------------| ---
 type     | [ClientTypeEnum](#clienttypeenum) | The type of client.
-host     | [IPvAnyAddress](#ipvanyaddress)   | The IP address of the qBittorrent server.
-port     | int                               | The port number of the qBittorrent server.
+host     | [HttpUrl](#httpurl)               | The IP address of the qBittorrent server.
 user     | str                               | The username for the qBittorrent server.
 password | str                               | The password for the qBittorrent server.
 
@@ -88,5 +86,8 @@ Administrator| str    | administrator             | Can perform all operations (
 
 ## Other types
 
-### IPvAnyAddress
-This type allows either an IPv4Address or an IPv6Address
+### HttpUrl
+A type that will accept any http or https URL.
+- TLD required
+- Host required
+- Max length 2083
