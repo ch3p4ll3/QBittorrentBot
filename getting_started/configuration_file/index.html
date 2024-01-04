@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="3.5.0.757539410324">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="3.5.0.757714355748">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 3.5.0">
@@ -30,12 +30,12 @@
 
     <script data-cfasync="false">(function () { var el = document.documentElement, m = localStorage.getItem("doc_theme"), wm = window.matchMedia; if (m === "dark" || (!m && wm && wm("(prefers-color-scheme: dark)").matches)) { el.classList.add("dark") } else { el.classList.remove("dark") } })();</script>
 
-    <link href="../../resources/css/retype.css?v=3.5.0.757539410324" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=3.5.0.757714355748" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=3.5.0.757539410324" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=3.5.0.757714355748" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=3.5.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=3.5.0.757539410324" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=3.5.0.757539410324" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=3.5.0.757714355748" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=3.5.0.757714355748" defer></script>
 </head>
 <body>
     <div id="docs-app" class="relative text-base antialiased text-gray-700 bg-white font-body dark:bg-dark-850 dark:text-dark-300">
@@ -176,8 +176,7 @@
 <pre class="language-json5"><code v-pre class="language-json5">{
     &quot;client&quot;: {
         &quot;type&quot;: &quot;qbittorrent&quot;,
-        &quot;host&quot;: &quot;192.168.178.102&quot;,
-        &quot;port&quot;: 8080,
+        &quot;host&quot;: &quot;http://192.168.178.102&quot;,
         &quot;user&quot;: &quot;admin&quot;,
         &quot;password&quot;: &quot;admin&quot;
     },
@@ -229,13 +228,8 @@
 </tr>
 <tr>
 <td>host</td>
-<td><doc-anchor-trigger to="#ipvanyaddress">IPvAnyAddress</doc-anchor-trigger></td>
+<td><doc-anchor-trigger to="#httpurl">HttpUrl</doc-anchor-trigger></td>
 <td>The IP address of the qBittorrent server.</td>
-</tr>
-<tr>
-<td>port</td>
-<td>int</td>
-<td>The port number of the qBittorrent server.</td>
 </tr>
 <tr>
 <td>user</td>
@@ -394,13 +388,18 @@
         <span>Other types</span>
     </h2>
 </doc-anchor-target>
-<doc-anchor-target id="ipvanyaddress">
+<doc-anchor-target id="httpurl">
     <h3>
-        <doc-anchor-trigger class="header-anchor-trigger" to="#ipvanyaddress">#</doc-anchor-trigger>
-        <span>IPvAnyAddress</span>
+        <doc-anchor-trigger class="header-anchor-trigger" to="#httpurl">#</doc-anchor-trigger>
+        <span>HttpUrl</span>
     </h3>
 </doc-anchor-target>
-<p>This type allows either an IPv4Address or an IPv6Address</p>
+<p>A type that will accept any http or https URL.</p>
+<ul>
+<li>TLD required</li>
+<li>Host required</li>
+<li>Max length 2083</li>
+</ul>
 
                                 
                                 <!-- Required only on API pages -->
