@@ -19,6 +19,10 @@ You can find more information [here](configuration_file/#enums)
 
 There are 2 changes to the field names, the first is the name of the `qbittorrent` section which has been renamed to `client`. While the second is the `ip` field inside che `client` section which has been renamed to `host`
 
+## Removed fileds
+
+The `port` field has been removed from the `qbittorrent` section. This is due to the fact that I opted to use the `host` field to simultaneously enter the protocol(`http`/`https`), the ip address or the domain of qbittorrent and the port
+
 ## V1 vs V2
 configurations in comparison
 
@@ -53,8 +57,7 @@ configurations in comparison
 {
     "client": {
         "type": "qbittorrent",
-        "host": "192.168.178.102",
-        "port": 8080,
+        "host": "http://192.168.178.102:8080",
         "user": "admin",
         "password": "admin"
     },
