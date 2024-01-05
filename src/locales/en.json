@@ -34,5 +34,32 @@
 
     "no_torrents": "There are no torrents",
     "back_to_menu_btn": "\uD83D\uDD19 Menu"
+  },
+
+  "commands": {
+    "not_authorized": "You are not authorized to use this bot",
+    "stats_command": "**============SYSTEM============**\n**CPU Usage:** ${cpu_usage}%\n**CPU Temp:** ${cpu_temp}°C\n**Free Memory:** ${free_memory} of ${total_memory} (${memory_percent}%)\n**Disks usage:** ${disk_used} of ${disk_total} (${disk_percent}%)"
+  },
+
+  "callbacks": {
+    "torrent_info": {
+      "torrent_completed": "**COMPLETED**\n",
+      "torrent_state": "**State:** ${current_state} \n**Download Speed:** ${download_speed}/s\n",
+      "torrent_size": "**Size:** ${torrent_size}\n",
+      "torrent_eta": "**ETA:** ${torrent_eta}\n",
+      "torrent_category": "**Category:** ${torrent_category}\n",
+
+      "info_btns": {
+        "export_torrent": "💾 Export torrent",
+        "pause_torrent": "⏸ Pause",
+        "resume_torrent": "▶️ Resume",
+        "delete_torrent": "🗑 Delete"
+      }
+    },
+
+    "add_torrents": {
+      "send_magnet": "Send a magnet link",
+      "send_torrent": "Send a torrent file"
+    }
   }
 }

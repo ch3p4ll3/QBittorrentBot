@@ -7,7 +7,8 @@ from ...client_manager import ClientRepo
 from ... import db_management
 from .common import send_menu
 from ...configs import Configs
-from ...utils import get_user_from_config, convert_type_from_string
+from ...configs.user import User
+from ...utils import convert_type_from_string, inject_user
 from .. import custom_filters
 from ...translator import Translator, Strings
 
@@ -16,9 +17,9 @@ logger = logging.getLogger(__name__)
 
 
 @Client.on_message(~filters.me & custom_filters.check_user_filter)
-async def on_text(client: Client, message: Message) -> None:
+@inject_user
+async def on_text(client: Client, message: Message, user: User) -> None:
     action = db_management.read_support(message.from_user.id)
-    user = get_user_from_config(message.from_user.id)
 
     if "magnet" in action:
         if message.text.startswith("magnet:?xt"):
@@ -75,25 +76,19 @@ async def on_text(client: Client, message: Message) -> None:
         )
 
     elif "category_dir" in action:
-        if os.path.exists(message.text):
-            name = db_management.read_support(message.from_user.id).split("#")[1]
+        name = db_management.read_support(message.from_user.id).split("#")[1]
 
-            repository = ClientRepo.get_client_manager(Configs.config.client.type)
+        repository = ClientRepo.get_client_manager(Configs.config.client.type)
 
-            if "modify" in action:
-                repository.edit_category(name=name, save_path=message.text)
-
-                await send_menu(client, message.id, message.from_user.id)
-                return
-
-            repository.create_category(name=name, save_path=message.text)
+        if "modify" in action:
+            repository.edit_category(name=name, save_path=message.text)
 
             await send_menu(client, message.id, message.from_user.id)
+            return
 
-        else:
-            await client.send_message(
-                message.from_user.id, Translator.translate(Strings.PathNotValid,locale=user.locale)
-            )
+        repository.create_category(name=name, save_path=message.text)
+
+        await send_menu(client, message.id, message.from_user.id)
 
     elif "edit_user" in action:
         data = action.split("#")[1]

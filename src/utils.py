@@ -2,7 +2,7 @@ from math import log, floor
 import datetime
 from typing import Dict
 
-from pydantic import IPvAnyAddress
+from pydantic import HttpUrl
 from pyrogram.errors.exceptions import UserIsBlocked
 
 from src import db_management
@@ -52,8 +52,8 @@ def convert_eta(n) -> str:
 def convert_type_from_string(input_type: str):
     if "int" in input_type:
         return int
-    elif "IPvAnyAddress" in input_type:
-        return IPvAnyAddress
+    elif "HttpUrl" in input_type:
+        return HttpUrl
     elif "ClientTypeEnum" in input_type:
         return ClientTypeEnum
     elif "UserRolesEnum" in input_type:
@@ -69,3 +69,11 @@ def get_value(locales_dict: Dict, key_string: str) -> str:
     else:
         head, tail = key_string.split('.', 1)
         return get_value(locales_dict[head], tail)
+
+
+def inject_user(func):
+    def wrapper(client, message):
+        user = get_user_from_config(message.from_user.id)
+        func(client, message, user)
+    
+    return wrapper
