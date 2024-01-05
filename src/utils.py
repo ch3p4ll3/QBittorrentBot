@@ -72,8 +72,8 @@ def get_value(locales_dict: Dict, key_string: str) -> str:
 
 
 def inject_user(func):
-    def wrapper(client, message):
+    async def wrapper(client, message):
         user = get_user_from_config(message.from_user.id)
-        func(client, message, user)
+        await func(client, message, user)
     
     return wrapper
