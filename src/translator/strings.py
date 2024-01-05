@@ -42,13 +42,13 @@ class Strings(StrEnum):
     TorrentSize = "callbacks.torrent_info.torrent_size"
     TorrentEta = "callbacks.torrent_info.torrent_eta"
     TorrentCategory = "callbacks.torrent_info.torrent_category"
-    
+
     ExportTorrentBtn = "callbacks.torrent_infoinfo_btns.export_torrent"
     PauseTorrentBtn = "callbacks.torrent_infoinfo_btns.pause_torrent"
     ResumeTorrentBtn = "callbacks.torrent_infoinfo_btns.resume_torrent"
     DeleteTorrentBtn = "callbacks.torrent_infoinfo_btns.delete_torrent"
 
-    # add_torrents
+    # Add Torrents
     SendMagnetLink = "callbacks.add_torrents.send_magnet"
     SendTorrentFile = "callbacks.add_torrents.send_torrent"
 
@@ -76,3 +76,16 @@ class Strings(StrEnum):
     EditClientType = "callbacks.client_settings.edit_client_type"
 
     NewValueForClientField = "callbacks.client_settings.new_value_for_field"
+
+    # Reload Settings
+    SettingsReloaded = "callbacks.reload_settings.settings_reloaded"
+
+    # User Settings
+
+    UserBtn = "callbacks.user_settings.user_btn"
+    AuthorizedUsers = "callbacks.user_settings.authorized_users"
+    EditUserSetting = "callbacks.user_settings.edit_user_setting"
+    BackToUsers = "callbacks.user_settings.back_to_users"
+    EditUserField = "callbacks.user_settings.edit_user_field"
+    BackToUSer = "callbacks.user_settings.back_to_user"
+    NewValueForUserField = "callbacks.user_settings.new_value_for_field"

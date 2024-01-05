@@ -72,8 +72,8 @@
     },
 
     "client_settings": {
-      "enabled": "Enabled",
-      "disabled": "Disabled",
+      "enabled": "✅ Enabled",
+      "disabled": "❌ Disabled",
       "speed_limit_status": "\n\n**Speed Limit**: ${speed_limit_status}",
       "edit_client_settings": "Edit ${client_type} client settings \n\n**Current Settings:**\n- ${configs}",
 
@@ -91,6 +91,20 @@
       "edit_client_type": "Edit ${client_type} Client",
       
       "new_value_for_field": "Send the new value for field \"${field_to_edit}\" for client. \n\n**Note:** the field type is \"${data_type}\""
+    },
+
+    "reload_settings": {
+      "settings_reloaded": "Settings Reloaded"
+    },
+
+    "user_settings": {
+      "user_btn": "User #${user_id}",
+      "authorized_users": "Authorized users",
+      "edit_user_setting": "Edit User #${user_id}\n\n**Current Settings:**\n- ${confs}",
+      "back_to_users": "\uD83D\uDD19 Users",
+      "edit_user_field": "Edit User #${user_id} ${field_to_edit} field",
+      "back_to_user": "\uD83D\uDD19 User#${user_id} info",
+      "new_value_for_field": "Send the new value for field \"${field_to_edit}\" for user #${user_id}. \n\n**Note:** the field type is \"${data_type}\""
     }
   }
 }

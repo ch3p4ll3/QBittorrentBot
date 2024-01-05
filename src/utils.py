@@ -60,6 +60,8 @@ def convert_type_from_string(input_type: str):
         return UserRolesEnum
     elif "str" in input_type:
         return str
+    elif "bool" in input_type:
+        return bool
 
 
 def get_value(locales_dict: Dict, key_string: str) -> str:
