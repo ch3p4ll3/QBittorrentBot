@@ -15,7 +15,7 @@ from ....utils import convert_size, convert_eta, inject_user
 @inject_user
 async def torrent_info_callback(client: Client, callback_query: CallbackQuery, user: User) -> None:
     repository = ClientRepo.get_client_manager(Configs.config.client.type)
-    torrent = repository.get_torrent_info(callback_query.data.split("#")[1])
+    torrent = repository.get_torrent(callback_query.data.split("#")[1])
 
     text = f"{torrent.name}\n"
 

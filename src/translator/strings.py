@@ -43,10 +43,10 @@ class Strings(StrEnum):
     TorrentEta = "callbacks.torrent_info.torrent_eta"
     TorrentCategory = "callbacks.torrent_info.torrent_category"
 
-    ExportTorrentBtn = "callbacks.torrent_infoinfo_btns.export_torrent"
-    PauseTorrentBtn = "callbacks.torrent_infoinfo_btns.pause_torrent"
-    ResumeTorrentBtn = "callbacks.torrent_infoinfo_btns.resume_torrent"
-    DeleteTorrentBtn = "callbacks.torrent_infoinfo_btns.delete_torrent"
+    ExportTorrentBtn = "callbacks.torrent_info.info_btns.export_torrent"
+    PauseTorrentBtn = "callbacks.torrent_info.info_btns.pause_torrent"
+    ResumeTorrentBtn = "callbacks.torrent_info.info_btns.resume_torrent"
+    DeleteTorrentBtn = "callbacks.torrent_info.info_btns.delete_torrent"
 
     # Add Torrents
     SendMagnetLink = "callbacks.add_torrents.send_magnet"

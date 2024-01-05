@@ -60,7 +60,12 @@ class ClientManager(ABC):
         raise NotImplementedError
 
     @classmethod
-    def get_torrent_info(cls, torrent_hash: str = None, status_filter: str = None):
+    def get_torrent(cls, torrent_hash: str, status_filter: str = None):
+        """Get a torrent info with or without a status filter"""
+        raise NotImplementedError
+
+    @classmethod
+    def get_torrents(cls, torrent_hash: str = None, status_filter: str = None):
         """Get a torrent info with or without a status filter"""
         raise NotImplementedError
 

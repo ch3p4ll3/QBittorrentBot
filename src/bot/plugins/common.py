@@ -49,7 +49,7 @@ async def send_menu(client: Client, message_id: int, chat_id: int) -> None:
 async def list_active_torrents(client: Client, chat_id: int, message_id: int, callback: Optional[str] = None, status_filter: str = None) -> None:
     user = get_user_from_config(chat_id)
     repository = ClientRepo.get_client_manager(Configs.config.client.type)
-    torrents = repository.get_torrent_info(status_filter=status_filter)
+    torrents = repository.get_torrents(status_filter=status_filter)
 
     def render_categories_buttons():
         return [
@@ -105,11 +105,11 @@ async def list_active_torrents(client: Client, chat_id: int, message_id: int, ca
 
     if callback is not None:
         for _, i in enumerate(torrents):
-            buttons.append([InlineKeyboardButton(i.name, f"{callback}#{i.info.hash}")])
+            buttons.append([InlineKeyboardButton(i.name, f"{callback}#{i.hash}")])
 
     else:
         for _, i in enumerate(torrents):
-            buttons.append([InlineKeyboardButton(i.name, f"torrentInfo#{i.info.hash}")])
+            buttons.append([InlineKeyboardButton(i.name, f"torrentInfo#{i.hash}")])
 
     buttons.append(
         [

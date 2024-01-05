@@ -6,6 +6,9 @@ from src.configs import Configs
 from typing import Union, List
 from .client_manager import ClientManager
 
+from .mappers.mapper_repo import MapperRepo
+from .entities.torrent import Torrent
+
 logger = logging.getLogger(__name__)
 
 
@@ -102,18 +105,25 @@ class QbittorrentManager(ClientManager):
                 return
 
     @classmethod
-    def get_torrent_info(cls, torrent_hash: str = None, status_filter: str = None):
-        if torrent_hash is None:
-            logger.debug("Getting torrents infos")
-            with qbittorrentapi.Client(**Configs.config.client.connection_string) as qbt_client:
-                return qbt_client.torrents_info(status_filter=status_filter)
-        logger.debug(f"Getting infos for torrent with hash {torrent_hash}")
+    def get_torrent(cls, torrent_hash: str, status_filter: str = None) -> Union[Torrent, None]:
+        logger.debug(f"Getting torrent with hash {torrent_hash}")
         with qbittorrentapi.Client(**Configs.config.client.connection_string) as qbt_client:
-            return next(
+            mapper = MapperRepo.get_mapper(Configs.config.client.type)
+
+            torrent = next(
                 iter(
                     qbt_client.torrents_info(status_filter=status_filter, torrent_hashes=torrent_hash)
                 ), None
             )
+            return mapper.map(torrent)
+
+    @classmethod
+    def get_torrents(cls, torrent_hash: str = None, status_filter: str = None) -> List[Torrent]:
+        if torrent_hash is None:
+            logger.debug("Getting torrents infos")
+            with qbittorrentapi.Client(**Configs.config.client.connection_string) as qbt_client:
+                mapper = MapperRepo.get_mapper(Configs.config.client.type)
+                return mapper.map(qbt_client.torrents_info(status_filter=status_filter))
 
     @classmethod
     def edit_category(cls, name: str, save_path: str) -> None:

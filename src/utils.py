@@ -15,7 +15,7 @@ from .configs.user import User
 async def torrent_finished(app):
     repository = ClientRepo.get_client_manager(Configs.config.client.type)
 
-    for i in repository.get_torrent_info(status_filter="completed"):
+    for i in repository.get_torrents(status_filter="completed"):
         if db_management.read_completed_torrents(i.hash) is None:
 
             for user in Configs.config.users:
