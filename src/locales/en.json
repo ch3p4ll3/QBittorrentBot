@@ -60,6 +60,37 @@
     "add_torrents": {
       "send_magnet": "Send a magnet link",
       "send_torrent": "Send a torrent file"
+    },
+
+    "settings": {
+      "settings_menu": "QBittorrentBot Settings",
+      "settings_menu_btns": {
+        "users_settings": "🫂 Users Settings",
+        "client_settings": "📥 Client Settings",
+        "reload_settings": "🔄 Reload Settings"
+      }
+    },
+
+    "client_settings": {
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "speed_limit_status": "\n\n**Speed Limit**: ${speed_limit_status}",
+      "edit_client_settings": "Edit ${client_type} client settings \n\n**Current Settings:**\n- ${configs}",
+
+      "edit_client_settings_btns": {
+        "edit_client_settings": "📝 Edit Client Settings",
+        "toggle_speed_limit": "🐢 Toggle Speed Limit",
+        "check_client_connection": "✅ Check Client connection",
+        "back_to_settings": "🔙 Settings"
+      },
+
+      "client_connection_ok": "✅ The connection works. QBittorrent version: ${version}",
+      "client_connection_bad": "❌ Unable to establish connection with QBittorrent",
+
+      "edit_client_setting": "Edit ${setting}",
+      "edit_client_type": "Edit ${client_type} Client",
+      
+      "new_value_for_field": "Send the new value for field \"${field_to_edit}\" for client. \n\n**Note:** the field type is \"${data_type}\""
     }
   }
 }
