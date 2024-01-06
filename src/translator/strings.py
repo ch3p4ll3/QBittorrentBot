@@ -5,6 +5,7 @@ class Strings(StrEnum):
     GenericError = "errors.error"
     PathNotValid = "errors.path_not_valid"
     CommandDoesNotExist = "errors.command_does_not_exist"
+    LocaleNotFound = "errors.locale_not_found"
 
     # On Message
     UnableToAddMagnet = "on_message.error_adding_magnet"
@@ -89,3 +90,16 @@ class Strings(StrEnum):
     EditUserField = "callbacks.user_settings.edit_user_field"
     BackToUSer = "callbacks.user_settings.back_to_user"
     NewValueForUserField = "callbacks.user_settings.new_value_for_field"
+
+    # Pause Resume
+    PauseResumeMenu = "callbacks.pause_resume.pause_resume_menu"
+    PauseAll = "callbacks.pause_resume.pause_all"
+    ResumeAll = "callbacks.pause_resume.resume_all"
+
+    # Pause
+    PauseAllTorrents = "callbacks.pause.pause_all_torrents"
+    PauseTorrent = "callbacks.pause.pause_one_torrent"
+
+    # Resume
+    ResumeAllTorrents = "callbacks.resume.resume_all_torrents"
+    ResumeTorrent = "callbacks.resume.resume_one_torrent"

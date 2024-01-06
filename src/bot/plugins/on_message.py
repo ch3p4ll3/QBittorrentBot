@@ -103,6 +103,16 @@ async def on_edit_user(client, message, user, action):
         if user_from_configs == -1:
             return
 
+        if field_to_edit == "locale" and new_value not in Translator.locales.keys():
+            await message.reply_text(
+                Translator.translate(
+                    Strings.LocaleNotFound,
+                    locale=user.locale,
+                    new_locale=new_value
+                )
+            )
+            return
+
         setattr(Configs.config.users[user_from_configs], field_to_edit, new_value)
         Configs.update_config(Configs.config)
         Configs.reload_config()

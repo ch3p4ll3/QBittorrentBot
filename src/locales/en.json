@@ -2,7 +2,8 @@
   "errors": {
     "path_not_valid": "The path entered does not exist! Retry",
     "error": "Error: ${error}",
-    "command_does_not_exist": "The command does not exist"
+    "command_does_not_exist": "The command does not exist",
+    "locale_not_found": "Locale ${new_locale} not found!"
   },
 
   "on_message": {
@@ -105,6 +106,22 @@
       "edit_user_field": "Edit User #${user_id} ${field_to_edit} field",
       "back_to_user": "\uD83D\uDD19 User#${user_id} info",
       "new_value_for_field": "Send the new value for field \"${field_to_edit}\" for user #${user_id}. \n\n**Note:** the field type is \"${data_type}\""
+    },
+
+    "pause_resume": {
+      "pause_resume_menu": "Pause/Resume a torrent",
+      "pause_all": "⏸ Pause All",
+      "resume_all": "▶\uFE0F Resume All"
+    },
+
+    "pause": {
+      "pause_all_torrents": "Paused all torrents",
+      "pause_one_torrent": "Torrent Paused"
+    },
+
+    "resume": {
+      "resume_all_torrents": "Resumed all torrents",
+      "resume_one_torrent": "Torrent Resumed"
     }
   }
 }
