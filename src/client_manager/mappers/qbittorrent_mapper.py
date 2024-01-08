@@ -8,7 +8,7 @@ from qbittorrentapi.torrents import TorrentInfoList, TorrentDictionary
 class QBittorrentMapper(Mapper):
     @classmethod
     def map(cls, torrents: Union[TorrentDictionary, TorrentInfoList]) -> Union[Torrent, List[Torrent]]:
-        if type(torrents) is TorrentInfoList:
+        if isinstance(torrents, TorrentInfoList):
             return [
                 Torrent(
                     torrent.info.hash,

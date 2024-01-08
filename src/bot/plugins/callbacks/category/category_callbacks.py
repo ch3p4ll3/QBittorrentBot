@@ -114,14 +114,14 @@ async def category(client: Client, callback_query: CallbackQuery, user: User) ->
 
     if categories is None:
         if "magnet" in callback_query.data:
-            await add_magnet_callback(client, callback_query)
+            await add_magnet_callback(client, callback_query, user)
 
         else:
-            await add_torrent_callback(client, callback_query)
+            await add_torrent_callback(client, callback_query, user)
 
         return
 
-    for key, i in enumerate(categories):
+    for _, i in enumerate(categories):
         buttons.append([InlineKeyboardButton(i, f"{callback_query.data.split('#')[1]}#{i}")])
 
     buttons.append([InlineKeyboardButton("None", f"{callback_query.data.split('#')[1]}#None")])
