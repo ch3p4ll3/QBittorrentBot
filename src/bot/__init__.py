@@ -12,13 +12,21 @@ plugins = dict(
     root="src.bot.plugins"
 )
 
+
+proxy = None
+
+if BOT_CONFIGS.telegram.proxy is not None:
+    proxy = BOT_CONFIGS.telegram.proxy.proxy_settings
+
+
 app = Client(
     "qbittorrent_bot",
     api_id=BOT_CONFIGS.telegram.api_id,
     api_hash=BOT_CONFIGS.telegram.api_hash,
     bot_token=BOT_CONFIGS.telegram.bot_token,
     parse_mode=ParseMode.MARKDOWN,
-    plugins=plugins
+    plugins=plugins,
+    proxy=proxy
 )
 
 scheduler = AsyncIOScheduler()

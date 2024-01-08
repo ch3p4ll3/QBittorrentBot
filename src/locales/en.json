@@ -122,6 +122,23 @@
     "resume": {
       "resume_all_torrents": "Resumed all torrents",
       "resume_one_torrent": "Torrent Resumed"
+    },
+
+    "delete_delete_all": {
+      "delete_all": "🗑 Delete All"
+    },
+
+    "delete_all": {
+      "delete_all": "🗑 Delete all torrents",
+      "delete_all_data": "🗑 Delete all torrents and data",
+
+      "deleted_all": "Deleted all torrents",
+      "deleted_all_data": "Deleted all torrents and data"
+    },
+
+    "delete_single": {
+      "delete_single": "🗑 Delete torrent",
+      "delete_single_data": "🗑 Delete torrent and data"
     }
   }
 }

@@ -1,4 +1,9 @@
+![GitHub License](https://img.shields.io/github/license/ch3p4ll3/QBittorrentBot)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/259099080ca24e029a910e3249d32041)](https://app.codacy.com/gh/ch3p4ll3/QBittorrentBot?utm_source=github.com&utm_medium=referral&utm_content=ch3p4ll3/QBittorrentBot&utm_campaign=Badge_Grade)
+![GitHub contributors](https://img.shields.io/github/contributors/ch3p4ll3/QBittorrentBot)
+![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/ch3p4ll3/QBittorrentBot/docker-image.yml)
+
+
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->

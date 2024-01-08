@@ -103,3 +103,15 @@ class Strings(StrEnum):
     # Resume
     ResumeAllTorrents = "callbacks.resume.resume_all_torrents"
     ResumeTorrent = "callbacks.resume.resume_one_torrent"
+
+    # Delete
+
+    DeleteAllMenuBtn = "callbacks.delete_delete_all.delete_all"
+    DeleteAllBtn = "callbacks.delete_all.delete_all"
+    DeleteAllData = "callbacks.delete_all.delete_all_data"
+
+    DeletedAll = "callbacks.delete_all.deleted_all"
+    DeletedAllData = "callbacks.delete_all.deleted_all_data"
+
+    DeleteSingleBtn = "callbacks.delete_single.delete_single"
+    DeleteSingleDataBtn = "callbacks.delete_single.delete_single_data"
