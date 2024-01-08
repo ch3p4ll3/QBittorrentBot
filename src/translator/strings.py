@@ -115,3 +115,14 @@ class Strings(StrEnum):
 
     DeleteSingleBtn = "callbacks.delete_single.delete_single"
     DeleteSingleDataBtn = "callbacks.delete_single.delete_single_data"
+
+    # Categories
+    AddCategory = "callbacks.category.add_category_btn"
+    RemoveCategory = "callbacks.category.remove_category_btn"
+    EditCategory = "callbacks.category.modify_category_btn"
+
+    NewCategoryName = "callbacks.category.send_category_name"
+    NoCategory = "callbacks.category.no_categories"
+    ChooseCategory = "callbacks.category.choose_category"
+    OnCategoryRemoved = "callbacks.category.on_category_removed"
+    OnCategoryEdited = "callbacks.category.on_category_edited"

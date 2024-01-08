@@ -139,6 +139,18 @@
     "delete_single": {
       "delete_single": "🗑 Delete torrent",
       "delete_single_data": "🗑 Delete torrent and data"
+    },
+
+    "category": {
+      "add_category_btn": "➕ Add Category",
+      "remove_category_btn": "🗑 Remove Category",
+      "modify_category_btn": "📝 Modify Category",
+
+      "send_category_name": "Send the category name",
+      "no_categories": "There are no categories",
+      "choose_category": "Choose a category:",
+      "on_category_removed": "The category ${category_name} has been removed",
+      "on_category_edited": "Send new path for category ${category_name}"
     }
   }
 }
