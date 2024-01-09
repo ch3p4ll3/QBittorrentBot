@@ -1,4 +1,7 @@
 {
+  "lang_name": "Italiano",
+  "en_lang_name": "Italian",
+
   "errors": {
     "path_not_valid": "Il path non esiste! Riprova",
     "error": "Errore: ${error}",
