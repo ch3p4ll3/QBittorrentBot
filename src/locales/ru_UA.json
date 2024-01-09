@@ -1,4 +1,7 @@
 {
+  "lang_name": "Русский(Украина)",
+  "en_lang_name": "Russian(Ukraine)",
+
   "errors": {
     "path_not_valid": "Путь не верный! Проверь и повтори",
     "error": "Ошибочка: ${error}",
