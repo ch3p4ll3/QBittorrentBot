@@ -1,5 +1,6 @@
 from pyrogram import Client
 from pyrogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
+from varname import nameof
 
 from .... import custom_filters
 from .....configs import Configs
@@ -79,6 +80,9 @@ async def edit_user_callback(client: Client, callback_query: CallbackQuery, user
     data_type = convert_type_from_string(data.split("-")[2])
 
     user_info = get_user_from_config(user_id)
+
+    # if field_to_edit == nameof(user.locale):
+    #     pass
 
     if data_type == bool:
         notify_status = Translator.translate(Strings.Enabled if user_info.notify else Strings.Disabled, user.locale)
