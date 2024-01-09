@@ -1,4 +1,7 @@
 {
+  "lang_name": "English",
+  "en_lang_name": "English",
+
   "errors": {
     "path_not_valid": "Введений шлях не існує! Перевiр та повтори спробу.",
     "error": "Помилка: ${error}",
