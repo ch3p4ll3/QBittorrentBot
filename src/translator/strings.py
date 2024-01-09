@@ -2,6 +2,9 @@ from enum import StrEnum
 
 
 class Strings(StrEnum):
+    LangName = "lang_name"
+    EnLangName = "en_lang_name"
+    # Errors
     GenericError = "errors.error"
     PathNotValid = "errors.path_not_valid"
     CommandDoesNotExist = "errors.command_does_not_exist"

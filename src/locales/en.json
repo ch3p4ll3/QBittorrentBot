@@ -1,4 +1,7 @@
 {
+  "lang_name": "English",
+  "en_lang_name": "English",
+
   "errors": {
     "path_not_valid": "The path entered does not exist! Retry",
     "error": "Error: ${error}",
