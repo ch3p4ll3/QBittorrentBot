@@ -8,7 +8,7 @@ db.bind(provider='sqlite', filename=f'{"/app/config/" if getenv("IS_DOCKER", Fal
 
 
 class Support(db.Entity):
-    id = PrimaryKey(int)
+    id = PrimaryKey(int, size=64)
     Action = Required(str, 255)
 
 
