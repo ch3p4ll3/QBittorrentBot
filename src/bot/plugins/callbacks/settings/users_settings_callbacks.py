@@ -1,6 +1,7 @@
 from pyrogram import Client
 from pyrogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
 from varname import nameof
+from pykeyboard import InlineKeyboard, InlineButton
 
 from .... import custom_filters
 from .....configs import Configs
@@ -81,8 +82,29 @@ async def edit_user_callback(client: Client, callback_query: CallbackQuery, user
 
     user_info = get_user_from_config(user_id)
 
-    # if field_to_edit == nameof(user.locale):
-    #     pass
+    if field_to_edit == nameof(user.locale):
+        keyboard = InlineKeyboard()
+        keyboard.add(
+            [
+                InlineButton(
+                    f'{Translator.translate(Strings.LangName, i)}/{Translator.translate(Strings.EnLangName, i)}',
+                    f'edit_locale#{user_id}-{i}'
+                )
+
+                for i in Translator.locales
+            ]
+        )
+
+        await callback_query.edit_message_text(
+            Translator.translate(Strings.EditLocale, user.locale),
+            reply_markup=keyboard.inline_keyboard + 
+            [
+                InlineKeyboardButton(
+                    Translator.translate(Strings.BackToUSer, user.locale, user_id=user_id),
+                    f"user_info#{user_id}"
+                )
+            ]
+        )
 
     if data_type == bool:
         notify_status = Translator.translate(Strings.Enabled if user_info.notify else Strings.Disabled, user.locale)
@@ -132,7 +154,7 @@ async def toggle_user_var(client: Client, callback_query: CallbackQuery, user: U
     user_id = int(data.split("-")[0])
     field_to_edit = data.split("-")[1]
 
-    user_from_configs = Configs.config.users.index(user)
+    user_from_configs = Configs.config.users.index(get_user_from_config(user_id))
 
     if user_from_configs == -1:
         return
@@ -158,5 +180,29 @@ async def toggle_user_var(client: Client, callback_query: CallbackQuery, user: U
                     )
                 ]
             ]
+        )
+    )
+
+
+@Client.on_callback_query(custom_filters.toggle_user_var_filter & custom_filters.check_user_filter & custom_filters.user_is_administrator)
+@inject_user
+async def edit_locale_filter(client: Client, callback_query: CallbackQuery, user: User) -> None:
+    data = callback_query.data.split("#")[1]
+    user_id = int(data.split("-")[0])
+    new_locale = data.split("-")[1]
+
+    user_from_configs = Configs.config.users.index(get_user_from_config(user_id))
+
+    if user_from_configs == -1:
+        return
+
+    Configs.config.users[user_from_configs].locale = new_locale
+
+    await callback_query.answer(
+        Translator.translate(
+            Strings.NewLocale,
+            user.locale,
+            new_locale=Translator.translate(Strings.LangName, new_locale),
+            user_id=user_id
         )
     )

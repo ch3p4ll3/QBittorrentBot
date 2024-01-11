@@ -1,3 +1,4 @@
+import uvloop
 from pyrogram import Client
 from pyrogram.enums.parse_mode import ParseMode
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -18,7 +19,7 @@ proxy = None
 if BOT_CONFIGS.telegram.proxy is not None:
     proxy = BOT_CONFIGS.telegram.proxy.proxy_settings
 
-
+uvloop.install()
 app = Client(
     "qbittorrent_bot",
     api_id=BOT_CONFIGS.telegram.api_id,

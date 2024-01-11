@@ -87,6 +87,8 @@ class Strings(StrEnum):
     # User Settings
 
     UserBtn = "callbacks.user_settings.user_btn"
+    NewLocale = "callbacks.user_settings.new_locale"
+    EditLocale = "callbacks.user_settings.edit_user_locale"
     AuthorizedUsers = "callbacks.user_settings.authorized_users"
     EditUserSetting = "callbacks.user_settings.edit_user_setting"
     BackToUsers = "callbacks.user_settings.back_to_users"

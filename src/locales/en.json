@@ -104,6 +104,8 @@
     "user_settings": {
       "user_btn": "User #${user_id}",
       "authorized_users": "Authorized users",
+      "new_locale": "Changed language to ${new_locale} for user #${user_id}",
+      "edit_user_locale": "Choose a new locale:",
       "edit_user_setting": "Edit User #${user_id}\n\n**Current Settings:**\n- ${confs}",
       "back_to_users": "\uD83D\uDD19 Users",
       "edit_user_field": "Edit User #${user_id} ${field_to_edit} field",
