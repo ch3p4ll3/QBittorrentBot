@@ -15,15 +15,21 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "joey00797",
+      "name": "joey00797",
+      "avatar_url": "https://avatars.githubusercontent.com/u/52893618?v=4",
+      "profile": "https://github.com/joey00797",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "contributorsPerLine": 7,
   "skipCi": true,
   "repoType": "github",
   "repoHost": "https://github.com",
-  "projectName": "QBittorrentBot",
-  "projectOwner": "ch3p4ll3"
-}
   "projectName": "QBittorrentBot",
   "projectOwner": "ch3p4ll3"
 }
