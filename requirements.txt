@@ -11,6 +11,7 @@ psutil==5.9.6
 pyaes==1.6.1
 pydantic==2.5.2
 pydantic_core==2.14.5
+pykeyboard==0.1.5
 Pyrogram==2.0.106
 PySocks==1.7.1
 pytz==2023.3.post1
