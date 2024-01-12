@@ -190,7 +190,7 @@ async def toggle_user_var(client: Client, callback_query: CallbackQuery, user: U
     )
 
 
-@Client.on_callback_query(custom_filters.toggle_user_var_filter & custom_filters.check_user_filter & custom_filters.user_is_administrator)
+@Client.on_callback_query(custom_filters.edit_locale_filter & custom_filters.check_user_filter & custom_filters.user_is_administrator)
 @inject_user
 async def edit_locale_filter(client: Client, callback_query: CallbackQuery, user: User) -> None:
     data = callback_query.data.split("#")[1]
