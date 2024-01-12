@@ -97,13 +97,15 @@ async def edit_user_callback(client: Client, callback_query: CallbackQuery, user
 
         await callback_query.edit_message_text(
             Translator.translate(Strings.EditLocale, user.locale),
-            reply_markup=keyboard.inline_keyboard + 
-            [
-                InlineKeyboardButton(
-                    Translator.translate(Strings.BackToUSer, user.locale, user_id=user_id),
-                    f"user_info#{user_id}"
-                )
-            ]
+            reply_markup=InlineKeyboardMarkup(
+                keyboard.inline_keyboard +
+                [
+                    InlineKeyboardButton(
+                        Translator.translate(Strings.BackToUSer, user.locale, user_id=user_id),
+                        f"user_info#{user_id}"
+                    )
+                ]
+            )
         )
 
     if data_type == bool:
