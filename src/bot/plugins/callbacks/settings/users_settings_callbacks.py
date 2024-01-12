@@ -85,7 +85,7 @@ async def edit_user_callback(client: Client, callback_query: CallbackQuery, user
     if field_to_edit == nameof(user.locale):
         keyboard = InlineKeyboard()
         keyboard.add(
-            [
+            *[
                 InlineButton(
                     f'{Translator.translate(Strings.LangName, i)}/{Translator.translate(Strings.EnLangName, i)}',
                     f'edit_locale#{user_id}-{i}'
@@ -100,13 +100,17 @@ async def edit_user_callback(client: Client, callback_query: CallbackQuery, user
             reply_markup=InlineKeyboardMarkup(
                 keyboard.inline_keyboard +
                 [
-                    InlineKeyboardButton(
-                        Translator.translate(Strings.BackToUSer, user.locale, user_id=user_id),
-                        f"user_info#{user_id}"
-                    )
+                    [
+                        InlineKeyboardButton(
+                            Translator.translate(Strings.BackToUSer, user.locale, user_id=user_id),
+                            f"user_info#{user_id}"
+                        )
+                    ]
                 ]
             )
         )
+
+        return
 
     if data_type == bool:
         notify_status = Translator.translate(Strings.Enabled if user_info.notify else Strings.Disabled, user.locale)
