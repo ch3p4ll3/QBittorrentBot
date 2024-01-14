@@ -41,7 +41,6 @@
   },
 
   "commands": {
-    "not_authorized": "Non sei autorizzato a utilizzare questo bot",
     "stats_command": "**============SISTEMA============**\n**Utilizzo CPU:** ${cpu_usage}%\n**Temperatura CPU:** ${cpu_temp}°C\n**Memoria libera:** ${free_memory} di ${total_memory} (${memory_percent}%)\n**Utilizzo dischi:** ${disk_used} di ${disk_total} (${disk_percent}%)"
   },
 

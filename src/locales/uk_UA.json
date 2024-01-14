@@ -41,7 +41,6 @@
   },
 
   "commands": {
-    "not_authorized": "В тебе не маєте дозволу використовувати цього бота",
     "stats_command": "**============SYSTEM============**\n**CPU Usage:** ${cpu_usage}%\n**CPU Temp:** ${cpu_temp}°C\n**Free Memory:** ${free_memory} of ${total_memory} (${memory_percent}%)\n**Disks usage:** ${disk_used} of ${disk_total} (${disk_percent}%)"
   },
 

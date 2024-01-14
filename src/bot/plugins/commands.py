@@ -11,11 +11,19 @@ from ...translator import Translator, Strings
 
 
 @Client.on_message(~custom_filters.check_user_filter)
-@inject_user
-async def access_denied_message(client: Client, message: Message, user: User) -> None:
-    button = InlineKeyboardMarkup([[InlineKeyboardButton("Github",
-                                                         url="https://github.com/ch3p4ll3/QBittorrentBot/")]])
-    await client.send_message(message.chat.id, Translator.translate(Strings.NotAuthorized, user.locale), reply_markup=button)
+async def access_denied_message(client: Client, message: Message) -> None:
+    button = InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton(
+                    "Github",
+                    url="https://github.com/ch3p4ll3/QBittorrentBot/"
+                )
+            ]
+        ]
+    )
+
+    await client.send_message(message.chat.id, "You are not authorized to use this bot", reply_markup=button)
 
 
 @Client.on_message(filters.command("start") & custom_filters.check_user_filter)
