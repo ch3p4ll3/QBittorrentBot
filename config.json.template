@@ -22,7 +22,7 @@
         {
             "user_id": 123456,
             "notify": false,
-            "locale": "en"
+            "locale": "en",
             "role": "administrator"
         }
     ]
