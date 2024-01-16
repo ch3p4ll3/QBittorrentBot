@@ -62,3 +62,5 @@ Please follow this guide
 ### How do I contribute to the development of QBittorrentBot?
 
 QBittorrentBot is an open-source project. You can contribute to the development by reporting bugs, suggesting improvements, or submitting pull requests. The project's code is hosted on [GitHub](https://github.com/ch3p4ll3/QBittorrentBot).
+
+[!ref](/contributing.md)

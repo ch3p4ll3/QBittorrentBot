@@ -32,7 +32,7 @@ Here's a brief overview of the configuration file and its key sections:
 
 - **Clients Section**: Establishes the connection details for the qBittorrent server, including the hostname, port number, username, and password. This enables the bot to interact with the qBittorrent server and manage torrents.
 
-- **Telegram Section**: Contains the bot token, API ID, and API hash, which are essential for authenticating the bot with the Telegram API. These credentials allow the bot to communicate with the Telegram server and receive user commands. Click [here](https://docs.pyrogram.org/intro/quickstart) to find out how to retrive your API ID and API Hash
+- **Telegram Section**: Contains the bot token, API ID, and API hash, which are essential for authenticating the bot with the Telegram API. These credentials allow the bot to communicate with the Telegram server and receive user commands. Click [here](https://core.telegram.org/api/obtaining_api_id) to find out how to retrive your API ID and API Hash
 
 - **Users Section**: Lists the authorized users of the QBittorrentBot, along with their Telegram user IDs, notification preferences, and user roles. This section defines the users who can interact with the bot, receive notifications, and manage torrents.
 
