@@ -1,7 +1,8 @@
 from math import log, floor
 import datetime
+from typing import Dict
 
-from pydantic import IPvAnyAddress
+from pydantic import HttpUrl
 from pyrogram.errors.exceptions import UserIsBlocked
 
 from src import db_management
@@ -14,7 +15,7 @@ from .configs.user import User
 async def torrent_finished(app):
     repository = ClientRepo.get_client_manager(Configs.config.client.type)
 
-    for i in repository.get_torrent_info(status_filter="completed"):
+    for i in repository.get_torrents(status_filter="completed"):
         if db_management.read_completed_torrents(i.hash) is None:
 
             for user in Configs.config.users:
@@ -51,11 +52,30 @@ def convert_eta(n) -> str:
 def convert_type_from_string(input_type: str):
     if "int" in input_type:
         return int
-    elif "IPvAnyAddress" in input_type:
-        return IPvAnyAddress
+    elif "HttpUrl" in input_type:
+        return HttpUrl
     elif "ClientTypeEnum" in input_type:
         return ClientTypeEnum
     elif "UserRolesEnum" in input_type:
         return UserRolesEnum
     elif "str" in input_type:
         return str
+    elif "bool" in input_type:
+        return bool
+
+
+def get_value(locales_dict: Dict, key_string: str) -> str:
+    """Function to get value from dictionary using key strings like 'on_message.error_adding_magnet'"""
+    if '.' not in key_string:
+        return locales_dict[key_string]
+    else:
+        head, tail = key_string.split('.', 1)
+        return get_value(locales_dict[head], tail)
+
+
+def inject_user(func):
+    async def wrapper(client, message):
+        user = get_user_from_config(message.from_user.id)
+        await func(client, message, user)
+    
+    return wrapper

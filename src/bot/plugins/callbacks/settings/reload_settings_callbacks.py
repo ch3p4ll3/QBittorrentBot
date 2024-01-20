@@ -3,10 +3,13 @@ from pyrogram.types import CallbackQuery
 
 from .... import custom_filters
 from .....configs import Configs
+from .....configs.user import User
+from .....utils import inject_user
+from .....translator import Translator, Strings
 
 
 @Client.on_callback_query(custom_filters.reload_settings_filter & custom_filters.check_user_filter & custom_filters.user_is_administrator)
-async def reload_settings_callback(client: Client, callback_query: CallbackQuery) -> None:
-    # TO FIX reload
+@inject_user
+async def reload_settings_callback(client: Client, callback_query: CallbackQuery, user: User) -> None:
     Configs.reload_config()
-    await callback_query.answer("Settings Reloaded", show_alert=True)
+    await callback_query.answer(Translator.translate(Strings.SettingsReloaded, user.locale), show_alert=True)

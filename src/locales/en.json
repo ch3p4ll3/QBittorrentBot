@@ -1,0 +1,160 @@
+{
+  "lang_name": "English",
+  "en_lang_name": "English",
+
+  "errors": {
+    "path_not_valid": "The path entered does not exist! Retry",
+    "error": "Error: ${error}",
+    "command_does_not_exist": "The command does not exist",
+    "locale_not_found": "Locale ${new_locale} not found!"
+  },
+
+  "on_message": {
+    "error_adding_magnet": "Unable to add magnet link",
+    "invalid_magnet": "This magnet link is invalid! Retry",
+    "error_adding_torrent": "Unable to add torrent file",
+    "invalid_torrent": "This is not a torrent file! Retry",
+    "send_category_path": "Please, send the path for the category ${category_name}"
+  },
+
+
+  "common": {
+    "menu": "Welcome to QBittorrent Bot",
+    "menu_btn": {
+      "menu_list": "\uD83D\uDCDD List",
+      "add_magnet": "➕ Add Magnet",
+      "add_torrent": "➕ Add Torrent",
+      "pause_resume": "⏯ Pause/Resume",
+      "delete": "\uD83D\uDDD1 Delete",
+      "categories": "\uD83D\uDCC2 Categories",
+      "settings": "⚙\uFE0F Settings"
+    },
+
+    "list_filter": {
+      "downloading": "⏳ ${active} Downloading",
+      "completed": "✔\uFE0F ${active} Completed",
+      "paused": "⏸\uFE0F ${active} Paused"
+    },
+
+    "no_torrents": "There are no torrents",
+    "back_to_menu_btn": "\uD83D\uDD19 Menu"
+  },
+
+  "commands": {
+    "stats_command": "**============SYSTEM============**\n**CPU Usage:** ${cpu_usage}%\n**CPU Temp:** ${cpu_temp}°C\n**Free Memory:** ${free_memory} of ${total_memory} (${memory_percent}%)\n**Disks usage:** ${disk_used} of ${disk_total} (${disk_percent}%)"
+  },
+
+  "callbacks": {
+    "torrent_info": {
+      "torrent_completed": "**COMPLETED**\n",
+      "torrent_state": "**State:** ${current_state} \n**Download Speed:** ${download_speed}/s\n",
+      "torrent_size": "**Size:** ${torrent_size}\n",
+      "torrent_eta": "**ETA:** ${torrent_eta}\n",
+      "torrent_category": "**Category:** ${torrent_category}\n",
+
+      "info_btns": {
+        "export_torrent": "💾 Export torrent",
+        "pause_torrent": "⏸ Pause",
+        "resume_torrent": "▶️ Resume",
+        "delete_torrent": "🗑 Delete"
+      }
+    },
+
+    "add_torrents": {
+      "send_magnet": "Send a magnet link",
+      "send_torrent": "Send a torrent file"
+    },
+
+    "settings": {
+      "settings_menu": "QBittorrentBot Settings",
+      "settings_menu_btns": {
+        "users_settings": "🫂 Users Settings",
+        "client_settings": "📥 Client Settings",
+        "reload_settings": "🔄 Reload Settings"
+      }
+    },
+
+    "client_settings": {
+      "enabled": "✅ Enabled",
+      "disabled": "❌ Disabled",
+      "speed_limit_status": "\n\n**Speed Limit**: ${speed_limit_status}",
+      "edit_client_settings": "Edit ${client_type} client settings \n\n**Current Settings:**\n- ${configs}",
+
+      "edit_client_settings_btns": {
+        "edit_client_settings": "📝 Edit Client Settings",
+        "toggle_speed_limit": "🐢 Toggle Speed Limit",
+        "check_client_connection": "✅ Check Client connection",
+        "back_to_settings": "🔙 Settings"
+      },
+
+      "client_connection_ok": "✅ The connection works. QBittorrent version: ${version}",
+      "client_connection_bad": "❌ Unable to establish connection with QBittorrent",
+
+      "edit_client_setting": "Edit ${setting}",
+      "edit_client_type": "Edit ${client_type} Client",
+      
+      "new_value_for_field": "Send the new value for field \"${field_to_edit}\" for client. \n\n**Note:** the field type is \"${data_type}\""
+    },
+
+    "reload_settings": {
+      "settings_reloaded": "Settings Reloaded"
+    },
+
+    "user_settings": {
+      "user_btn": "User #${user_id}",
+      "authorized_users": "Authorized users",
+      "new_locale": "Changed language to ${new_locale} for user #${user_id}",
+      "edit_user_locale": "Choose a new locale:",
+      "edit_user_setting": "Edit User #${user_id}\n\n**Current Settings:**\n- ${confs}",
+      "back_to_users": "\uD83D\uDD19 Users",
+      "edit_user_field": "Edit User #${user_id} ${field_to_edit} field",
+      "back_to_user": "\uD83D\uDD19 User#${user_id} info",
+      "new_value_for_field": "Send the new value for field \"${field_to_edit}\" for user #${user_id}. \n\n**Note:** the field type is \"${data_type}\""
+    },
+
+    "pause_resume": {
+      "pause_resume_menu": "Pause/Resume a torrent",
+      "pause_all": "⏸ Pause All",
+      "resume_all": "▶\uFE0F Resume All"
+    },
+
+    "pause": {
+      "pause_all_torrents": "Paused all torrents",
+      "pause_one_torrent": "Torrent Paused"
+    },
+
+    "resume": {
+      "resume_all_torrents": "Resumed all torrents",
+      "resume_one_torrent": "Torrent Resumed"
+    },
+
+    "delete_delete_all": {
+      "delete_all": "🗑 Delete All"
+    },
+
+    "delete_all": {
+      "delete_all": "🗑 Delete all torrents",
+      "delete_all_data": "🗑 Delete all torrents and data",
+
+      "deleted_all": "Deleted all torrents",
+      "deleted_all_data": "Deleted all torrents and data"
+    },
+
+    "delete_single": {
+      "delete_single": "🗑 Delete torrent",
+      "delete_single_data": "🗑 Delete torrent and data"
+    },
+
+    "category": {
+      "add_category_btn": "➕ Add Category",
+      "remove_category_btn": "🗑 Remove Category",
+      "modify_category_btn": "📝 Modify Category",
+
+      "send_category_name": "Send the category name",
+      "no_categories": "There are no categories",
+      "choose_category": "Choose a category:",
+      "on_category_removed": "The category ${category_name} has been removed",
+      "on_category_edited": "Send new path for category ${category_name}"
+    }
+  }
+}

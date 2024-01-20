@@ -64,13 +64,21 @@ configurations in comparison
     "telegram": {
         "bot_token": "1111111:AAAAAAAA-BBBBBBBBB",
         "api_id": 1111,
-        "api_hash": "aaaaaaaa"
+        "api_hash": "aaaaaaaa",
+        "proxy": {
+            "scheme": "http",
+            "hostname": "myproxy.local",
+            "port": 8080,
+            "username": "admin",
+            "password": "admin"
+        }
     },
 
     "users": [
         {
             "user_id": 123456,
             "notify": false,
+            "locale": "en",
             "role": "administrator"
         }
     ]

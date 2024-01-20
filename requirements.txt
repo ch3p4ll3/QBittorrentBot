@@ -3,6 +3,7 @@ APScheduler==3.10.4
 async-lru==2.0.4
 certifi==2023.11.17
 charset-normalizer==3.3.2
+executing==2.0.1
 idna==3.6
 packaging==23.2
 pony==0.7.17
@@ -10,6 +11,7 @@ psutil==5.9.6
 pyaes==1.6.1
 pydantic==2.5.2
 pydantic_core==2.14.5
+pykeyboard==0.1.5
 Pyrogram==2.0.106
 PySocks==1.7.1
 pytz==2023.3.post1
@@ -24,3 +26,4 @@ tzdata==2023.3
 tzlocal==5.2
 urllib3==2.1.0
 uvloop==0.19.0
+varname==0.12.2

@@ -37,7 +37,7 @@ class ClientTypeEnum(str, Enum):
 - Return to the `src/client_manager` folder and edit the `client_repo.py` file by adding to the dictionary named `repositories` an entry associating the newly created enum with the new manager. Example:
 ```python
 from ..configs.enums import ClientTypeEnum
-from .qbittorrent_manager import QbittorrentManager, ClientManager
+from .qbittorrent_manager import QbittorrentManager, ClientManager, UtorrentManager
 
 
 class ClientRepo:
