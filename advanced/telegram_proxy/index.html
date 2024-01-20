@@ -9,24 +9,24 @@
     <meta name="generator" content="Retype 3.5.0">
 
     <!-- Primary Meta Tags -->
-    <title>Add new client manager</title>
-    <meta name="title" content="Add new client manager">
-    <meta name="description" content="Adding a new client manager to QBittorrentBot involves creating a new class that implements the ClientManager">
+    <title>Configure proxy for Telegram</title>
+    <meta name="title" content="Configure proxy for Telegram">
+    <meta name="description" content="QBittorrent Bot can be configured to use a Telegram proxy to connect to the Telegram API.">
 
     <!-- Canonical -->
-    <link rel="canonical" href="/advanced/add_new_client_manager/">
+    <link rel="canonical" href="/advanced/telegram_proxy/">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="/advanced/add_new_client_manager/">
-    <meta property="og:title" content="Add new client manager">
-    <meta property="og:description" content="Adding a new client manager to QBittorrentBot involves creating a new class that implements the ClientManager">
+    <meta property="og:url" content="/advanced/telegram_proxy/">
+    <meta property="og:title" content="Configure proxy for Telegram">
+    <meta property="og:description" content="QBittorrent Bot can be configured to use a Telegram proxy to connect to the Telegram API.">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="/advanced/add_new_client_manager/">
-    <meta property="twitter:title" content="Add new client manager">
-    <meta property="twitter:description" content="Adding a new client manager to QBittorrentBot involves creating a new class that implements the ClientManager">
+    <meta property="twitter:url" content="/advanced/telegram_proxy/">
+    <meta property="twitter:title" content="Configure proxy for Telegram">
+    <meta property="twitter:description" content="QBittorrent Bot can be configured to use a Telegram proxy to connect to the Telegram API.">
 
     <script data-cfasync="false">(function () { var el = document.documentElement, m = localStorage.getItem("doc_theme"), wm = window.matchMedia; if (m === "dark" || (!m && wm && wm("(prefers-color-scheme: dark)").matches)) { el.classList.add("dark") } else { el.classList.remove("dark") } })();</script>
 
@@ -164,92 +164,53 @@
                                 <!-- Rendered if sidebar right is enabled -->
                                 <div id="docs-sidebar-right-toggle"></div>
                                 <!-- Page content  -->
-<doc-anchor-target id="add-new-client-manager" class="break-words">
+<doc-anchor-target id="configure-proxy-for-telegram" class="break-words">
     <h1>
-        <doc-anchor-trigger class="header-anchor-trigger" to="#add-new-client-manager">#</doc-anchor-trigger>
-        <span>Add new client manager</span>
+        <doc-anchor-trigger class="header-anchor-trigger" to="#configure-proxy-for-telegram">#</doc-anchor-trigger>
+        <span>Configure proxy for Telegram</span>
     </h1>
 </doc-anchor-target>
-<p>Adding a new client manager to QBittorrentBot involves creating a new class that implements the <code v-pre>ClientManager</code> interface. This interface defines the methods that the bot uses to interact with the client, such as adding, removing, pausing, and resuming torrents.</p>
-<p>To do this you need to follow a couple of steps:</p>
-<ul>
-<li>Clone the repository locally using the command: <code v-pre>git clone https://github.com/ch3p4ll3/QBittorrentBot.git</code></li>
-<li>Navigate to the folder <code v-pre>src/client_manager</code></li>
-<li>Create a new file for your client manager class. Name the file something like <code v-pre>&lt;client&gt;_manager.py</code>. For example, if you are writing a manager for utorrent the name will be <code v-pre>utorrent_manager.py</code></li>
-<li>Define your client manager class. The class should inherit from the <code v-pre>ClientManager</code> class and implement all of its methods. For example, the <code v-pre>utorrent_manager.py</code> file might look like this:</li>
-</ul>
+<p>QBittorrent Bot can be configured to use a Telegram proxy to connect to the Telegram API. This can be useful if you are behind a firewall that blocks direct connections to Telegram.</p>
+<p>To configure QBittorrent Bot to use a Telegram proxy, you will need to add a <strong>proxy section</strong> to the <code v-pre>config.json</code> file in the <strong>telegram section</strong>. The telegram section should have the following format:</p>
 <div class="codeblock-wrapper"><doc-codeblock>
-<pre class="language-python"><code v-pre class="language-python">from typing import Union, List
-from .client_manager import ClientManager
-
-
-class UtorrentManager(ClientManager):
-    @classmethod
-    def add_magnet(cls, magnet_link: Union[str, List[str]], category: str = None) -&gt; None:
-        # Implement your code to add a magnet to the utorrent client
-        pass
-
-    @classmethod
-    def add_torrent(cls, file_name: str, category: str = None) -&gt; None:
-        # Implement your code to add a torrent to the utorrent client
-        pass
-...</code></pre>
-</doc-codeblock></div>
-<ul>
-<li>Navigate to the <code v-pre>src/configs/</code> folder and edit the <code v-pre>enums.py</code> file by adding to the <code v-pre>ClientTypeEnum</code> class an enum for your client. For example, if we wanted to add a manager for utorrent the class would become like this:</li>
-</ul>
-<div class="codeblock-wrapper"><doc-codeblock>
-<pre class="language-python"><code v-pre class="language-python">class ClientTypeEnum(str, Enum):
-    QBittorrent = 'qbittorrent'
-    Utorrent = 'utorrent'</code></pre>
-</doc-codeblock></div>
-<ul>
-<li>Return to the <code v-pre>src/client_manager</code> folder and edit the <code v-pre>client_repo.py</code> file by adding to the dictionary named <code v-pre>repositories</code> an entry associating the newly created enum with the new manager. Example:</li>
-</ul>
-<div class="codeblock-wrapper"><doc-codeblock>
-<pre class="language-python"><code v-pre class="language-python">from ..configs.enums import ClientTypeEnum
-from .qbittorrent_manager import QbittorrentManager, ClientManager, UtorrentManager
-
-
-class ClientRepo:
-    repositories = {
-        ClientTypeEnum.QBittorrent: QbittorrentManager,
-        ClientTypeEnum.Utorrent: UtorrentManager
-    }
-...</code></pre>
-</doc-codeblock></div>
-<ul>
-<li>Register your client manager in the config file. The config file is a JSON file that defines the configuration for the QBittorrentBot. You can add your new client manager to the client section of the config file. For example, the config file might look like this:</li>
-</ul>
-<div class="codeblock-wrapper"><doc-codeblock>
-<pre class="language-json"><code v-pre class="language-json">{
-    &quot;client&quot;: {
-        &quot;type&quot;: &quot;utorrent&quot;,
-        &quot;host&quot;: &quot;192.168.178.102&quot;,
+<pre class="language-json5"><code v-pre class="language-json5">&quot;telegram&quot;: {
+    &quot;bot_token&quot;: &quot;1111111:AAAAAAAA-BBBBBBBBB&quot;,
+    &quot;api_id&quot;: 1111,
+    &quot;api_hash&quot;: &quot;aaaaaaaa&quot;,
+    &quot;proxy&quot;: {
+        &quot;scheme&quot;: &quot;http&quot;, // http, sock4 or sock5
+        &quot;hostname&quot;: &quot;myproxy.local&quot;,
         &quot;port&quot;: 8080,
-        &quot;user&quot;: &quot;admin&quot;,
+        &quot;username&quot;: &quot;admin&quot;,
         &quot;password&quot;: &quot;admin&quot;
-    },
-    &quot;telegram&quot;: {
-        &quot;bot_token&quot;: &quot;1111111:AAAAAAAA-BBBBBBBBB&quot;,
-        &quot;api_id&quot;: 1111,
-        &quot;api_hash&quot;: &quot;aaaaaaaa&quot;
-    },
-
-    &quot;users&quot;: [
-        {
-            &quot;user_id&quot;: 123456,
-            &quot;notify&quot;: false,
-            &quot;role&quot;: &quot;administrator&quot;
-        }
-    ]
+  }
 }</code></pre>
 </doc-codeblock></div>
+<p>Where:</p>
 <ul>
-<li>Build the docker image</li>
-<li>Start the docker container</li>
+<li><code v-pre>scheme</code> is the protocol to use for the proxy connection. This can be <code v-pre>http</code>, <code v-pre>sock4</code> or <code v-pre>sock5</code></li>
+<li><code v-pre>hostname</code> is the hostname or IP address of the proxy server.</li>
+<li><code v-pre>port</code> is the port number of the proxy server.</li>
+<li><code v-pre>username</code> (optional) is the username for the proxy server.</li>
+<li><code v-pre>password</code> (optional) is the password for the proxy server.</li>
 </ul>
-<p>You can now use the bot with the new client, have fun<span class="docs-emoji">&#x1F973;</span></p>
+<div class="flex mb-6">
+    <div class="shrink-0 w-1 rounded-tl rounded-bl bg-blue-500 dark:bg-blue-400"></div>
+    <div class="flex w-full py-4 border border-l-0 border-gray-300 rounded-tr rounded-br doc-alert bg-white dark:bg-dark-700 dark:border-dark-700" role="alert">
+        <div class="flex items-center ml-4 h-7">
+            <svg xmlns="http://www.w3.org/2000/svg" class="mb-px text-blue-500 dark:text-blue-400" width="22" height="22" viewBox="0 0 24 24" role="presentation">
+                <g fill="currentColor"><g>
+                    <path d="M12 1C5.93 1 1 5.93 1 12s4.93 11 11 11 11-4.93 11-11S18.07 1 12 1zm0 20c-4.96 0-9-4.04-9-9s4.04-9 9-9 9 4.04 9 9-4.04 9-9 9z"></path>
+                    <path d="M12 11c-.55 0-1 .45-1 1v4c0 .55.45 1 1 1s1-.45 1-1v-4c0-.55-.45-1-1-1zM12.01 7c-.56 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z"></path>
+                    <path fill="none" d="M0 0h24v24H0z"></path>
+                </g></g>
+            </svg>
+        </div>
+        <div class="pr-5 ml-3 w-full">
+<p>Once you have added the proxy section to the config.json file, you will need to restart QBittorrent Bot for the changes to take effect.</p>
+        </div>
+    </div>
+</div>
 
                                 
                                 <!-- Required only on API pages -->
@@ -259,20 +220,20 @@ class ClientRepo:
                             
                                 <nav class="flex mt-14">
                                     <div class="w-1/2">
-                                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-blue-500 dark:text-blue-400 border border-gray-300 hover:border-gray-400 dark:border-dark-650 dark:hover:border-dark-450 rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../advanced/">
+                                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-blue-500 dark:text-blue-400 border border-gray-300 hover:border-gray-400 dark:border-dark-650 dark:hover:border-dark-450 rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../advanced/add_new_client_manager/">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
                                             <span>
                                                 <span class="block text-xs font-normal text-gray-400 dark:text-dark-400">Previous</span>
-                                                <span class="block mt-1">Advanced</span>
+                                                <span class="block mt-1">Add new client manager</span>
                                             </span>
                                         </a>
                                     </div>
                             
                                     <div class="w-1/2">
-                                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-blue-500 dark:text-blue-400 border border-gray-300 hover:border-gray-400 dark:border-dark-650 dark:hover:border-dark-450 rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../advanced/telegram_proxy/">
+                                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-blue-500 dark:text-blue-400 border border-gray-300 hover:border-gray-400 dark:border-dark-650 dark:hover:border-dark-450 rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../advanced/add_entries_configuration/">
                                             <span>
                                                 <span class="block text-xs font-normal text-right text-gray-400 dark:text-dark-400">Next</span>
-                                                <span class="block mt-1">Configure proxy for Telegram</span>
+                                                <span class="block mt-1">Add new entries in configuration file</span>
                                             </span>
                                             <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
                                         </a>
@@ -316,6 +277,6 @@ class ClientRepo:
 
     <div id="docs-overlay-target"></div>
 
-    <script data-cfasync="false">window.__DOCS__ = { "title": "Add new client manager", level: 2, icon: "file", hasPrism: true, hasMermaid: false, hasMath: false, tocDepth: 23 }</script>
+    <script data-cfasync="false">window.__DOCS__ = { "title": "Configure proxy for Telegram", level: 2, icon: "file", hasPrism: true, hasMermaid: false, hasMath: false, tocDepth: 23 }</script>
 </body>
 </html>

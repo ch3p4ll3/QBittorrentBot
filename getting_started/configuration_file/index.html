@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="3.5.0.758290362614">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="3.5.0.759074512186">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 3.5.0">
@@ -30,12 +30,12 @@
 
     <script data-cfasync="false">(function () { var el = document.documentElement, m = localStorage.getItem("doc_theme"), wm = window.matchMedia; if (m === "dark" || (!m && wm && wm("(prefers-color-scheme: dark)").matches)) { el.classList.add("dark") } else { el.classList.remove("dark") } })();</script>
 
-    <link href="../../resources/css/retype.css?v=3.5.0.758290362614" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=3.5.0.759074512186" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=3.5.0.758290362614" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=3.5.0.759074512186" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=3.5.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=3.5.0.758290362614" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=3.5.0.758290362614" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=3.5.0.759074512186" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=3.5.0.759074512186" defer></script>
 </head>
 <body>
     <div id="docs-app" class="relative text-base antialiased text-gray-700 bg-white font-body dark:bg-dark-850 dark:text-dark-300">
@@ -199,7 +199,7 @@
 <ul>
 <li><p><strong>Clients Section</strong>: Establishes the connection details for the qBittorrent server, including the hostname, port number, username, and password. This enables the bot to interact with the qBittorrent server and manage torrents.</p>
 </li>
-<li><p><strong>Telegram Section</strong>: Contains the bot token, API ID, and API hash, which are essential for authenticating the bot with the Telegram API. These credentials allow the bot to communicate with the Telegram server and receive user commands. Click <a href="https://docs.pyrogram.org/intro/quickstart">here</a> to find out how to retrive your API ID and API Hash</p>
+<li><p><strong>Telegram Section</strong>: Contains the bot token, API ID, and API hash, which are essential for authenticating the bot with the Telegram API. These credentials allow the bot to communicate with the Telegram server and receive user commands. Click <a href="https://core.telegram.org/api/obtaining_api_id">here</a> to find out how to retrive your API ID and API Hash</p>
 </li>
 <li><p><strong>Users Section</strong>: Lists the authorized users of the QBittorrentBot, along with their Telegram user IDs, notification preferences, and user roles. This section defines the users who can interact with the bot, receive notifications, and manage torrents.</p>
 </li>
@@ -217,7 +217,7 @@
 <tr>
 <th>Name</th>
 <th>Type</th>
-<th>Value</th>
+<th>Remarks</th>
 </tr>
 </thead>
 <tbody>
@@ -257,7 +257,7 @@
 <tr>
 <th>Name</th>
 <th>Type</th>
-<th>Value</th>
+<th>Remarks</th>
 </tr>
 </thead>
 <tbody>
@@ -276,6 +276,11 @@
 <td>str</td>
 <td>The API hash for the QBittorrentBot. This is a string of characters that is used to verify the authenticity of the bot&#x27;s requests to the Telegram API.</td>
 </tr>
+<tr>
+<td>proxy</td>
+<td><doc-anchor-trigger to="#telegram-proxy-settings">TelegramProxySettings</doc-anchor-trigger></td>
+<td>Optional, the settings for using a proxy to contact telegram servers</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -292,7 +297,7 @@
 <tr>
 <th>Name</th>
 <th>Type</th>
-<th>Value</th>
+<th>Remarks</th>
 </tr>
 </thead>
 <tbody>
@@ -309,7 +314,12 @@
 <tr>
 <td>role</td>
 <td><doc-anchor-trigger to="#userrolesenum">UserRolesEnum</doc-anchor-trigger></td>
-<td>The role of the user.</td>
+<td>The role of the user. Default: <code v-pre>administrator</code></td>
+</tr>
+<tr>
+<td>locale</td>
+<td>str</td>
+<td>Language used by the user, <doc-anchor-trigger to="#languages">list of supported languages</doc-anchor-trigger>. Default: <code v-pre>en</code></td>
 </tr>
 </tbody>
 </table>
@@ -339,7 +349,7 @@
 <tr>
 <td>QBittorrent</td>
 <td>str</td>
-<td>qbittorrent</td>
+<td><code v-pre>qbittorrent</code></td>
 </tr>
 </tbody>
 </table>
@@ -364,20 +374,54 @@
 <tr>
 <td>Reader</td>
 <td>str</td>
-<td>reader</td>
+<td><code v-pre>reader</code></td>
 <td>Can perform only reading operations(view torrents)</td>
 </tr>
 <tr>
 <td>Manager</td>
 <td>str</td>
-<td>manager</td>
+<td><code v-pre>manager</code></td>
 <td>Can perform only managing operations(view torrents + can download files + can add/edit categories + set torrent priority + can stop/start downloads)</td>
 </tr>
 <tr>
 <td>Administrator</td>
 <td>str</td>
-<td>administrator</td>
+<td><code v-pre>administrator</code></td>
 <td>Can perform all operations (Manager + remove torrent + remove category + edit configs)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<doc-anchor-target id="telegram-proxy-scheme">
+    <h3>
+        <doc-anchor-trigger class="header-anchor-trigger" to="#telegram-proxy-scheme">#</doc-anchor-trigger>
+        <span>Telegram Proxy Scheme</span>
+    </h3>
+</doc-anchor-target>
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Value(to be used in json)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sock4</td>
+<td>str</td>
+<td><code v-pre>socks4</code></td>
+</tr>
+<tr>
+<td>Sock5</td>
+<td>str</td>
+<td><code v-pre>socks5</code></td>
+</tr>
+<tr>
+<td>Http</td>
+<td>str</td>
+<td><code v-pre>http</code></td>
 </tr>
 </tbody>
 </table>
@@ -400,6 +444,85 @@
 <li>Host required</li>
 <li>Max length 2083</li>
 </ul>
+<doc-anchor-target id="languages">
+    <h3>
+        <doc-anchor-trigger class="header-anchor-trigger" to="#languages">#</doc-anchor-trigger>
+        <span>Languages</span>
+    </h3>
+</doc-anchor-target>
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Value(to be used in json)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>English</td>
+<td>str</td>
+<td><code v-pre>en</code></td>
+</tr>
+<tr>
+<td>Italian</td>
+<td>str</td>
+<td><code v-pre>it</code></td>
+</tr>
+<tr>
+<td>Ukrainian</td>
+<td>str</td>
+<td><code v-pre>uk_UA</code></td>
+</tr>
+<tr>
+<td>Russian(Ukraine)</td>
+<td>str</td>
+<td><code v-pre>ru_UA</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<doc-anchor-target id="telegram-proxy-settings">
+    <h3>
+        <doc-anchor-trigger class="header-anchor-trigger" to="#telegram-proxy-settings">#</doc-anchor-trigger>
+        <span>Telegram Proxy Settings</span>
+    </h3>
+</doc-anchor-target>
+<p>QBittorrentBot supports proxies with and without authentication. This feature allows QBittorrentBot to exchange data with Telegram through an intermediate SOCKS 4/5 or HTTP proxy server.</p>
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Remarks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>scheme</td>
+<td><doc-anchor-trigger to="#telegram-proxy-scheme">TelegramProxyScheme</doc-anchor-trigger></td>
+<td>The scheme to be used to connect to the proxy</td>
+</tr>
+<tr>
+<td>hostname</td>
+<td>str</td>
+<td>The hostname of the proxy</td>
+</tr>
+<tr>
+<td>username</td>
+<td>str</td>
+<td>Optional, the proxy user</td>
+</tr>
+<tr>
+<td>password</td>
+<td>str</td>
+<td>Optional, the proxy password</td>
+</tr>
+</tbody>
+</table>
+</div>
 
                                 
                                 <!-- Required only on API pages -->
@@ -419,10 +542,10 @@
                                     </div>
                             
                                     <div class="w-1/2">
-                                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-blue-500 dark:text-blue-400 border border-gray-300 hover:border-gray-400 dark:border-dark-650 dark:hover:border-dark-450 rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../getting_started/migrating_to_v2/">
+                                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-blue-500 dark:text-blue-400 border border-gray-300 hover:border-gray-400 dark:border-dark-650 dark:hover:border-dark-450 rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../getting_started/installation/">
                                             <span>
                                                 <span class="block text-xs font-normal text-right text-gray-400 dark:text-dark-400">Next</span>
-                                                <span class="block mt-1">Migrating to V​2</span>
+                                                <span class="block mt-1">Installation-​Updating</span>
                                             </span>
                                             <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
                                         </a>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="3.5.0.758290362614">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="3.5.0.759074512186">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 3.5.0">
@@ -11,7 +11,7 @@
     <!-- Primary Meta Tags -->
     <title>Getting Started</title>
     <meta name="title" content="Getting Started">
-    <meta name="description" content="In order to start using the bot, you must first create a folder where the bot will fish for settings and where it will save logs">
+    <meta name="description" content="QBittorrentBot is a Telegram bot that allows you to control your qBittorrent client from within the Telegram messaging app.">
 
     <!-- Canonical -->
     <link rel="canonical" href="/getting_started/">
@@ -20,21 +20,21 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="/getting_started/">
     <meta property="og:title" content="Getting Started">
-    <meta property="og:description" content="In order to start using the bot, you must first create a folder where the bot will fish for settings and where it will save logs">
+    <meta property="og:description" content="QBittorrentBot is a Telegram bot that allows you to control your qBittorrent client from within the Telegram messaging app.">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="/getting_started/">
     <meta property="twitter:title" content="Getting Started">
-    <meta property="twitter:description" content="In order to start using the bot, you must first create a folder where the bot will fish for settings and where it will save logs">
+    <meta property="twitter:description" content="QBittorrentBot is a Telegram bot that allows you to control your qBittorrent client from within the Telegram messaging app.">
 
     <script data-cfasync="false">(function () { var el = document.documentElement, m = localStorage.getItem("doc_theme"), wm = window.matchMedia; if (m === "dark" || (!m && wm && wm("(prefers-color-scheme: dark)").matches)) { el.classList.add("dark") } else { el.classList.remove("dark") } })();</script>
 
-    <link href="../resources/css/retype.css?v=3.5.0.758290362614" rel="stylesheet">
+    <link href="../resources/css/retype.css?v=3.5.0.759074512186" rel="stylesheet">
 
-    <script data-cfasync="false" src="../resources/js/config.js?v=3.5.0.758290362614" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../resources/js/config.js?v=3.5.0.759074512186" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../resources/js/retype.js?v=3.5.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../resources/js/lunr.js?v=3.5.0.758290362614" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../resources/js/lunr.js?v=3.5.0.759074512186" data-turbo-eval="false" defer></script>
 </head>
 <body>
     <div id="docs-app" class="relative text-base antialiased text-gray-700 bg-white font-body dark:bg-dark-850 dark:text-dark-300">
@@ -169,32 +169,23 @@
         <span>Getting Started</span>
     </h1>
 </doc-anchor-target>
-<p>In order to start using the bot, you must first create a folder where the bot will fish for settings and where it will save logs</p>
-<p>For example: let&#x27;s create a folder called <code v-pre>QBittorrentBot</code> in the home of the user <code v-pre>user</code>. The path to the folder will then be <code v-pre>/home/user/docker/QBittorrentBot</code>.</p>
-<p>Before starting the bot you need to place the configuration file in this folder. You can rename the <code v-pre>config.json.template</code> file to <code v-pre>config.json</code> and change the parameters as desired. Go <a href="configuration_file/">here</a> to read more about the configuration file.</p>
-<p>Once that is done you can start the bot using docker, you can use either docker or docker compose.</p>
-<doc-tabs>
-<doc-tab v-cloak id="docker">
-<template #title>Docker</template>
-<p>Open your terminal and execute the following command to start the bot container:</p>
-<p><code v-pre>docker run -d -v /home/user/docker/QBittorrentBot:/app/config:rw --name qbittorrent-bot ch3p4ll3/qbittorrent-bot:latest</code></p>
-</doc-tab>
-<doc-tab v-cloak id="docker-compose">
-<template #title>Docker compose</template>
-<p>Create a file named <code v-pre>docker-compose.yml</code> inside a directory with the following content:</p>
-<div class="codeblock-wrapper"><doc-codeblock>
-<pre class="language-none"><code v-pre class="language-none">version: '3.9'
-services:
-    qbittorrent-bot:
-        image: 'ch3p4ll3/qbittorrent-bot:latest'
-        container_name: qbittorrent-bot
-        restart: unless-stopped
-        volumes:
-            - '/home/user/docker/QBittorrentBot:/app/config:rw'</code></pre>
-</doc-codeblock></div>
-<p>Run the following command to start the bot using Docker Compose:
-<code v-pre>docker compose up -d</code></p>
-</doc-tab>
+<p>QBittorrentBot is a Telegram bot that allows you to control your qBittorrent client from within the Telegram messaging app. This makes it easy to add new torrents, manage your existing downloads, and get status updates without having to switch between applications.</p>
+<doc-anchor-target id="prerequisites">
+    <h2>
+        <doc-anchor-trigger class="header-anchor-trigger" to="#prerequisites">#</doc-anchor-trigger>
+        <span>Prerequisites</span>
+    </h2>
+</doc-anchor-target>
+<ul>
+<li>A Telegram account
+<ul>
+<li>A bot token obtained from <a href="https://core.telegram.org/bots#how-do-i-create-a-bot">botfather</a></li>
+<li><a href="https://core.telegram.org/api/obtaining_api_id">Telegram API ID</a></li>
+</ul>
+</li>
+<li>A running qBittorrent instance with WebUI enabled</li>
+<li>Access to your qBittorrent server&#x27;s IP address and port number</li>
+</ul>
 
                                 
                                 <!-- Required only on API pages -->
