@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: /sitemap.xml.gz
+Sitemap: https://ch3p4ll3.github.io/QBittorrentBot/sitemap.xml.gz
