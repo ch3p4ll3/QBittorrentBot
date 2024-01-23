@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## V2.1 - 20/01/2024
+
 ### Added
 
 - Add multiple language support (`en`, `it`, `ru_UA`, `uk_UA`)
