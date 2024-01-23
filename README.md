@@ -38,35 +38,44 @@ Since version V2, the mapping of the configuration file has been changed. Make s
 
 ## Configuration
 ### Retrieve Telegram API ID and API HASH
-With the change of library to [pyrogram](https://docs.pyrogram.org/) you will need the API_ID and API_HASH. Check [here](https://docs.pyrogram.org/intro/quickstart) to find out how to recover them.
+With the change of library to [pyrogram](https://docs.pyrogram.org/) you will need the API_ID and API_HASH. Check [here](https://core.telegram.org/api/obtaining_api_id) to find out how to recover them.
 ### JSON Configuration
 Edit the config.json.template file and rename it to config.json. 
 The config file is stored in the mounted /app/config/ volume
 
-```
+```json5
 {
     "client": {
         "type": "qbittorrent",
-        "host": "http://192.168.178.102",
+        "host": "http://192.168.178.102:8080",
         "user": "admin",
         "password": "admin"
     },
     "telegram": {
         "bot_token": "1111111:AAAAAAAA-BBBBBBBBB",
         "api_id": 1111,
-        "api_hash": "aaaaaaaa"
+        "api_hash": "aaaaaaaa",
+        "proxy": {  // optional
+            "scheme": "http",
+            "hostname": "myproxy.local",
+            "port": 8080,
+            "username": "admin",  // optional
+            "password": "admin"  // optional
+        }
     },
 
     "users": [
         {
             "user_id": 123456,
             "notify": false,
-            "role": "administrator"
+            "locale": "en",  // optional, default "en"
+            "role": "administrator"  // optional, default "administrator"
         },
         {
-            "user_id": 12345678,
+            "user_id": 78910,
             "notify": true,
-            "role": "manager"
+            "locale": "it",
+            "role": "administrator"
         }
     ]
 }
