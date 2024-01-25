@@ -15,3 +15,12 @@ class TelegramProxyScheme(str, Enum):
     Sock4 = "socks4"
     Sock5 = "socks5"
     Http = "http"
+
+
+class LoggerEnum(str, Enum):
+    CRITICAL = 'CRITICAL'
+    ERROR = 'ERROR'
+    WARNING = 'WARNING'
+    INFO = 'INFO'
+    DEBUG = 'DEBUG'
+    NOTSET = 'NOTSET'

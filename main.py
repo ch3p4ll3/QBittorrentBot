@@ -17,12 +17,13 @@ handler = handlers.TimedRotatingFileHandler(
 )
 
 # Create a format
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+formatter = logging.Formatter(Configs.config.logger.format)
 handler.setFormatter(formatter)
 
 logging.getLogger().addHandler(handler)
+
 # Set logging level to DEBUG
-logging.getLogger().setLevel(logging.DEBUG)
+logging.getLogger().setLevel(Configs.config.logger.parsed_level)
 
 if __name__ == '__main__':
     scheduler.start()
