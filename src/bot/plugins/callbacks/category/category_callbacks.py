@@ -114,10 +114,10 @@ async def category(client: Client, callback_query: CallbackQuery, user: User) ->
 
     if categories is None:
         if "magnet" in callback_query.data:
-            await add_magnet_callback(client, callback_query, user)
+            await add_magnet_callback(client, callback_query)
 
         else:
-            await add_torrent_callback(client, callback_query, user)
+            await add_torrent_callback(client, callback_query)
 
         return
 
