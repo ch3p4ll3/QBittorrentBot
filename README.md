@@ -149,3 +149,8 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=ch3p4ll3/QBittorrentBot&type=Date)](https://star-history.com/#ch3p4ll3/QBittorrentBot&Date)
+
