@@ -20,7 +20,7 @@ qbittorrent-api==2023.11.57
 requests==2.31.0
 six==1.16.0
 TgCrypto==1.2.5
-tqdm==4.66.1
+tqdm==4.66.3
 typing_extensions==4.9.0
 tzdata==2023.3
 tzlocal==5.2
