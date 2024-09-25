@@ -21,21 +21,17 @@ class Client(BaseModel):
         return v
 
     @property
-    def qbittorrent_connection_string(self) -> dict:
+    def connection_string(self) -> dict:
         if self.type is ClientTypeEnum.QBittorrent:
             return dict(
                 host=self.host.unicode_string(),
                 username=self.user,
                 password=self.password
             )
-
-    @property
-    def transmission_connection_string(self) -> dict:
-        if self.type is ClientTypeEnum.QBittorrent:
+        elif self.type is ClientTypeEnum.Transmission:
             return dict(
                 host=self.host.host,
                 port=self.host.port,
                 username=self.user,
                 password=self.password
             )
-
