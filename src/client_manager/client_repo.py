@@ -1,10 +1,14 @@
 from ..configs.enums import ClientTypeEnum
-from .qbittorrent_manager import QbittorrentManager, ClientManager
+
+from .client_manager import ClientManager
+from .qbittorrent_manager import QbittorrentManager
+from .transmission_manager import TransmissionManager
 
 
 class ClientRepo:
     repositories = {
-        ClientTypeEnum.QBittorrent: QbittorrentManager
+        ClientTypeEnum.QBittorrent: QbittorrentManager,
+        ClientTypeEnum.Transmission: TransmissionManager
     }
 
     @classmethod

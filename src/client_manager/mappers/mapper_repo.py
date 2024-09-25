@@ -1,10 +1,13 @@
 from ...configs.enums import ClientTypeEnum
-from .qbittorrent_mapper import QBittorrentMapper, Mapper
+from .qbittorrent_mapper import QBittorrentMapper
+from .mapper import Mapper
+from .transmission_mapper import TransmissionMapper
 
 
 class MapperRepo:
     mappers = {
-        ClientTypeEnum.QBittorrent: QBittorrentMapper
+        ClientTypeEnum.QBittorrent: QBittorrentMapper,
+        ClientTypeEnum.Transmission: TransmissionMapper
     }
 
     @classmethod

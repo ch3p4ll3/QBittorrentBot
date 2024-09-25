@@ -8,14 +8,14 @@ from pyrogram.errors.exceptions import UserIsBlocked
 from src import db_management
 from src.client_manager import ClientRepo
 from .configs import Configs
-from .configs.enums import ClientTypeEnum, UserRolesEnum
+from .configs.enums import ClientTypeEnum, UserRolesEnum, TorrentStatusEnum
 from .configs.user import User
 
 
 async def torrent_finished(app):
     repository = ClientRepo.get_client_manager(Configs.config.client.type)
 
-    for i in repository.get_torrents(status_filter="completed"):
+    for i in repository.get_torrents(status_filter=TorrentStatusEnum.Completed.value[Configs.config.client.type]):
         if db_management.read_completed_torrents(i.hash) is None:
 
             for user in Configs.config.users:

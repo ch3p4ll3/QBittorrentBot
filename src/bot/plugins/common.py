@@ -8,7 +8,7 @@ from ... import db_management
 from ...configs import Configs
 from ...client_manager import ClientRepo
 from ...utils import get_user_from_config
-from ...configs.enums import UserRolesEnum
+from ...configs.enums import UserRolesEnum, TorrentStatusEnum
 from ...translator import Translator, Strings
 
 
@@ -57,21 +57,21 @@ async def list_active_torrents(client: Client, chat_id: int, message_id: int, ca
                 Translator.translate(
                     Strings.ListFilterDownloading, user.locale, active='*' if status_filter == 'downloading' else ''
                 ),
-                "by_status_list#downloading"
+                f"by_status_list#{TorrentStatusEnum.Downloading.value[Configs.config.client.type]}"
             ),
 
             InlineKeyboardButton(
                 Translator.translate(
                     Strings.ListFilterCompleted, user.locale, active='*' if status_filter == 'completed' else ''
                 ),
-                "by_status_list#completed"
+                f"by_status_list#{TorrentStatusEnum.Completed.value[Configs.config.client.type]}"
             ),
 
             InlineKeyboardButton(
                 Translator.translate(
                     Strings.ListFilterPaused, user.locale, active='*' if status_filter == 'paused' else ''
                 ),
-                "by_status_list#paused"
+                f"by_status_list#{TorrentStatusEnum.Paused.value[Configs.config.client.type]}"
             ),
         ]
 
