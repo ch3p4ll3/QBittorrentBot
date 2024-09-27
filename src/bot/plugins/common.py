@@ -3,6 +3,7 @@ from pyrogram.errors.exceptions import MessageIdInvalid
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from typing import Optional
+from json import loads
 
 from ... import db_management
 from ...configs import Configs

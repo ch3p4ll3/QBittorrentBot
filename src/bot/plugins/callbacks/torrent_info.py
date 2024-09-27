@@ -6,6 +6,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQ
 from ... import custom_filters
 from ....client_manager import ClientRepo
 from ....configs import Configs
+from ....configs.enums import TorrentStatusEnum
 from ....configs.user import User
 from ....translator import Translator, Strings
 from ....utils import convert_size, convert_eta, inject_user
@@ -25,7 +26,7 @@ async def torrent_info_callback(client: Client, callback_query: CallbackQuery, u
     else:
         text += f"{tqdm.format_meter(torrent.progress, 1, 0, bar_format='{l_bar}{bar}|')}\n"
 
-    if "stalled" not in torrent.state:
+    if TorrentStatusEnum.Stalled.value[Configs.config.client.type] not in torrent.state:
         text += Translator.translate(
             Strings.TorrentState,
             user.locale,
@@ -39,7 +40,7 @@ async def torrent_info_callback(client: Client, callback_query: CallbackQuery, u
         torrent_size=convert_size(torrent.size)
     )
 
-    if "stalled" not in torrent.state:
+    if TorrentStatusEnum.Stalled.value[Configs.config.client.type] not in torrent.state:
         text += Translator.translate(
             Strings.TorrentEta,
             user.locale,

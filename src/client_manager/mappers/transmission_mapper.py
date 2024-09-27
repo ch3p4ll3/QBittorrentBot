@@ -8,16 +8,16 @@ from transmission_rpc.torrent import Torrent as TransmissionTorrent
 class TransmissionMapper(Mapper):
     @classmethod
     def map(cls, torrents: Union[TransmissionTorrent, List[TransmissionTorrent]]) -> Union[Torrent, List[Torrent]]:
-        if isinstance(torrents, List[TransmissionTorrent]):
+        if isinstance(torrents, list):
             return [
                 Torrent(
                     torrent.info_hash,
                     torrent.name,
-                    torrent.progress,
+                    torrent.progress / 100,
                     torrent.rate_download,
                     torrent.status,
                     torrent.total_size,
-                    torrent.eta,
+                    0 if torrent.eta is None else torrent.eta.total_seconds(),
                     None
                 )
                 for torrent in torrents
@@ -26,10 +26,10 @@ class TransmissionMapper(Mapper):
         return Torrent(
             torrents.info_hash,
             torrents.name,
-            torrents.progress,
+            torrents.progress / 100,
             torrents.rate_download,
             torrents.status,
             torrents.total_size,
-            torrents.eta,
+            0 if torrents.eta is None else torrents.eta.total_seconds(),
             None
         )

@@ -12,7 +12,7 @@ class UserRolesEnum(str, Enum):
     Administrator = "administrator"
 
 
-class TorrentStatusEnum(str, Enum):
+class TorrentStatusEnum(Enum):
     Downloading = {
         ClientTypeEnum.QBittorrent: 'downloading',
         ClientTypeEnum.Transmission: 'downloading'
@@ -24,6 +24,10 @@ class TorrentStatusEnum(str, Enum):
     Paused = {
         ClientTypeEnum.QBittorrent: 'paused',
         ClientTypeEnum.Transmission: 'stopped'
+    }
+    Stalled = {
+        ClientTypeEnum.QBittorrent: 'stalled',
+        ClientTypeEnum.Transmission: 'download pending'
     }
 
 

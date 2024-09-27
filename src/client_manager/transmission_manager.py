@@ -23,12 +23,16 @@ class TransmissionManager(ClientManager):
         for magnet in magnet_link:
             client.add_torrent(magnet, labels=[category] if category is not None else None)
 
+        return True
+
     @classmethod
     def add_torrent(cls, file_name: str, category: str = None) -> bool:
         """Add one torrent file with or without a category, return true if successful"""
         client = Client(**Configs.config.client.connection_string)
 
         client.add_torrent(file_name, labels=[category] if category is not None else None)
+
+        return True
 
     @classmethod
     def resume_all(cls) -> None:
@@ -149,7 +153,7 @@ class TransmissionManager(ClientManager):
 
         with open(torrent.torrent_file, "rb") as fh:
             bytesio = BytesIO(fh.read())
-            bytesio.name = torrent.name
+            bytesio.name = torrent.name + ".torrent"
 
         return bytesio
 

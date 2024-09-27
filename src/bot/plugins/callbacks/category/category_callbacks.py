@@ -110,7 +110,11 @@ async def category(client: Client, callback_query: CallbackQuery, user: User) ->
     buttons = []
 
     repository = ClientRepo.get_client_manager(Configs.config.client.type)
-    categories = repository.get_categories()
+
+    try:
+        categories = repository.get_categories()
+    except NotImplementedError:
+        categories = []
 
     if categories is None:
         if "magnet" in callback_query.data:
