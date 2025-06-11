@@ -17,7 +17,7 @@ PySocks==1.7.1
 pytz==2023.3.post1
 pytz-deprecation-shim==0.1.0.post0
 qbittorrent-api==2023.11.57
-requests==2.32.0
+requests==2.32.4
 six==1.16.0
 TgCrypto==1.2.5
 tqdm==4.66.3
