@@ -24,6 +24,6 @@ tqdm==4.66.3
 typing_extensions==4.9.0
 tzdata==2023.3
 tzlocal==5.2
-urllib3==2.5.0
+urllib3==2.6.3
 uvloop==0.19.0
 varname==0.12.2
