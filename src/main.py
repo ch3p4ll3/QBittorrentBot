@@ -5,6 +5,7 @@ from os import getenv
 
 from bot.handlers.on_message import get_router
 from redis_helper.wrapper import RedisWrapper
+from settings import Settings
 
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
@@ -22,11 +23,12 @@ async def main() -> None:
     dp = Dispatcher()
     
     # create Redis client
-    redis_client = RedisWrapper(url="redis://localhost:6379")
+    redis_client = RedisWrapper()
     await redis_client.connect()
 
     # register it in dp.dependencies
     dp["redis"] = redis_client
+    dp["settings"] = Settings.load_settings()
 
     # register routers
     dp.include_router(get_router())
