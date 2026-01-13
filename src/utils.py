@@ -2,35 +2,35 @@ from math import log, floor
 import datetime
 from typing import Dict
 
-from pydantic import HttpUrl
-from pyrogram.errors.exceptions import UserIsBlocked
+from aiogram import Bot
 
-from src import db_management
-from src.client_manager import ClientRepo
-from .configs import Configs
-from .configs.enums import ClientTypeEnum, UserRolesEnum
-from .configs.user import User
+from redis_helper.wrapper import RedisWrapper
+from client_manager import ClientRepo
+from settings import Settings
+from settings.enums import ClientTypeEnum, UserRolesEnum
+from settings.user import User
 
 
-async def torrent_finished(app):
-    repository = ClientRepo.get_client_manager(Configs.config.client.type)
+async def torrent_finished(bot: Bot, redis: RedisWrapper):
+    repository = ClientRepo.get_client_manager(Settings.client.type)
 
     for i in repository.get_torrents(status_filter="completed"):
-        if db_management.read_completed_torrents(i.hash) is None:
+        if not redis.exists(i.hash):
 
-            for user in Configs.config.users:
+            for user in Settings.users:
                 if user.notify:
                     try:
-                        await app.send_message(user.user_id, f"torrent {i.name} has finished downloading!")
-                    except UserIsBlocked:
+                        await bot.send_message(user.user_id, f"torrent {i.name} has finished downloading!")
+                    except:
                         pass
-            db_management.write_completed_torrents(i.hash)
+
+            redis.set(i.hash, True)
 
 
 def get_user_from_config(user_id: int) -> User:
     return next(
         iter(
-            [i for i in Configs.config.users if i.user_id == user_id]
+            [i for i in Settings.users if i.user_id == user_id]
         )
     )
 

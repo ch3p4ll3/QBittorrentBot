@@ -1,4 +1,4 @@
-from ...configs.enums import ClientTypeEnum
+from settings.enums import ClientTypeEnum
 from .qbittorrent_mapper import QBittorrentMapper, Mapper
 
 

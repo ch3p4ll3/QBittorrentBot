@@ -1,8 +1,0 @@
-version: '3.9'
-services:
-    qbittorrent-bot:
-        image: 'ch3p4ll3/qbittorrent-bot:latest'
-        container_name: qbittorrent-bot
-        restart: unless-stopped
-        volumes:
-            - '/home/user/docker/QBittorrentBot:/app/config:rw'
