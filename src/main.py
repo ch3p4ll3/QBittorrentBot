@@ -2,6 +2,7 @@ import asyncio
 from pathlib import Path
 
 from aiogram import Bot, Dispatcher
+from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 
@@ -30,7 +31,12 @@ async def main(base_path: Path) -> None:
     settings = Settings.load_settings()
 
     # Initialize Bot instance with default bot properties which will be passed to all API calls
-    bot = Bot(token=settings.telegram.bot_token, default=DefaultBotProperties(parse_mode=ParseMode.MARKDOWN))
+    session = None
+
+    if settings.telegram.proxy is not None:
+        session = AiohttpSession(proxy=settings.telegram.proxy.connection_string)
+
+    bot = Bot(token=settings.telegram.bot_token, default=DefaultBotProperties(parse_mode=ParseMode.MARKDOWN), session=session)
 
     # All handlers should be attached to the Router (or Dispatcher)
     dp = Dispatcher()

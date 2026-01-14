@@ -4,7 +4,7 @@ from .enums import TelegramProxyScheme
 
 
 class TelegramProxy(BaseModel):
-    scheme: TelegramProxyScheme = TelegramProxyScheme.Http  # "socks4", "socks5" and "http" are supported
+    scheme: TelegramProxyScheme = TelegramProxyScheme.Http  # "socks4", "socks5", "http"
     hostname: str
     port: int
     username: Optional[str] = None
@@ -17,5 +17,15 @@ class TelegramProxy(BaseModel):
             hostname=self.hostname,
             port=self.port,
             username=self.username,
-            passowrd=self.password
+            password=self.password  # fixed typo
         )
+
+    @property
+    def connection_string(self) -> str:
+        """
+        Returns the proxy connection string in the format:
+        protocol://user:password@host:port
+        If username/password are not provided, they are omitted.
+        """
+        auth = f"{self.username}:{self.password}@" if self.username and self.password else ""
+        return f"{self.scheme.value}://{auth}{self.hostname}:{self.port}"

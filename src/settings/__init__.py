@@ -1,7 +1,8 @@
 from pathlib import Path
 
 from pydantic import BaseModel
-from yaml import safe_load, dump
+import json
+import yaml
 
 from .client import Client
 from .user import User
@@ -19,7 +20,7 @@ class Settings(BaseModel):
         settings_file_path = Path(__file__).parent.parent.parent / "data/config.yml"
 
         with open(settings_file_path, "w") as settings_file:
-            dump(self.model_dump(mode='json'), settings_file, indent=2)
+            yaml.dump(self.model_dump(mode='json'), settings_file, indent=2)
     
     def update_from(self, new: "Settings") -> None:
         for field in self.model_fields:
@@ -27,18 +28,40 @@ class Settings(BaseModel):
 
     @classmethod
     def load_settings(cls):
-        settings_file_path = Path(__file__).parent.parent.parent / "data/config.yml"
+        base_path = Path(__file__).parent.parent.parent / "data"
+        yml_path = base_path / "config.yml"
+        json_path = base_path / "config.json"
 
-        if not settings_file_path.exists():
+        # If YAML config does not exist
+        if not yml_path.exists():
+            # If old JSON config exists, convert it
+            if json_path.exists():
+                with open(json_path, "r") as json_file:
+                    json_data = json.load(json_file)
+
+                json_data['redis'] = {
+                    'url': None
+                }
+
+                settings = cls(**json_data)
+
+                with open(yml_path, "w") as yml_file:
+                    yaml.dump(settings.model_dump(mode="json"), yml_file, indent=2)
+
+                json_path.unlink()  # delete old config.json
+                return settings
+
+            # Otherwise create default config
             settings = cls.get_default_settings()
 
-            with open(settings_file_path, "w") as settings_file:
-                dump(settings.model_dump(mode='json'), settings_file, indent=2)
+            with open(yml_path, "w") as yml_file:
+                yaml.dump(settings.model_dump(mode="json"), yml_file, indent=2)
 
             return settings
 
-        with open(settings_file_path, "r") as settings_file:
-            return cls(**safe_load(settings_file))
+        # Load existing YAML config
+        with open(yml_path, "r") as yml_file:
+            return cls(**yaml.safe_load(yml_file))
 
     @classmethod
     def get_default_settings(cls):
@@ -66,6 +89,5 @@ class Settings(BaseModel):
                 "url": None
             }
         }
-
 
         return cls(**data)
