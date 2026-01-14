@@ -8,23 +8,9 @@ from client_manager import ClientRepo
 from settings import Settings
 from settings.user import User
 from translator import Translator, Strings
-from utils import convert_size, convert_eta
+from utils import convert_size, convert_eta, format_progress
 
 from ...filters.callbacks import TorrentInfo, Export, Pause, Resume, DeleteOne, Menu
-
-
-def format_progress(progress: float, width: int = 20) -> str:
-    """
-    progress: float from 0.0 to 1.0
-    """
-    progress = max(0.0, min(progress, 1.0))
-    filled = int(progress * width)
-
-    bar = "█" * filled + "░" * (width - filled)
-    percent = int(progress * 100)
-
-    return f"{percent:3d}%|{bar}|\n"
-
 
 
 def get_router():
@@ -73,28 +59,47 @@ def get_router():
 
         buttons = [
             [
-                InlineKeyboardButton(text=Translator.translate(Strings.ExportTorrentBtn, user.locale), callback_data=Export(torrent_hash=callback_data.torrent_hash).pack())
+                InlineKeyboardButton( 
+                    text=Translator.translate(Strings.ExportTorrentBtn, user.locale),
+                    callback_data=Export(torrent_hash=callback_data.torrent_hash).pack()
+                )
             ],
             [
-                InlineKeyboardButton(text=Translator.translate(Strings.PauseTorrentBtn, user.locale), callback_data=Pause(torrent_hash=callback_data.torrent_hash).pack())
+                InlineKeyboardButton(
+                    text=Translator.translate(Strings.PauseTorrentBtn, user.locale),
+                    callback_data=Pause(torrent_hash=callback_data.torrent_hash).pack()
+                )
             ],
             [
-                InlineKeyboardButton(text=Translator.translate(Strings.ResumeTorrentBtn, user.locale), callback_data=Resume(torrent_hash=callback_data.torrent_hash).pack())
+                InlineKeyboardButton(
+                    text=Translator.translate(Strings.ResumeTorrentBtn, user.locale),
+                    callback_data=Resume(torrent_hash=callback_data.torrent_hash).pack()
+                )
             ],
             [
-                InlineKeyboardButton(text=Translator.translate(Strings.DeleteTorrentBtn, user.locale), callback_data=DeleteOne(torrent_hash=callback_data.torrent_hash).pack())
+                InlineKeyboardButton(
+                    text=Translator.translate(Strings.DeleteTorrentBtn, user.locale),
+                    callback_data=DeleteOne(torrent_hash=callback_data.torrent_hash).pack()
+                )
             ],
             [
-                InlineKeyboardButton(text=Translator.translate(Strings.BackToMenu, user.locale), callback_data=Menu().pack())
+                InlineKeyboardButton(
+                    text=Translator.translate(Strings.BackToMenu, user.locale),
+                    callback_data=Menu().pack()
+                )
             ]
         ]
 
-        await bot.edit_message_text(chat_id=callback_query.from_user.id, message_id=callback_query.message.message_id, text=text_to_send,
-                                    reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons))
+        await bot.edit_message_text(
+            chat_id=callback_query.from_user.id,
+            message_id=callback_query.message.message_id,
+            text=text_to_send,
+            reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons)
+        )
 
 
     @router.callback_query(Export.filter())
-    async def export_callback(callback_query: CallbackQuery, callback_data: Export, settings: Settings, bot: Bot, user: User) -> None:
+    async def export_callback(callback_query: CallbackQuery, callback_data: Export, settings: Settings, bot: Bot) -> None:
         repository_class = ClientRepo.get_client_manager(settings.client.type)
         file_bytes = repository_class(settings).export_torrent(callback_data.torrent_hash)
 

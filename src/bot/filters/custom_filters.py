@@ -8,18 +8,6 @@ from settings.enums import UserRolesEnum
 from aiogram import F as filters
 
 
-# Categories filters
-menu_category_filter = filters.regexp(r"^menu_categories$")
-add_category_filter = filters.regexp(r"^add_category$")
-remove_category_filter = filters.regexp(r'^remove_category(#.+|$)?$')
-modify_category_filter = filters.regexp(r'^modify_category(#.+|$)?$')
-category_filter = filters.regexp(r'^category(#.+|$)?$')
-select_category_filter = filters.regexp(r'^select_category(#.+|$)?$')
-
-# Add filters
-add_magnet_filter = filters.regexp(r'^add_magnet(#.+|$)?$')
-add_torrent_filter = filters.regexp(r'^add_torrent(#.+|$)?$')
-
 # Pause/Resume filters
 menu_pause_resume_filter = filters.regexp(r"^menu_pause_resume$")
 pause_all_filter = filters.regexp(r"^pause_all$")
@@ -49,11 +37,3 @@ check_connection_filter = filters.regexp(r"^check_connection$")
 edit_client_setting_filter = filters.regexp(r'^edit_clt(#.+|$)?$')
 reload_settings_filter = filters.regexp(r"^reload_settings$")
 toggle_speed_limit_filter = filters.regexp(r"^toggle_speed_limit$")
-
-
-# Other
-export_filter = filters.regexp(r'^export(#.+|$)?$')
-torrentInfo_filter = filters.regexp(r'^torrentInfo(#.+|$)?$')
-menu_filter = filters.regexp(r"^menu$")
-list_filter = filters.regexp(r"^list$")
-list_by_status_filter = filters.regexp(r'^by_status_list(#.+|$)?$')

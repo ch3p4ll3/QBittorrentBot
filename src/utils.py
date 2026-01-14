@@ -49,6 +49,19 @@ def convert_eta(n) -> str:
     return str(datetime.timedelta(seconds=n))
 
 
+def format_progress(progress: float, width: int = 20) -> str:
+    """
+    progress: float from 0.0 to 1.0
+    """
+    progress = max(0.0, min(progress, 1.0))
+    filled = int(progress * width)
+
+    bar = "█" * filled + "░" * (width - filled)
+    percent = int(progress * 100)
+
+    return f"{percent:3d}%|{bar}|\n"
+
+
 def convert_type_from_string(input_type: str):
     if "int" in input_type:
         return int
