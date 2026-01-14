@@ -1,6 +1,5 @@
-from aiogram.filters import BaseFilter
-from aiogram.types import Message
-from aiogram.types import CallbackQuery
+from aiogram.filters import Filter
+from aiogram.types import Message, CallbackQuery
 
 from settings import Settings
 from utils import get_user_from_config
@@ -10,13 +9,13 @@ from aiogram import F as filters
 
 
 # Authorization filters
-class IsAuthorizedUser(BaseFilter):
-    async def __call__(self, message: Message) -> bool:
-        allowed_ids = {i.user_id for i in Settings.users}
+class IsAuthorizedUser(Filter):
+    async def __call__(self, message: Message, settings: Settings) -> bool:
+        allowed_ids = {i.user_id for i in settings.users}
         return message.from_user.id in allowed_ids
 
 
-class HasRole(BaseFilter):
+class HasRole(Filter):
     def __init__(self, role: UserRolesEnum):
         self.role = role
 

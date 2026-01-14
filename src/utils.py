@@ -11,8 +11,8 @@ from settings.enums import ClientTypeEnum, UserRolesEnum
 from settings.user import User
 
 
-async def torrent_finished(bot: Bot, redis: RedisWrapper):
-    repository = ClientRepo.get_client_manager(Settings.client.type)
+async def torrent_finished(bot: Bot, redis: RedisWrapper, settings: Settings):
+    repository = ClientRepo.get_client_manager(settings.client.type)
 
     for i in repository.get_torrents(status_filter="completed"):
         if not redis.exists(i.hash):
@@ -27,11 +27,12 @@ async def torrent_finished(bot: Bot, redis: RedisWrapper):
             redis.set(i.hash, True)
 
 
-def get_user_from_config(user_id: int) -> User:
+def get_user_from_config(user_id: int, settings: Settings) -> User:
+    print(settings.users, user_id)
     return next(
         iter(
-            [i for i in Settings.users if i.user_id == user_id]
-        )
+            [i for i in settings.users if i.user_id == user_id]
+        ), None
     )
 
 

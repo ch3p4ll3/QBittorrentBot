@@ -8,3 +8,5 @@ venv
 .git
 *.session
 *.session-journal
+docs/
+data/

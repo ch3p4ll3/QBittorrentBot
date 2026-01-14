@@ -1,52 +1,63 @@
-from pyrogram import Client, filters
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
+from aiogram import F
+from aiogram import Bot
+from aiogram.types import Message
+from aiogram.types.inline_keyboard_markup import InlineKeyboardMarkup
+from aiogram.types.inline_keyboard_button import InlineKeyboardButton
+from aiogram.dispatcher.router import Router
+from aiogram.filters import CommandStart, Command
+
 import psutil
 
-from .. import custom_filters
-from ...db_management import write_support
-from ...utils import convert_size, inject_user
+from ..custom_filters import IsAuthorizedUser
+from redis_helper.wrapper import RedisWrapper
+from utils import convert_size, inject_user
 from .common import send_menu
-from ...settings.user import User
-from ...translator import Translator, Strings
+from settings import User, Settings
+from translator import Translator, Strings
 
 
-@Client.on_message(~custom_filters.check_user_filter)
-async def access_denied_message(client: Client, message: Message) -> None:
-    button = InlineKeyboardMarkup(
-        [
+def get_router():
+    router = Router()
+
+    @router.message(~IsAuthorizedUser())
+    async def access_denied_message(message: Message) -> None:
+        buttons = [
             [
                 InlineKeyboardButton(
-                    "Github",
+                    text="Github",
                     url="https://github.com/ch3p4ll3/QBittorrentBot/"
                 )
             ]
         ]
-    )
 
-    await client.send_message(message.chat.id, "You are not authorized to use this bot", reply_markup=button)
+        markup = InlineKeyboardMarkup(inline_keyboard=buttons)
 
-
-@Client.on_message(filters.command("start") & custom_filters.check_user_filter)
-async def start_command(client: Client, message: Message) -> None:
-    """Start the bot."""
-    write_support("None", message.chat.id)
-    await send_menu(client, message.id, message.chat.id)
+        await message.reply("You are not authorized to use this bot", reply_markup=markup)
 
 
-@Client.on_message(filters.command("stats") & custom_filters.check_user_filter)
-@inject_user
-async def stats_command(client: Client, message: Message, user: User) -> None:
-    stats_text = Translator.translate(
-        Strings.StatsCommand,
-        user.locale,
-        cpu_usage=psutil.cpu_percent(interval=None),
-        cpu_temp=psutil.sensors_temperatures()['coretemp'][0].current,
-        free_memory=convert_size(psutil.virtual_memory().available),
-        total_memory=convert_size(psutil.virtual_memory().total),
-        memory_percent=psutil.virtual_memory().percent,
-        disk_used=convert_size(psutil.disk_usage('/mnt').used),
-        disk_total=convert_size(psutil.disk_usage('/mnt').total),
-        disk_percent=psutil.disk_usage('/mnt').percent
-    )
+    @router.message(Command("start"), IsAuthorizedUser())
+    async def start_command(message: Message, redis: RedisWrapper, bot: Bot, settings: Settings) -> None:
+        """Start the bot."""
+        await redis.set(f"action:{message.from_user.id}", None)
+        await send_menu(bot, redis, settings, message.chat.id, message.message_id)
 
-    await client.send_message(message.chat.id, stats_text)
+
+    @router.message(Command("stats"), IsAuthorizedUser())
+    @inject_user
+    async def stats_command(message: Message, user: User) -> None:
+        stats_text = Translator.translate(
+            Strings.StatsCommand,
+            user.locale,
+            cpu_usage=psutil.cpu_percent(interval=None),
+            cpu_temp=psutil.sensors_temperatures()['coretemp'][0].current,
+            free_memory=convert_size(psutil.virtual_memory().available),
+            total_memory=convert_size(psutil.virtual_memory().total),
+            memory_percent=psutil.virtual_memory().percent,
+            disk_used=convert_size(psutil.disk_usage('/mnt').used),
+            disk_total=convert_size(psutil.disk_usage('/mnt').total),
+            disk_percent=psutil.disk_usage('/mnt').percent
+        )
+
+        await message.reply(stats_text)
+
+    return router

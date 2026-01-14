@@ -7,6 +7,7 @@ requires-python = ">=3.13"
 dependencies = [
     "aiogram>=3.24.0",
     "apscheduler>=3.11.2",
+    "psutil>=7.2.1",
     "pydantic>=2.12.5",
     "pyyaml>=6.0.3",
     "qbittorrent-api>=2025.11.1",

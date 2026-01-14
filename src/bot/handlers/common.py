@@ -14,34 +14,34 @@ from translator import Translator, Strings
 logger = logging.getLogger(__name__)
 
 
-async def send_menu(bot: Bot, redis: RedisWrapper, chat_id: int, message_id: Optional[int] = None) -> None:
-    user = get_user_from_config(chat_id)
+async def send_menu(bot: Bot, redis: RedisWrapper, settings: Settings, chat_id: int, message_id: Optional[int] = None) -> None:
+    user = get_user_from_config(chat_id, settings)
     
     # Build buttons
     buttons = [
-        [InlineKeyboardButton(Translator.translate(Strings.MenuList, user.locale), callback_data="list")]
+        [InlineKeyboardButton(text=Translator.translate(Strings.MenuList, user.locale), callback_data="list")]
     ]
 
     if user.role in [UserRolesEnum.Manager, UserRolesEnum.Administrator]:
         buttons += [
             [
                 InlineKeyboardButton(
-                    Translator.translate(Strings.AddMagnet, user.locale),
+                    text=Translator.translate(Strings.AddMagnet, user.locale),
                     callback_data="category#add_magnet"
                 ),
                 InlineKeyboardButton(
-                    Translator.translate(Strings.AddTorrent, user.locale),
+                    text=Translator.translate(Strings.AddTorrent, user.locale),
                     callback_data="category#add_torrent"
                 )
             ],
-            [InlineKeyboardButton(Translator.translate(Strings.PauseResume, user.locale), callback_data="menu_pause_resume")]
+            [InlineKeyboardButton(text=Translator.translate(Strings.PauseResume, user.locale), callback_data="menu_pause_resume")]
         ]
 
     if user.role == UserRolesEnum.Administrator:
         buttons += [
-            [InlineKeyboardButton(Translator.translate(Strings.Delete, user.locale), callback_data="menu_delete")],
-            [InlineKeyboardButton(Translator.translate(Strings.Categories, user.locale), callback_data="menu_categories")],
-            [InlineKeyboardButton(Translator.translate(Strings.Settings, user.locale), callback_data="settings")]
+            [InlineKeyboardButton(text=Translator.translate(Strings.Delete, user.locale), callback_data="menu_delete")],
+            [InlineKeyboardButton(text=Translator.translate(Strings.Categories, user.locale), callback_data="menu_categories")],
+            [InlineKeyboardButton(text=Translator.translate(Strings.Settings, user.locale), callback_data="settings")]
         ]
 
     await redis.set(f"action:{chat_id}", None)

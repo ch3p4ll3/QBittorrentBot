@@ -6,22 +6,26 @@ from yaml import safe_load, dump
 from .client import Client
 from .user import User
 from .telegram import Telegram
+from .redis import Redis
 
 
 class Settings(BaseModel):
     client: Client
     telegram: Telegram
     users: list[User]
+    redis: Redis
 
     def export_settings(self):
-        settings_file_path = Path(__file__).parent.parent / "data/config.yml"
+        settings_file_path = Path(__file__).parent.parent.parent / "data/config.yml"
 
         with open(settings_file_path, "w") as settings_file:
             dump(self.model_dump(mode='json'), settings_file, indent=2)
 
     @classmethod
     def load_settings(cls):
-        settings_file_path = Path(__file__).parent.parent / "data/config.yml"
+        settings_file_path = Path(__file__).parent.parent.parent / "data/config.yml"
+
+        print(settings_file_path)
 
         if not settings_file_path.exists():
             settings = cls.get_default_settings()
@@ -54,7 +58,11 @@ class Settings(BaseModel):
                 "locale": "en",
                 "notify": True
                 }
-            ]
+            ],
+
+            "redis": {
+                "url": None
+            }
         }
 
 

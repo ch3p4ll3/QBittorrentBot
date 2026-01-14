@@ -1,42 +1,44 @@
 import asyncio
-import logging
-import sys
+from pathlib import Path
 from os import getenv
 
-from bot.handlers.on_message import get_router
+from bot.handlers import get_commands_router, get_on_message_router
 from redis_helper.wrapper import RedisWrapper
 from settings import Settings
+from logger import configure_logger
 
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 
-# Bot token can be obtained via https://t.me/BotFather
-TOKEN = getenv("BOT_TOKEN")
-
 
 async def main() -> None:
+    settings = Settings.load_settings()
+
     # Initialize Bot instance with default bot properties which will be passed to all API calls
-    bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.MARKDOWN_V2))
+    bot = Bot(token=settings.telegram.bot_token, default=DefaultBotProperties(parse_mode=ParseMode.MARKDOWN_V2))
 
     # All handlers should be attached to the Router (or Dispatcher)
     dp = Dispatcher()
     
     # create Redis client
-    redis_client = RedisWrapper()
+    redis_client = RedisWrapper(url=settings.redis.url)
     await redis_client.connect()
 
     # register it in dp.dependencies
     dp["redis"] = redis_client
-    dp["settings"] = Settings.load_settings()
+    dp["settings"] = settings
 
     # register routers
-    dp.include_router(get_router())
+    #dp.include_router(get_on_message_router())
+    dp.include_router(get_commands_router())
 
     # And the run events dispatching
     await dp.start_polling(bot)
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, stream=sys.stdout)
+    base_path = Path(__file__).parent.parent
+
+    configure_logger(base_path)
     asyncio.run(main())
