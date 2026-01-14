@@ -1,7 +1,7 @@
 from pyrogram import Client
 from pyrogram.types import CallbackQuery
 from .... import db_management
-from ... import custom_filters
+from ...filters import custom_filters
 from ....settings.user import User
 from ....translator import Translator, Strings
 from ....utils import inject_user

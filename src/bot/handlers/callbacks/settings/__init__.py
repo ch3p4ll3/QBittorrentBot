@@ -1,6 +1,6 @@
 from pyrogram import Client
 from pyrogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
-from .... import custom_filters
+from ....filters import custom_filters
 from .....settings.user import User
 from .....utils import inject_user
 from .....translator import Translator, Strings

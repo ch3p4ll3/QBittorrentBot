@@ -4,14 +4,15 @@ from client_manager import ClientRepo
 from .common import send_menu
 from settings import Settings
 from settings.user import User
-from utils import convert_type_from_string, inject_user
-from ..custom_filters import IsAuthorizedUser
+from utils import convert_type_from_string
+from ..filters import GetUser, IsAuthorizedUser, IsCommand
 from translator import Translator, Strings
 from redis_helper.wrapper import RedisWrapper
 
 from aiogram import F
 from aiogram import Bot
 from aiogram.types import Message
+from aiogram.filters import Command
 from aiogram.dispatcher.router import Router
 
 
@@ -145,11 +146,9 @@ def get_router():
             logger.exception(f"Error converting value \"{message.text}\" to type \"{data_type}\"", exc_info=True)
 
 
-    @router.message(IsAuthorizedUser(), ~F.from_user.is_bot)
-    @inject_user
+    @router.message(~F.from_user.is_bot, ~IsCommand(), IsAuthorizedUser(), GetUser())
     async def on_message(message: Message, redis: RedisWrapper, bot: Bot, settings: Settings, user: User) -> None:
-        action = await redis.get(f"action:{message.from_user.id}")
-        print(user)
+        action = await redis.get(f"action:{message.from_user.id}") or ""
 
         if "magnet" in action:
             await on_magnet(message, user, redis, bot, settings)

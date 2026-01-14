@@ -8,22 +8,6 @@ from settings.enums import UserRolesEnum
 from aiogram import F as filters
 
 
-# Authorization filters
-class IsAuthorizedUser(Filter):
-    async def __call__(self, message: Message, settings: Settings) -> bool:
-        allowed_ids = {i.user_id for i in settings.users}
-        return message.from_user.id in allowed_ids
-
-
-class HasRole(Filter):
-    def __init__(self, role: UserRolesEnum):
-        self.role = role
-
-    async def __call__(self, query: CallbackQuery) -> bool:
-        user = get_user_from_config(query.from_user.id)
-        return user and user.role == self.role
-
-
 # Categories filters
 menu_category_filter = filters.regexp(r"^menu_categories$")
 add_category_filter = filters.regexp(r"^add_category$")

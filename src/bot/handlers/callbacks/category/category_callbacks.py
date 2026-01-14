@@ -4,7 +4,7 @@ from pyrogram.errors.exceptions import MessageIdInvalid
 
 from ..add_torrents_callbacks import add_magnet_callback, add_torrent_callback
 from ..... import db_management
-from .... import custom_filters
+from ....filters import custom_filters
 from .....client_manager import ClientRepo
 from .....settings import Configs
 

@@ -1,7 +1,7 @@
 from pyrogram import Client
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 
-from .... import custom_filters
+from ....filters import custom_filters
 from .....client_manager import ClientRepo
 from ...common import send_menu, list_active_torrents
 from .....settings import Configs

@@ -1,6 +1,6 @@
 from pyrogram import Client
 from pyrogram.types import CallbackQuery
-from ... import custom_filters
+from ...filters import custom_filters
 from ..common import list_active_torrents, send_menu
 
 

@@ -28,7 +28,6 @@ async def torrent_finished(bot: Bot, redis: RedisWrapper, settings: Settings):
 
 
 def get_user_from_config(user_id: int, settings: Settings) -> User:
-    print(settings.users, user_id)
     return next(
         iter(
             [i for i in settings.users if i.user_id == user_id]
@@ -72,11 +71,3 @@ def get_value(locales_dict: Dict, key_string: str) -> str:
     else:
         head, tail = key_string.split('.', 1)
         return get_value(locales_dict[head], tail)
-
-
-def inject_user(func):
-    async def wrapper(client, message):
-        user = get_user_from_config(message.from_user.id)
-        await func(client, message, user)
-    
-    return wrapper

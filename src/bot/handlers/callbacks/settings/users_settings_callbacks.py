@@ -3,7 +3,7 @@ from pyrogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardBu
 from varname import nameof
 from pykeyboard import InlineKeyboard, InlineButton
 
-from .... import custom_filters
+from ....filters import custom_filters
 from .....settings import Configs
 from .....settings.user import User
 from .....db_management import write_support

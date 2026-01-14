@@ -8,7 +8,7 @@ from aiogram.filters import CommandStart, Command
 
 import psutil
 
-from ..custom_filters import IsAuthorizedUser
+from ..filters import IsAuthorizedUser, GetUser
 from redis_helper.wrapper import RedisWrapper
 from utils import convert_size, inject_user
 from .common import send_menu
@@ -35,21 +35,25 @@ def get_router():
         await message.reply("You are not authorized to use this bot", reply_markup=markup)
 
 
-    @router.message(Command("start"), IsAuthorizedUser())
+    @router.message(CommandStart(), IsAuthorizedUser())
     async def start_command(message: Message, redis: RedisWrapper, bot: Bot, settings: Settings) -> None:
         """Start the bot."""
         await redis.set(f"action:{message.from_user.id}", None)
         await send_menu(bot, redis, settings, message.chat.id, message.message_id)
 
 
-    @router.message(Command("stats"), IsAuthorizedUser())
-    @inject_user
+    @router.message(Command("stats"), IsAuthorizedUser(), GetUser())
     async def stats_command(message: Message, user: User) -> None:
+        try:
+            cpu_temp = psutil.sensors_temperatures()['coretemp'][0].current
+        except:
+            cpu_temp = 0
+
         stats_text = Translator.translate(
             Strings.StatsCommand,
             user.locale,
             cpu_usage=psutil.cpu_percent(interval=None),
-            cpu_temp=psutil.sensors_temperatures()['coretemp'][0].current,
+            cpu_temp=cpu_temp,
             free_memory=convert_size(psutil.virtual_memory().available),
             total_memory=convert_size(psutil.virtual_memory().total),
             memory_percent=psutil.virtual_memory().percent,

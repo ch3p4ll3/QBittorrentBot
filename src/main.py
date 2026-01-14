@@ -16,7 +16,7 @@ async def main() -> None:
     settings = Settings.load_settings()
 
     # Initialize Bot instance with default bot properties which will be passed to all API calls
-    bot = Bot(token=settings.telegram.bot_token, default=DefaultBotProperties(parse_mode=ParseMode.MARKDOWN_V2))
+    bot = Bot(token=settings.telegram.bot_token, default=DefaultBotProperties(parse_mode=ParseMode.MARKDOWN))
 
     # All handlers should be attached to the Router (or Dispatcher)
     dp = Dispatcher()
@@ -30,7 +30,7 @@ async def main() -> None:
     dp["settings"] = settings
 
     # register routers
-    #dp.include_router(get_on_message_router())
+    dp.include_router(get_on_message_router())
     dp.include_router(get_commands_router())
 
     # And the run events dispatching
