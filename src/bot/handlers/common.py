@@ -10,7 +10,7 @@ from client_manager import ClientRepo
 from utils import get_user_from_config
 from settings.enums import UserRolesEnum
 from translator import Translator, Strings
-from ..filters.callbacks import CategoryAction, CategoryMenu
+from ..filters.callbacks import CategoryAction, CategoryMenu, ListByStatus, List, TorrentInfo
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +20,7 @@ async def send_menu(bot: Bot, redis: RedisWrapper, settings: Settings, chat_id: 
     
     # Build buttons
     buttons = [
-        [InlineKeyboardButton(text=Translator.translate(Strings.MenuList, user.locale), callback_data="list")]
+        [InlineKeyboardButton(text=Translator.translate(Strings.MenuList, user.locale), callback_data=List().pack())]
     ]
 
     if user.role in [UserRolesEnum.Manager, UserRolesEnum.Administrator]:
@@ -75,26 +75,27 @@ async def list_active_torrents(
     bot: Bot,
     chat_id: int,
     message_id: int,
+    settings: Settings,
     callback: Optional[str] = None,
     status_filter: Optional[str] = None
 ) -> None:
-    user = get_user_from_config(chat_id)
-    repository = ClientRepo.get_client_manager(Settings.client.type)
-    torrents = repository.get_torrents(status_filter=status_filter)
+    user = get_user_from_config(chat_id, settings)
+    repository_class = ClientRepo.get_client_manager(settings.client.type)
+    torrents = repository_class(settings).get_torrents(status_filter=status_filter)
 
     # Status filter buttons
     categories_buttons = [
         InlineKeyboardButton(
             text=Translator.translate(Strings.ListFilterDownloading, user.locale, active='*' if status_filter == 'downloading' else ''),
-            callback_data="by_status_list#downloading"
+            callback_data=ListByStatus(status="downloading").pack()
         ),
         InlineKeyboardButton(
             text=Translator.translate(Strings.ListFilterCompleted, user.locale, active='*' if status_filter == 'completed' else ''),
-            callback_data="by_status_list#completed"
+            callback_data=ListByStatus(status="completed").pack()
         ),
         InlineKeyboardButton(
             text=Translator.translate(Strings.ListFilterPaused, user.locale, active='*' if status_filter == 'paused' else ''),
-            callback_data="by_status_list#paused"
+            callback_data=ListByStatus(status="paused").pack()
         )
     ]
 
@@ -122,7 +123,7 @@ async def list_active_torrents(
         if callback:
             buttons.append([InlineKeyboardButton(text=torrent.name, callback_data=f"{callback}#{torrent.hash}")])
         else:
-            buttons.append([InlineKeyboardButton(text=torrent.name, callback_data=f"torrentInfo#{torrent.hash}")])
+            buttons.append([InlineKeyboardButton(text=torrent.name, callback_data=TorrentInfo(torrent_hash=torrent.hash).pack())])
 
     buttons.append([InlineKeyboardButton(text=Translator.translate(Strings.BackToMenu, user.locale), callback_data="menu")])
     markup = InlineKeyboardMarkup(inline_keyboard=buttons)

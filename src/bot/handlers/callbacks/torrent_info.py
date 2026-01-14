@@ -1,86 +1,106 @@
-from tqdm import tqdm
+#from tqdm import tqdm
 
-from pyrogram import Client
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
+from aiogram import Bot, Router
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.types import BufferedInputFile, CallbackQuery
 
-from ...filters import custom_filters
-from ....client_manager import ClientRepo
-from ....settings import Configs
-from ....settings.user import User
-from ....translator import Translator, Strings
-from ....utils import convert_size, convert_eta, inject_user
+from client_manager import ClientRepo
+from settings import Settings
+from settings.user import User
+from translator import Translator, Strings
+from utils import convert_size, convert_eta
+
+from ...filters.callbacks import TorrentInfo, Export, Pause, Resume, DeleteOne, Menu
 
 
-@Client.on_callback_query(custom_filters.torrentInfo_filter & custom_filters.check_user_filter)
-@inject_user
-async def torrent_info_callback(client: Client, callback_query: CallbackQuery, user: User) -> None:
-    repository = ClientRepo.get_client_manager(Configs.config.client.type)
-    torrent = repository.get_torrent(callback_query.data.split("#")[1])
+def format_progress(progress: float, width: int = 20) -> str:
+    """
+    progress: float from 0.0 to 1.0
+    """
+    progress = max(0.0, min(progress, 1.0))
+    filled = int(progress * width)
 
-    text = f"{torrent.name}\n"
+    bar = "█" * filled + "░" * (width - filled)
+    percent = int(progress * 100)
 
-    if torrent.progress == 1:
-        text += Translator.translate(Strings.TorrentCompleted, user.locale)
+    return f"{percent:3d}%|{bar}|\n"
 
-    else:
-        text += f"{tqdm.format_meter(torrent.progress, 1, 0, bar_format='{l_bar}{bar}|')}\n"
 
-    if "stalled" not in torrent.state:
-        text += Translator.translate(
-            Strings.TorrentState,
+
+def get_router():
+    router = Router()
+
+    @router.callback_query(TorrentInfo.filter())
+    async def torrent_info_callback(callback_query: CallbackQuery, callback_data: TorrentInfo, settings: Settings, bot: Bot, user: User) -> None:
+        repository_class = ClientRepo.get_client_manager(settings.client.type)
+        torrent = repository_class(settings).get_torrent(callback_data.torrent_hash)
+
+        text_to_send = f"{torrent.name}\n"
+
+        if torrent.progress == 1:
+            text_to_send += Translator.translate(Strings.TorrentCompleted, user.locale)
+
+        else:
+            text_to_send += format_progress(torrent.progress)
+
+        if "stalled" not in torrent.state:
+            text_to_send += Translator.translate(
+                Strings.TorrentState,
+                user.locale,
+                current_state=torrent.state.capitalize(),
+                download_speed=convert_size(torrent.dlspeed)
+            )
+
+        text_to_send += Translator.translate(
+            Strings.TorrentSize,
             user.locale,
-            current_state=torrent.state.capitalize(),
-            download_speed=convert_size(torrent.dlspeed)
+            torrent_size=convert_size(torrent.size)
         )
 
-    text += Translator.translate(
-        Strings.TorrentSize,
-        user.locale,
-        torrent_size=convert_size(torrent.size)
-    )
+        if "stalled" not in torrent.state:
+            text_to_send += Translator.translate(
+                Strings.TorrentEta,
+                user.locale,
+                torrent_eta=convert_eta(int(torrent.eta))
+            )
 
-    if "stalled" not in torrent.state:
-        text += Translator.translate(
-            Strings.TorrentEta,
-            user.locale,
-            torrent_eta=convert_eta(int(torrent.eta))
-        )
+        if torrent.category:
+            text_to_send += Translator.translate(
+                Strings.TorrentCategory,
+                user.locale,
+                torrent_category=torrent.category
+            )
 
-    if torrent.category:
-        text += Translator.translate(
-            Strings.TorrentCategory,
-            user.locale,
-            torrent_category=torrent.category
-        )
-
-    buttons = [
-        [
-            InlineKeyboardButton(Translator.translate(Strings.ExportTorrentBtn, user.locale), f"export#{callback_query.data.split('#')[1]}")
-        ],
-        [
-           InlineKeyboardButton(Translator.translate(Strings.PauseTorrentBtn, user.locale), f"pause#{callback_query.data.split('#')[1]}")
-        ],
-        [
-           InlineKeyboardButton(Translator.translate(Strings.ResumeTorrentBtn, user.locale), f"resume#{callback_query.data.split('#')[1]}")
-        ],
-        [
-           InlineKeyboardButton(Translator.translate(Strings.DeleteTorrentBtn, user.locale), f"delete_one#{callback_query.data.split('#')[1]}")
-        ],
-        [
-           InlineKeyboardButton(Translator.translate(Strings.BackToMenu, user.locale), "menu")
+        buttons = [
+            [
+                InlineKeyboardButton(text=Translator.translate(Strings.ExportTorrentBtn, user.locale), callback_data=Export(torrent_hash=callback_data.torrent_hash).pack())
+            ],
+            [
+                InlineKeyboardButton(text=Translator.translate(Strings.PauseTorrentBtn, user.locale), callback_data=Pause(torrent_hash=callback_data.torrent_hash).pack())
+            ],
+            [
+                InlineKeyboardButton(text=Translator.translate(Strings.ResumeTorrentBtn, user.locale), callback_data=Resume(torrent_hash=callback_data.torrent_hash).pack())
+            ],
+            [
+                InlineKeyboardButton(text=Translator.translate(Strings.DeleteTorrentBtn, user.locale), callback_data=DeleteOne(torrent_hash=callback_data.torrent_hash).pack())
+            ],
+            [
+                InlineKeyboardButton(text=Translator.translate(Strings.BackToMenu, user.locale), callback_data=Menu().pack())
+            ]
         ]
-    ]
 
-    await client.edit_message_text(callback_query.from_user.id, callback_query.message.id, text=text,
-                                   reply_markup=InlineKeyboardMarkup(buttons))
+        await bot.edit_message_text(chat_id=callback_query.from_user.id, message_id=callback_query.message.message_id, text=text_to_send,
+                                    reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons))
 
 
-@Client.on_callback_query(custom_filters.export_filter & custom_filters.check_user_filter)
-async def export_callback(client: Client, callback_query: CallbackQuery) -> None:
-    repository = ClientRepo.get_client_manager(Configs.config.client.type)
-    file_bytes = repository.export_torrent(torrent_hash=callback_query.data.split("#")[1])
+    @router.callback_query(Export.filter())
+    async def export_callback(callback_query: CallbackQuery, callback_data: Export, settings: Settings, bot: Bot, user: User) -> None:
+        repository_class = ClientRepo.get_client_manager(settings.client.type)
+        file_bytes = repository_class(settings).export_torrent(callback_data.torrent_hash)
 
-    await client.send_document(
-        callback_query.from_user.id,
-        file_bytes
-    )
+        await bot.send_document(
+            callback_query.from_user.id,
+            BufferedInputFile(file_bytes.read(), file_bytes.name)
+        )
+
+    return router
