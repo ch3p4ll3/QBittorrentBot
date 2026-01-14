@@ -1,143 +1,176 @@
-from pyrogram import Client
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
-from pyrogram.errors.exceptions import MessageIdInvalid
+from aiogram import Bot, Router
+from aiogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
 
-from ..add_torrents_callbacks import add_magnet_callback, add_torrent_callback
-from ..... import db_management
-from ....filters import custom_filters
-from .....client_manager import ClientRepo
-from .....settings import Configs
+from client_manager import ClientRepo
+from settings import Settings, User
+from settings.enums import UserRolesEnum
+from redis_helper.wrapper import RedisWrapper
 
-from .....settings.user import User
-from .....utils import inject_user
-from .....translator import Translator, Strings
+from ....filters import HasRole
+from ....filters.callbacks import AddCategory, SelectCategory, CategoryMenu, Menu, RemoveCategory, ModifyCategory, CategoryAction, AddMagnet, AddTorrent
+
+from translator import Translator, Strings
 
 
-@Client.on_callback_query(custom_filters.add_category_filter & custom_filters.check_user_filter & (custom_filters.user_is_administrator | custom_filters.user_is_manager))
-@inject_user
-async def add_category_callback(client: Client, callback_query: CallbackQuery, user: User) -> None:
-    db_management.write_support("category_name", callback_query.from_user.id)
-    button = InlineKeyboardMarkup([[InlineKeyboardButton(Translator.translate(Strings.BackToMenu, user.locale), "menu")]])
-    try:
-        await client.edit_message_text(
+def get_router():
+    router = Router()
+
+    @router.callback_query(CategoryMenu.filter(), HasRole(UserRolesEnum.Administrator))
+    async def menu_category_callback(callback_query: CallbackQuery, callback_data: CategoryMenu, user: User) -> None:
+        print(callback_data)
+        await callback_query.edit_message_text(
+            "Pause/Resume a download",
+            reply_markup=InlineKeyboardMarkup(
+                inline_keyboard=[
+                    [
+                        InlineKeyboardButton(text=Translator.translate(Strings.AddCategory, user.locale), callback_data=AddCategory().pack()),
+                    ],
+                    [
+                        InlineKeyboardButton(text=Translator.translate(Strings.RemoveCategory, user.locale), callback_data=SelectCategory(action="remove_category").pack())
+                    ],
+                    [
+                        InlineKeyboardButton(text=Translator.translate(Strings.EditCategory, user.locale), callback_data=SelectCategory(action="modify_category").pack())],
+                    [
+                        InlineKeyboardButton(text=Translator.translate(Strings.BackToMenu, user.locale), callback_data=Menu().pack())
+                    ]
+                ]
+            )
+        )
+
+    @router.callback_query(AddCategory.filter(), HasRole(UserRolesEnum.Administrator))
+    @router.callback_query(AddCategory.filter(), HasRole(UserRolesEnum.Manager))
+    async def add_category_callback(callback_query: CallbackQuery, bot: Bot, redis: RedisWrapper, user: User) -> None:
+        redis.set(f"action:{callback_query.from_user.id}", "category_name")
+        button = InlineKeyboardMarkup(
+            inline_keyboard=[
+                [
+                    InlineKeyboardButton(text=Translator.translate(Strings.BackToMenu, user.locale), callback_data=Menu().pack())
+                ]
+            ]
+        )
+
+        try:
+            await bot.edit_message_text(
+                callback_query.from_user.id,
+                callback_query.message.id,
+                Translator.translate(Strings.NewCategoryName, user.locale),
+                reply_markup=button
+            )
+
+        except Exception:
+            await bot.send_message(
+                callback_query.from_user.id,
+                Translator.translate(Strings.NewCategoryName, user.locale),
+                reply_markup=button
+            )
+
+
+    @router.callback_query(SelectCategory.filter(), HasRole(UserRolesEnum.Administrator))
+    @router.callback_query(SelectCategory.filter(), HasRole(UserRolesEnum.Manager))
+    async def list_categories(callback_query: CallbackQuery, callback_data: SelectCategory, bot: Bot, settings: Settings, user: User):
+        buttons = []
+
+        repository_class_class = ClientRepo.get_client_manager(settings.client.type)
+        categories = repository_class_class(settings).get_categories()
+
+        if categories is None:
+            buttons.append([InlineKeyboardButton(text=Translator.translate(Strings.BackToMenu, user.locale), callback_data=Menu().pack())])
+
+            await bot.edit_message_text(
+                callback_query.from_user.id,
+                callback_query.message.id,
+                Translator.translate(Strings.NoCategory, user.locale),
+                reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons)
+            )
+
+            return
+
+        for _, i in enumerate(categories):
+            buttons.append([InlineKeyboardButton(text=i, callback_data=f"{callback_data.action}#{i}")])
+
+        buttons.append([InlineKeyboardButton(text=Translator.translate(Strings.BackToMenu, user.locale), callback_data=Menu().pack())])
+
+        try:
+            await bot.edit_message_text(
+                callback_query.from_user.id,
+                callback_query.message.id,
+                Translator.translate(Strings.ChooseCategory, user.locale),
+                reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons)
+            )
+
+        except Exception:
+            await bot.send_message(
+                callback_query.from_user.id,
+                Translator.translate(Strings.ChooseCategory, user.locale),
+                reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons)
+            )
+
+
+    @router.callback_query(RemoveCategory.filter(), HasRole(UserRolesEnum.Administrator))
+    async def remove_category_callback(callback_query: CallbackQuery, callback_data: RemoveCategory, bot: Bot, settings: Settings, user: User) -> None:
+        buttons = [
+            [
+                InlineKeyboardButton(text=Translator.translate(Strings.BackToMenu, user.locale), callback_data=Menu().pack())
+            ]
+        ]
+
+        repository_class = ClientRepo.get_client_manager(settings.client.type)
+        repository_class(settings).remove_category(callback_data.category)
+
+        await bot.edit_message_text(
             callback_query.from_user.id,
             callback_query.message.id,
-            Translator.translate(Strings.NewCategoryName, user.locale),
-            reply_markup=button
-        )
-
-    except MessageIdInvalid:
-        await client.send_message(
-            callback_query.from_user.id,
-            Translator.translate(Strings.NewCategoryName, user.locale),
-            reply_markup=button
+            Translator.translate(Strings.OnCategoryRemoved, user.locale, category_name=callback_data.category),
+            reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons)
         )
 
 
-@Client.on_callback_query(custom_filters.select_category_filter & custom_filters.check_user_filter & (custom_filters.user_is_administrator | custom_filters.user_is_manager))
-@inject_user
-async def list_categories(client: Client, callback_query: CallbackQuery, user: User):
-    buttons = []
+    @router.callback_query(ModifyCategory.filter(), HasRole(UserRolesEnum.Administrator))
+    async def modify_category_callback(callback_query: CallbackQuery, callback_data: ModifyCategory, bot: Bot, redis: RedisWrapper, user: User) -> None:
+        buttons = [
+            [
+                InlineKeyboardButton(text=Translator.translate(Strings.BackToMenu, user.locale), callback_data=Menu().pack())
+            ]
+        ]
 
-    repository = ClientRepo.get_client_manager(Configs.config.client.type)
-    categories = repository.get_categories()
+        redis.set(f"action:{callback_query.from_user.id}", f"category_dir#{callback_data.category}")
 
-    if categories is None:
-        buttons.append([InlineKeyboardButton(Translator.translate(Strings.BackToMenu, user.locale), "menu")])
-        await client.edit_message_text(
+        await bot.edit_message_text(
             callback_query.from_user.id,
             callback_query.message.id,
-            Translator.translate(Strings.NoCategory, user.locale),
-            reply_markup=InlineKeyboardMarkup(buttons)
-        )
-
-        return
-
-    for _, i in enumerate(categories):
-        buttons.append([InlineKeyboardButton(i, f"{callback_query.data.split('#')[1]}#{i}")])
-
-    buttons.append([InlineKeyboardButton(Translator.translate(Strings.BackToMenu, user.locale), "menu")])
-
-    try:
-        await client.edit_message_text(
-            callback_query.from_user.id,
-            callback_query.message.id,
-            Translator.translate(Strings.ChooseCategory, user.locale),
-            reply_markup=InlineKeyboardMarkup(buttons)
-        )
-
-    except MessageIdInvalid:
-        await client.send_message(
-            callback_query.from_user.id,
-            Translator.translate(Strings.ChooseCategory, user.locale),
-            reply_markup=InlineKeyboardMarkup(buttons)
+            Translator.translate(Strings.OnCategoryEdited, user.locale, category_name=callback_data.category),
+            reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons)
         )
 
 
-@Client.on_callback_query(custom_filters.remove_category_filter & custom_filters.check_user_filter & custom_filters.user_is_administrator)
-@inject_user
-async def remove_category_callback(client: Client, callback_query: CallbackQuery, user: User) -> None:
-    buttons = [[InlineKeyboardButton(Translator.translate(Strings.BackToMenu, user.locale), "menu")]]
+    @router.callback_query(CategoryAction.filter(), HasRole(UserRolesEnum.Administrator))
+    @router.callback_query(CategoryAction.filter(), HasRole(UserRolesEnum.Manager))
+    async def category(callback_query: CallbackQuery, callback_data: CategoryAction, bot: Bot, user: User, settings: Settings) -> None:
+        buttons = []
 
-    repository = ClientRepo.get_client_manager(Configs.config.client.type)
-    repository.remove_category(callback_query.data.split("#")[1])
+        repository_class = ClientRepo.get_client_manager(settings.client.type)
+        categories = repository_class(settings).get_categories()
+        callback_type = AddMagnet if callback_data.action.startswith('add_magnet') else AddTorrent
 
-    await client.edit_message_text(
-        callback_query.from_user.id,
-        callback_query.message.id,
-        Translator.translate(Strings.OnCategoryRemoved, user.locale, category_name=callback_query.data.split('#')[1]),
-        reply_markup=InlineKeyboardMarkup(buttons)
-    )
+        for i in categories:
+            buttons.append([InlineKeyboardButton(text=i, callback_data=callback_type(category=i).pack())])
 
+        buttons.append([InlineKeyboardButton(text="None", callback_data=callback_type(category=None).pack())])
+        buttons.append([InlineKeyboardButton(text=Translator.translate(Strings.BackToMenu, user.locale), callback_data=Menu().pack())])
 
-@Client.on_callback_query(custom_filters.modify_category_filter & custom_filters.check_user_filter & custom_filters.user_is_administrator)
-@inject_user
-async def modify_category_callback(client: Client, callback_query: CallbackQuery, user: User) -> None:
-    buttons = [[InlineKeyboardButton(Translator.translate(Strings.BackToMenu, user.locale), "menu")]]
+        try:
+            await bot.edit_message_text(
+                callback_query.from_user.id,
+                callback_query.message.id,
+                Translator.translate(Strings.ChooseCategory, user.locale),
+                reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons)
+            )
 
-    db_management.write_support(f"category_dir_modify#{callback_query.data.split('#')[1]}", callback_query.from_user.id)
-    await client.edit_message_text(
-        callback_query.from_user.id,
-        callback_query.message.id,
-        Translator.translate(Strings.OnCategoryEdited, user.locale, category_name=callback_query.data.split('#')[1]),
-        reply_markup=InlineKeyboardMarkup(buttons)
-    )
+        except Exception:
+            await bot.send_message(
+                callback_query.from_user.id,
+                Translator.translate(Strings.ChooseCategory, user.locale),
+                reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons)
+            )
 
-
-@Client.on_callback_query(custom_filters.category_filter & custom_filters.check_user_filter & (custom_filters.user_is_administrator | custom_filters.user_is_manager))
-@inject_user
-async def category(client: Client, callback_query: CallbackQuery, user: User) -> None:
-    buttons = []
-
-    repository = ClientRepo.get_client_manager(Configs.config.client.type)
-    categories = repository.get_categories()
-
-    if categories is None:
-        if "magnet" in callback_query.data:
-            await add_magnet_callback(client, callback_query)
-
-        else:
-            await add_torrent_callback(client, callback_query)
-
-        return
-
-    for _, i in enumerate(categories):
-        buttons.append([InlineKeyboardButton(i, f"{callback_query.data.split('#')[1]}#{i}")])
-
-    buttons.append([InlineKeyboardButton("None", f"{callback_query.data.split('#')[1]}#None")])
-    buttons.append([InlineKeyboardButton(Translator.translate(Strings.BackToMenu, user.locale), "menu")])
-
-    try:
-        await client.edit_message_text(
-            callback_query.from_user.id,
-            callback_query.message.id,
-            Translator.translate(Strings.ChooseCategory, user.locale),
-            reply_markup=InlineKeyboardMarkup(buttons)
-        )
-
-    except MessageIdInvalid:
-        await client.send_message(
-            callback_query.from_user.id,
-            Translator.translate(Strings.ChooseCategory, user.locale),
-            reply_markup=InlineKeyboardMarkup(buttons)
-        )
+    return router

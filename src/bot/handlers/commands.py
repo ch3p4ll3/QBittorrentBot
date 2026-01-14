@@ -8,9 +8,9 @@ from aiogram.filters import CommandStart, Command
 
 import psutil
 
-from ..filters import IsAuthorizedUser, GetUser
+from ..filters import IsAuthorizedUser
 from redis_helper.wrapper import RedisWrapper
-from utils import convert_size, inject_user
+from utils import convert_size
 from .common import send_menu
 from settings import User, Settings
 from translator import Translator, Strings
@@ -42,11 +42,11 @@ def get_router():
         await send_menu(bot, redis, settings, message.chat.id, message.message_id)
 
 
-    @router.message(Command("stats"), IsAuthorizedUser(), GetUser())
+    @router.message(Command("stats"), IsAuthorizedUser())
     async def stats_command(message: Message, user: User) -> None:
         try:
             cpu_temp = psutil.sensors_temperatures()['coretemp'][0].current
-        except:
+        except KeyError:
             cpu_temp = 0
 
         stats_text = Translator.translate(

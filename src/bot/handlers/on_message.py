@@ -1,19 +1,19 @@
 import logging
 import tempfile
+
+from aiogram import F
+from aiogram import Bot
+from aiogram.types import Message
+from aiogram.dispatcher.router import Router
+
 from client_manager import ClientRepo
 from .common import send_menu
 from settings import Settings
 from settings.user import User
 from utils import convert_type_from_string
-from ..filters import GetUser, IsAuthorizedUser, IsCommand
+from ..filters import IsAuthorizedUser, IsCommand
 from translator import Translator, Strings
 from redis_helper.wrapper import RedisWrapper
-
-from aiogram import F
-from aiogram import Bot
-from aiogram.types import Message
-from aiogram.filters import Command
-from aiogram.dispatcher.router import Router
 
 
 logger = logging.getLogger(__name__)
@@ -146,7 +146,7 @@ def get_router():
             logger.exception(f"Error converting value \"{message.text}\" to type \"{data_type}\"", exc_info=True)
 
 
-    @router.message(~F.from_user.is_bot, ~IsCommand(), IsAuthorizedUser(), GetUser())
+    @router.message(~F.from_user.is_bot, ~IsCommand(), IsAuthorizedUser())
     async def on_message(message: Message, redis: RedisWrapper, bot: Bot, settings: Settings, user: User) -> None:
         action = await redis.get(f"action:{message.from_user.id}") or ""
 
@@ -157,7 +157,7 @@ def get_router():
             await on_torrent(message, user, redis, bot, settings)
 
         elif action == "category_name":
-            await on_category_name(message, redis, bot, settings)
+            await on_category_name(message, redis)
 
         elif "category_dir" in action:
             await on_category_directory(message, action, redis, bot, settings)

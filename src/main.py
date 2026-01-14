@@ -3,6 +3,9 @@ from pathlib import Path
 from os import getenv
 
 from bot.handlers import get_commands_router, get_on_message_router
+from bot.handlers.callbacks import get_category_router, get_add_torrents_router
+from bot.middlewares import UserMiddleware
+
 from redis_helper.wrapper import RedisWrapper
 from settings import Settings
 from logger import configure_logger
@@ -29,9 +32,14 @@ async def main() -> None:
     dp["redis"] = redis_client
     dp["settings"] = settings
 
+    dp.message.middleware(UserMiddleware(settings))
+    dp.callback_query.middleware(UserMiddleware(settings))
+
     # register routers
     dp.include_router(get_on_message_router())
     dp.include_router(get_commands_router())
+    dp.include_router(get_add_torrents_router())
+    dp.include_router(get_category_router())
 
     # And the run events dispatching
     await dp.start_polling(bot)
