@@ -54,7 +54,7 @@ def get_router():
     @router.callback_query(Pause.filter(), HasRole(UserRolesEnum.Manager))
     async def pause_callback(callback_query: CallbackQuery, callback_data: Pause, bot: Bot, settings: Settings, user: User) -> None:
         if not callback_data.torrent_hash:
-            await list_active_torrents(bot, callback_query.from_user.id, callback_query.message.id, settings, callback="pause")
+            await list_active_torrents(bot, callback_query.from_user.id, callback_query.message.message_id, settings, callback="pause")
 
         else:
             repository_class = ClientRepo.get_client_manager(settings.client.type)

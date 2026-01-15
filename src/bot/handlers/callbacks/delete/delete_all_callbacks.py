@@ -1,51 +1,77 @@
-from pyrogram import Client
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
+from aiogram import Bot, Router
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 
-from ....filters import custom_filters
-from .....client_manager import ClientRepo
+from ....filters.callbacks import DeleteMenu, Menu, DeleteOne, DeleteAll, DeleteAllData, DeleteAllNoData
+from ....filters import HasRole
+from client_manager import ClientRepo
 from ...common import send_menu
-from .....settings import Configs
 
-from .....settings.user import User
-from .....utils import inject_user
-from .....translator import Translator, Strings
+from settings import Settings
+from settings.enums import UserRolesEnum
+from settings.user import User
+from redis_helper.wrapper import RedisWrapper
+from translator import Translator, Strings
 
 
+def get_router():
+    router = Router()
+    
+    @router.callback_query(DeleteMenu.filter(), HasRole(UserRolesEnum.Administrator))
+    async def menu_delete_callback(callback_query: CallbackQuery, callback_data: DeleteMenu, bot: Bot, user: User) -> None:
+        await bot.edit_message_text(
+            "Delete a torrent",
+            reply_markup=InlineKeyboardMarkup(
+                inline_keyboard=[
+                    [
+                        InlineKeyboardButton(text=Translator.translate(Strings.DeleteTorrentBtn, user.locale), callback_data=DeleteOne().pack())
+                    ],
+                    [
+                        InlineKeyboardButton(text=Translator.translate(Strings.DeleteAllMenuBtn, user.locale), callback_data=DeleteAll().pack())
+                    ],
+                    [
+                        InlineKeyboardButton(text=Translator.translate(Strings.BackToMenu, user.locale), callback_data=Menu().pack())
+                    ]
+                ]
+            )
+        )
 
-@Client.on_callback_query(custom_filters.delete_all_filter & custom_filters.check_user_filter & custom_filters.user_is_administrator)
-@inject_user
-async def delete_all_callback(client: Client, callback_query: CallbackQuery, user: User) -> None:
-    buttons = [
-        [
-            InlineKeyboardButton(Translator.translate(Strings.DeleteAllBtn, user.locale), "delete_all_no_data")
-        ],
-        [
-            InlineKeyboardButton(Translator.translate(Strings.DeleteAllData, user.locale), "delete_all_data")
-        ],
-        [
-            InlineKeyboardButton(Translator.translate(Strings.BackToMenu, user.locale), "menu")
+
+    @router.callback_query(DeleteAll.filter(), HasRole(UserRolesEnum.Administrator))
+    async def delete_all_callback(callback_query: CallbackQuery, callback_data: DeleteAll, bot: Bot, user: User) -> None:
+        buttons = [
+            [
+                InlineKeyboardButton(text=Translator.translate(Strings.DeleteAllBtn, user.locale), callback_data=DeleteAllNoData().pack())
+            ],
+            [
+                InlineKeyboardButton(text=Translator.translate(Strings.DeleteAllData, user.locale), callback_data=DeleteAllData().pack())
+            ],
+            [
+                InlineKeyboardButton(text=Translator.translate(Strings.BackToMenu, user.locale), callback_data=Menu().pack())
+            ]
         ]
-    ]
 
-    await client.edit_message_reply_markup(callback_query.from_user.id, callback_query.message.id,
-                                           reply_markup=InlineKeyboardMarkup(buttons))
-
-
-@Client.on_callback_query(custom_filters.delete_all_no_data_filter & custom_filters.check_user_filter & custom_filters.user_is_administrator)
-@inject_user
-async def delete_all_with_no_data_callback(client: Client, callback_query: CallbackQuery, user: User) -> None:
-    repository = ClientRepo.get_client_manager(Configs.config.client.type)
-    repository.delete_all_no_data()
-
-    await client.answer_callback_query(callback_query.id, Translator.translate(Strings.DeletedAll, user.locale))
-    await send_menu(client, callback_query.message.id, callback_query.from_user.id)
+        await bot.edit_message_reply_markup(
+            callback_query.from_user.id,
+            callback_query.message.message_id,
+            reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons)
+        )
 
 
-@Client.on_callback_query(custom_filters.delete_all_data_filter & custom_filters.check_user_filter & custom_filters.user_is_administrator)
-@inject_user
-async def delete_all_with_data_callback(client: Client, callback_query: CallbackQuery, user: User) -> None:
-    repository = ClientRepo.get_client_manager(Configs.config.client.type)
-    repository.delete_all_data()
+    @router.callback_query(DeleteAllNoData.filter(), HasRole(UserRolesEnum.Administrator))
+    async def delete_all_with_no_data_callback(callback_query: CallbackQuery, callback_data: DeleteAllNoData, bot: Bot, settings: Settings, redis: RedisWrapper, user: User) -> None:
+        repository_class = ClientRepo.get_client_manager(settings.client.type)
+        repository_class(settings).delete_all_no_data()
 
-    await client.answer_callback_query(callback_query.id, Translator.translate(Strings.DeletedAllData, user.locale))
-    await send_menu(client, callback_query.message.id, callback_query.from_user.id)
+        await bot.answer_callback_query(callback_query.id, Translator.translate(Strings.DeletedAll, user.locale))
+        await send_menu(bot, redis, settings, callback_query.from_user.id, callback_query.message.message_id)
+
+
+    @router.callback_query(DeleteAllData.filter(), HasRole(UserRolesEnum.Administrator))
+    async def delete_all_with_data_callback(callback_query: CallbackQuery, callback_data: DeleteAllData, bot: Bot, settings: Settings, redis: RedisWrapper, user: User) -> None:
+        repository_class = ClientRepo.get_client_manager(settings.client.type)
+        repository_class(settings).delete_all_data()
+
+        await bot.answer_callback_query(callback_query.id, Translator.translate(Strings.DeletedAllData, user.locale))
+        await send_menu(bot, redis, settings, callback_query.from_user.id, callback_query.message.message_id)
+
+    return router

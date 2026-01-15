@@ -52,7 +52,7 @@ def get_router():
         try:
             await bot.edit_message_text(
                 callback_query.from_user.id,
-                callback_query.message.id,
+                callback_query.message.message_id,
                 Translator.translate(Strings.NewCategoryName, user.locale),
                 reply_markup=button
             )
@@ -78,7 +78,7 @@ def get_router():
 
             await bot.edit_message_text(
                 callback_query.from_user.id,
-                callback_query.message.id,
+                callback_query.message.message_id,
                 Translator.translate(Strings.NoCategory, user.locale),
                 reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons)
             )
@@ -93,7 +93,7 @@ def get_router():
         try:
             await bot.edit_message_text(
                 callback_query.from_user.id,
-                callback_query.message.id,
+                callback_query.message.message_id,
                 Translator.translate(Strings.ChooseCategory, user.locale),
                 reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons)
             )
@@ -119,7 +119,7 @@ def get_router():
 
         await bot.edit_message_text(
             callback_query.from_user.id,
-            callback_query.message.id,
+            callback_query.message.message_id,
             Translator.translate(Strings.OnCategoryRemoved, user.locale, category_name=callback_data.category),
             reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons)
         )
@@ -137,7 +137,7 @@ def get_router():
 
         await bot.edit_message_text(
             callback_query.from_user.id,
-            callback_query.message.id,
+            callback_query.message.message_id,
             Translator.translate(Strings.OnCategoryEdited, user.locale, category_name=callback_data.category),
             reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons)
         )
@@ -161,7 +161,7 @@ def get_router():
         try:
             await bot.edit_message_text(
                 callback_query.from_user.id,
-                callback_query.message.id,
+                callback_query.message.message_id,
                 Translator.translate(Strings.ChooseCategory, user.locale),
                 reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons)
             )

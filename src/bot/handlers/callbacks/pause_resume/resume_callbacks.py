@@ -1,7 +1,7 @@
 from aiogram import Bot, Router
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
+from aiogram.types import CallbackQuery
 
-from ....filters.callbacks import Menu, Resume, ResumeAll
+from ....filters.callbacks import Resume, ResumeAll
 from ....filters import HasRole
 from client_manager import ClientRepo
 from ...common import list_active_torrents
@@ -32,7 +32,7 @@ def get_router():
     @router.callback_query(Resume.filter(), HasRole(UserRolesEnum.Manager))
     async def resume_callback(callback_query: CallbackQuery, callback_data: Resume, bot: Bot, settings: Settings, user: User) -> None:
         if not callback_data.torrent_hash:
-            await list_active_torrents(bot, callback_query.from_user.id, callback_query.message.id, settings, callback="resume")
+            await list_active_torrents(bot, callback_query.from_user.id, callback_query.message.message_id, settings, callback="resume")
 
         else:
             repository_class = ClientRepo.get_client_manager(settings.client.type)
