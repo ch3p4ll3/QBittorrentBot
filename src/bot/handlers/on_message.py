@@ -27,8 +27,8 @@ def get_router():
             magnet_link = message.text.split("\n")
             category = (await redis.get(f"action:{message.from_user.id}")).split("#")[1]
 
-            repository = ClientRepo.get_client_manager(settings.client.type)
-            response = repository.add_magnet(
+            repository_class = ClientRepo.get_client_manager(settings.client.type)
+            response = repository_class(settings).add_magnet(
                 magnet_link=magnet_link,
                 category=category
             )
@@ -51,10 +51,10 @@ def get_router():
             with tempfile.TemporaryDirectory() as tempdir:
                 name = f"{tempdir}/{message.document.file_name}"
                 category = (await redis.get(f"action:{message.from_user.id}")).split("#")[1]
-                await message.download(name)
+                await bot.download_file(tempdir, message.document.file_name)
 
-                repository = ClientRepo.get_client_manager(settings.client.type)
-                response = repository.add_torrent(file_name=name, category=category)
+                repository_class = ClientRepo.get_client_manager(settings.client.type)
+                response = repository_class(settings).add_torrent(file_name=name, category=category)
 
                 if not response:
                     await message.reply(Translator.translate(Strings.UnableToAddTorrent, locale=user.locale))
@@ -77,16 +77,16 @@ def get_router():
 
 
     async def on_category_directory(message: Message, action, redis: RedisWrapper, bot: Bot, settings: Settings):
-        name = (await redis.get(f"action:{message.from_user.id}")).split("#")[1]
+        name: str = (await redis.get(f"action:{message.from_user.id}")).split("#")[1]
 
-        repository = ClientRepo.get_client_manager(settings.client.type)
+        repository_class = ClientRepo.get_client_manager(settings.client.type)
 
         if "modify" in action:
-            repository.edit_category(name=name, save_path=message.text)
+            repository_class(settings).edit_category(name=name, save_path=message.text.replace("\\", ""))
             await send_menu(bot, redis, settings, message.chat.id, message.message_id)
             return
 
-        repository.create_category(name=name, save_path=message.text)
+        repository_class(settings).create_category(name=name, save_path=message.text.replace("\\", ""))
         await send_menu(bot, redis, settings, message.chat.id, message.message_id)
 
 

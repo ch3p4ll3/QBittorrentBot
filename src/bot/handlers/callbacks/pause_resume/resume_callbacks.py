@@ -22,9 +22,8 @@ def get_router():
         repository_class = ClientRepo.get_client_manager(settings.client.type)
         repository_class(settings).resume_all()
 
-        await bot.answer_callback_query(
-            callback_query.id,
-            Translator.translate(Strings.ResumeAllTorrents, user.locale)
+        await callback_query.answer(
+            text=Translator.translate(Strings.ResumeAllTorrents, user.locale)
         )
 
 
@@ -38,6 +37,6 @@ def get_router():
             repository_class = ClientRepo.get_client_manager(settings.client.type)
             repository_class(settings).resume(torrent_hash=callback_data.torrent_hash)
 
-            await callback_query.answer(Translator.translate(Strings.ResumeTorrent, user.locale))
+            await callback_query.answer(text=Translator.translate(Strings.ResumeTorrent, user.locale))
 
     return router

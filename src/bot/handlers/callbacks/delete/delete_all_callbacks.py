@@ -19,11 +19,13 @@ def get_router():
     @router.callback_query(DeleteMenu.filter(), HasRole(UserRolesEnum.Administrator))
     async def menu_delete_callback(callback_query: CallbackQuery, callback_data: DeleteMenu, bot: Bot, user: User) -> None:
         await bot.edit_message_text(
-            "Delete a torrent",
+            chat_id=callback_query.from_user.id,
+            message_id=callback_query.message.message_id,
+            text="Delete a torrent",
             reply_markup=InlineKeyboardMarkup(
                 inline_keyboard=[
                     [
-                        InlineKeyboardButton(text=Translator.translate(Strings.DeleteTorrentBtn, user.locale), callback_data=DeleteOne().pack())
+                        InlineKeyboardButton(text=Translator.translate(Strings.DeleteTorrentBtn, user.locale), callback_data=DeleteOne(torrent_hash="").pack())
                     ],
                     [
                         InlineKeyboardButton(text=Translator.translate(Strings.DeleteAllMenuBtn, user.locale), callback_data=DeleteAll().pack())
@@ -51,8 +53,8 @@ def get_router():
         ]
 
         await bot.edit_message_reply_markup(
-            callback_query.from_user.id,
-            callback_query.message.message_id,
+            chat_id=callback_query.from_user.id,
+            message_id=callback_query.message.message_id,
             reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons)
         )
 

@@ -16,10 +16,11 @@ def get_router():
     router = Router()
 
     @router.callback_query(CategoryMenu.filter(), HasRole(UserRolesEnum.Administrator))
-    async def menu_category_callback(callback_query: CallbackQuery, callback_data: CategoryMenu, user: User) -> None:
-        print(callback_data)
-        await callback_query.edit_message_text(
-            "Pause/Resume a download",
+    async def menu_category_callback(callback_query: CallbackQuery, callback_data: CategoryMenu, bot: Bot, user: User) -> None:
+        await bot.edit_message_text(
+            chat_id=callback_query.from_user.id,
+            message_id=callback_query.message.message_id,
+            text="Pause/Resume a download",
             reply_markup=InlineKeyboardMarkup(
                 inline_keyboard=[
                     [
@@ -40,7 +41,7 @@ def get_router():
     @router.callback_query(AddCategory.filter(), HasRole(UserRolesEnum.Administrator))
     @router.callback_query(AddCategory.filter(), HasRole(UserRolesEnum.Manager))
     async def add_category_callback(callback_query: CallbackQuery, bot: Bot, redis: RedisWrapper, user: User) -> None:
-        redis.set(f"action:{callback_query.from_user.id}", "category_name")
+        await redis.set(f"action:{callback_query.from_user.id}", "category_name")
         button = InlineKeyboardMarkup(
             inline_keyboard=[
                 [
@@ -51,9 +52,9 @@ def get_router():
 
         try:
             await bot.edit_message_text(
-                callback_query.from_user.id,
-                callback_query.message.message_id,
-                Translator.translate(Strings.NewCategoryName, user.locale),
+                chat_id=callback_query.from_user.id,
+                message_id=callback_query.message.message_id,
+                text=Translator.translate(Strings.NewCategoryName, user.locale),
                 reply_markup=button
             )
 
@@ -77,24 +78,24 @@ def get_router():
             buttons.append([InlineKeyboardButton(text=Translator.translate(Strings.BackToMenu, user.locale), callback_data=Menu().pack())])
 
             await bot.edit_message_text(
-                callback_query.from_user.id,
-                callback_query.message.message_id,
-                Translator.translate(Strings.NoCategory, user.locale),
+                chat_id=callback_query.from_user.id,
+                message_id=callback_query.message.message_id,
+                text=Translator.translate(Strings.NoCategory, user.locale),
                 reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons)
             )
 
             return
 
         for _, i in enumerate(categories):
-            buttons.append([InlineKeyboardButton(text=i, callback_data=f"{callback_data.action}#{i}")])
+            buttons.append([InlineKeyboardButton(text=i, callback_data=f"{callback_data.action}:{i}")])
 
         buttons.append([InlineKeyboardButton(text=Translator.translate(Strings.BackToMenu, user.locale), callback_data=Menu().pack())])
 
         try:
             await bot.edit_message_text(
-                callback_query.from_user.id,
-                callback_query.message.message_id,
-                Translator.translate(Strings.ChooseCategory, user.locale),
+                chat_id=callback_query.from_user.id,
+                message_id=callback_query.message.message_id,
+                text=Translator.translate(Strings.ChooseCategory, user.locale),
                 reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons)
             )
 
@@ -118,9 +119,9 @@ def get_router():
         repository_class(settings).remove_category(callback_data.category)
 
         await bot.edit_message_text(
-            callback_query.from_user.id,
-            callback_query.message.message_id,
-            Translator.translate(Strings.OnCategoryRemoved, user.locale, category_name=callback_data.category),
+            chat_id=callback_query.from_user.id,
+            message_id=callback_query.message.message_id,
+            text=Translator.translate(Strings.OnCategoryRemoved, user.locale, category_name=callback_data.category),
             reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons)
         )
 
@@ -133,12 +134,12 @@ def get_router():
             ]
         ]
 
-        redis.set(f"action:{callback_query.from_user.id}", f"category_dir#{callback_data.category}")
+        await redis.set(f"action:{callback_query.from_user.id}", f"category_dir_modify#{callback_data.category}")
 
         await bot.edit_message_text(
-            callback_query.from_user.id,
-            callback_query.message.message_id,
-            Translator.translate(Strings.OnCategoryEdited, user.locale, category_name=callback_data.category),
+            chat_id=callback_query.from_user.id,
+            message_id=callback_query.message.message_id,
+            text=Translator.translate(Strings.OnCategoryEdited, user.locale, category_name=callback_data.category),
             reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons)
         )
 
@@ -160,9 +161,9 @@ def get_router():
 
         try:
             await bot.edit_message_text(
-                callback_query.from_user.id,
-                callback_query.message.message_id,
-                Translator.translate(Strings.ChooseCategory, user.locale),
+                chat_id=callback_query.from_user.id,
+                message_id=callback_query.message.message_id,
+                text=Translator.translate(Strings.ChooseCategory, user.locale),
                 reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons)
             )
 

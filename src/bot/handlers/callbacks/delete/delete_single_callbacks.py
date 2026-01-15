@@ -35,8 +35,8 @@ def get_router():
             ]
 
             await bot.edit_message_reply_markup(
-                callback_query.from_user.id,
-                callback_query.message.message_id,
+                chat_id=callback_query.from_user.id,
+                message_id=callback_query.message.message_id,
                 reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons)
             )
 

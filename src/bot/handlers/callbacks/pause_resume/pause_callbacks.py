@@ -19,12 +19,14 @@ def get_router():
     @router.callback_query(PauseResumeMenu.filter(), HasRole(UserRolesEnum.Administrator))
     async def menu_pause_resume_callback(callback_query: CallbackQuery, callback_data: PauseResumeMenu, bot: Bot, user: User) -> None:
         await bot.edit_message_text(
-            Translator.translate(Strings.PauseResumeMenu, user.locale),
+            chat_id=callback_query.from_user.id,
+            message_id=callback_query.message.message_id,
+            text=Translator.translate(Strings.PauseResumeMenu, user.locale),
             reply_markup=InlineKeyboardMarkup(
                 inline_keyboard=[
                     [
-                        InlineKeyboardButton(text=Translator.translate(Strings.PauseTorrentBtn, user.locale), callback_data=Pause().pack()),
-                        InlineKeyboardButton(text=Translator.translate(Strings.ResumeTorrentBtn, user.locale), callback_data=Resume().pack())
+                        InlineKeyboardButton(text=Translator.translate(Strings.PauseTorrentBtn, user.locale), callback_data=Pause(torrent_hash="").pack()),
+                        InlineKeyboardButton(text=Translator.translate(Strings.ResumeTorrentBtn, user.locale), callback_data=Resume(torrent_hash="").pack())
                     ],
                     [
                         InlineKeyboardButton(text=Translator.translate(Strings.PauseAll, user.locale), callback_data=PauseAll().pack()),
@@ -44,9 +46,8 @@ def get_router():
         repository_class = ClientRepo.get_client_manager(settings.client.type)
         repository_class(settings).pause_all()
         
-        await bot.answer_callback_query(
-            callback_query.id,
-            Translator.translate(Strings.PauseAllTorrents,user.locale)
+        await callback_query.answer(
+            text=Translator.translate(Strings.PauseAllTorrents,user.locale)
         )
 
 
@@ -59,6 +60,6 @@ def get_router():
         else:
             repository_class = ClientRepo.get_client_manager(settings.client.type)
             repository_class(settings).pause(torrent_hash=callback_data.torrent_hash)
-            await callback_query.answer(Translator.translate(Strings.PauseTorrent, user.locale))
+            await callback_query.answer(text=Translator.translate(Strings.PauseTorrent, user.locale))
 
     return router

@@ -121,7 +121,7 @@ async def list_active_torrents(
     # Torrent buttons
     for torrent in torrents:
         if callback:
-            buttons.append([InlineKeyboardButton(text=torrent.name, callback_data=f"{callback}#{torrent.hash}")])
+            buttons.append([InlineKeyboardButton(text=torrent.name, callback_data=f"{callback}:{torrent.hash}")])
         else:
             buttons.append([InlineKeyboardButton(text=torrent.name, callback_data=TorrentInfo(torrent_hash=torrent.hash).pack())])
 
