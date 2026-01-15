@@ -90,62 +90,6 @@ def get_router():
         await send_menu(bot, redis, settings, message.chat.id, message.message_id)
 
 
-    async def on_edit_user(message: Message, user, action, redis: RedisWrapper, bot: Bot, settings: Settings):
-        data = action.split("#")[1]
-        user_id = int(data.split("-")[0])
-        field_to_edit = data.split("-")[1]
-        data_type = convert_type_from_string(data.split("-")[2].replace("<class ", "").replace(">", ""))
-
-        try:
-            new_value = data_type(message.text)
-
-            user_from_configs = settings.users.index(user)
-
-            if user_from_configs == -1:
-                return
-
-            if field_to_edit == "locale" and new_value not in Translator.locales.keys():
-                await message.reply_text(
-                    Translator.translate(
-                        Strings.LocaleNotFound,
-                        locale=user.locale,
-                        new_locale=new_value
-                    )
-                )
-                return
-
-            setattr(settings.users[user_from_configs], field_to_edit, new_value)
-            # Configs.update_config(settings)
-            # Configs.reload_config()
-            logger.debug(f"Updating User #{user_id} {field_to_edit} settings to {new_value}")
-            await redis.set(f"action:{message.from_user.id}", None)
-
-            await send_menu(bot, redis, settings, message.chat.id, message.message_id)
-        except Exception as e:
-            await message.reply_text(Translator.translate(Strings.GenericError, locale=user.locale, error=e))
-            logger.exception(f"Error converting value \"{message.text}\" to type \"{data_type}\"", exc_info=True)
-
-
-    async def on_edit_client(message: Message, user, action, redis: RedisWrapper, bot: Bot, settings: Settings):
-        data = action.split("#")[1]
-        field_to_edit = data.split("-")[0]
-        data_type = convert_type_from_string(data.split("-")[1])
-
-        try:
-            new_value = data_type(message.text)
-
-            setattr(settings.client, field_to_edit, new_value)
-            # Configs.update_config(Settings)
-            # Configs.reload_config()
-            logger.debug(f"Updating Client field \"{field_to_edit}\" to \"{new_value}\"")
-            await redis.set(f"action:{message.from_user.id}", None)
-
-            await send_menu(bot, redis, settings, message.chat.id, message.message_id)
-        except Exception as e:
-            await message.reply_text(Translator.translate(Strings.GenericError, locale=user.locale, error=e))
-            logger.exception(f"Error converting value \"{message.text}\" to type \"{data_type}\"", exc_info=True)
-
-
     @router.message(~F.from_user.is_bot, ~IsCommand(), IsAuthorizedUser())
     async def on_message(message: Message, redis: RedisWrapper, bot: Bot, settings: Settings, user: User) -> None:
         action = await redis.get(f"action:{message.from_user.id}") or ""
@@ -162,11 +106,6 @@ def get_router():
         elif "category_dir" in action:
             await on_category_directory(message, action, redis, bot, settings)
 
-        elif "edit_user" in action:
-            await on_edit_user(message, user, action, redis, bot, settings)
-
-        elif "edit_clt" in action:
-            await on_edit_client(message, user, action, redis, bot, settings)
         else:
             await message.reply(
                 Translator.translate(Strings.CommandDoesNotExist, locale=user.locale)

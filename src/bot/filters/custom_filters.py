@@ -8,22 +8,6 @@ from settings.enums import UserRolesEnum
 from aiogram import F as filters
 
 
-# Pause/Resume filters
-menu_pause_resume_filter = filters.regexp(r"^menu_pause_resume$")
-pause_all_filter = filters.regexp(r"^pause_all$")
-resume_all_filter = filters.regexp(r"^resume_all$")
-pause_filter = filters.regexp(r'^pause(#.+|$)?$')
-resume_filter = filters.regexp(r'^resume(#.+|$)?$')
-
-# Delete filers
-menu_delete_filter = filters.regexp(r"^menu_delete$")
-delete_one_filter = filters.regexp(r'^delete_one(#.+|$)?$')
-delete_one_no_data_filter = filters.regexp(r'^delete_one_no_data(#.+|$)?$')
-delete_one_data_filter = filters.regexp(r'^delete_one_data(#.+|$)?$')
-delete_all_filter = filters.regexp(r'^delete_all(#.+|$)?$')
-delete_all_no_data_filter = filters.regexp(r"^delete_all_no_data$")
-delete_all_data_filter = filters.regexp(r"^delete_all_data$")
-
 # Settings filters
 settings_filter = filters.regexp(r"^settings$")
 get_users_filter = filters.regexp(r"^get_users$")

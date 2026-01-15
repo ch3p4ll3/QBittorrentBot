@@ -10,7 +10,7 @@ from client_manager import ClientRepo
 from utils import get_user_from_config
 from settings.enums import UserRolesEnum
 from translator import Translator, Strings
-from ..filters.callbacks import CategoryAction, CategoryMenu, ListByStatus, List, TorrentInfo
+from ..filters.callbacks import CategoryAction, CategoryMenu, ListByStatus, List, TorrentInfo, SettingsMenu, DeleteMenu, PauseResumeMenu
 
 logger = logging.getLogger(__name__)
 
@@ -35,14 +35,14 @@ async def send_menu(bot: Bot, redis: RedisWrapper, settings: Settings, chat_id: 
                     callback_data=CategoryAction(action="add_torrent").pack()
                 )
             ],
-            [InlineKeyboardButton(text=Translator.translate(Strings.PauseResume, user.locale), callback_data="menu_pause_resume")]
+            [InlineKeyboardButton(text=Translator.translate(Strings.PauseResume, user.locale), callback_data=PauseResumeMenu().pack())]
         ]
 
     if user.role == UserRolesEnum.Administrator:
         buttons += [
-            [InlineKeyboardButton(text=Translator.translate(Strings.Delete, user.locale), callback_data="menu_delete")],
+            [InlineKeyboardButton(text=Translator.translate(Strings.Delete, user.locale), callback_data=DeleteMenu().pack())],
             [InlineKeyboardButton(text=Translator.translate(Strings.Categories, user.locale), callback_data=CategoryMenu().pack())],
-            [InlineKeyboardButton(text=Translator.translate(Strings.Settings, user.locale), callback_data="settings")]
+            [InlineKeyboardButton(text=Translator.translate(Strings.Settings, user.locale), callback_data=SettingsMenu().pack())]
         ]
 
     await redis.set(f"action:{chat_id}", None)
