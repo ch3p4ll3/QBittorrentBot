@@ -1,30 +1,64 @@
-from pyrogram import Client
-from pyrogram.types import CallbackQuery
+from aiogram import Bot, Router
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 
-from ....filters import custom_filters
-from .....client_manager import ClientRepo
+from ....filters.callbacks import PauseResumeMenu, Menu, PauseAll, Pause, Resume, ResumeAll
+from ....filters import HasRole
+from client_manager import ClientRepo
 from ...common import list_active_torrents
-from .....settings import Configs
-from .....settings.user import User
-from .....utils import inject_user
-from .....translator import Translator, Strings
+
+from settings import Settings
+from settings.enums import UserRolesEnum
+from settings.user import User
+
+from translator import Translator, Strings
 
 
-@Client.on_callback_query(custom_filters.pause_all_filter & custom_filters.check_user_filter & (custom_filters.user_is_administrator | custom_filters.user_is_manager))
-@inject_user
-async def pause_all_callback(client: Client, callback_query: CallbackQuery, user: User) -> None:
-    repository = ClientRepo.get_client_manager(Configs.config.client.type)
-    repository.pause_all()
-    await client.answer_callback_query(callback_query.id, Translator.translate(Strings.PauseAllTorrents, user.locale))
+def get_router():
+    router = Router()
+
+    @router.callback_query(PauseResumeMenu.filter(), HasRole(UserRolesEnum.Administrator))
+    async def menu_pause_resume_callback(callback_query: CallbackQuery, callback_data: PauseResumeMenu, bot: Bot, user: User) -> None:
+        await bot.edit_message_text(
+            Translator.translate(Strings.PauseResumeMenu, user.locale),
+            reply_markup=InlineKeyboardMarkup(
+                inline_keyboard=[
+                    [
+                        InlineKeyboardButton(text=Translator.translate(Strings.PauseTorrentBtn, user.locale), callback_data=Pause().pack()),
+                        InlineKeyboardButton(text=Translator.translate(Strings.ResumeTorrentBtn, user.locale), callback_data=Resume().pack())
+                    ],
+                    [
+                        InlineKeyboardButton(text=Translator.translate(Strings.PauseAll, user.locale), callback_data=PauseAll().pack()),
+                        InlineKeyboardButton(text=Translator.translate(Strings.ResumeAll, user.locale), callback_data=ResumeAll().pack())
+                    ],
+                    [
+                        InlineKeyboardButton(text=Translator.translate(Strings.BackToMenu, user.locale), callback_data=Menu().pack())
+                    ]
+                ]
+            )
+        )
 
 
-@Client.on_callback_query(custom_filters.pause_filter & custom_filters.check_user_filter & (custom_filters.user_is_administrator | custom_filters.user_is_manager))
-@inject_user
-async def pause_callback(client: Client, callback_query: CallbackQuery, user: User) -> None:
-    if callback_query.data.find("#") == -1:
-        await list_active_torrents(client, callback_query.from_user.id, callback_query.message.id, "pause")
+    @router.callback_query(PauseAll.filter(), HasRole(UserRolesEnum.Administrator))
+    @router.callback_query(PauseAll.filter(), HasRole(UserRolesEnum.Manager))
+    async def pause_all_callback(callback_query: CallbackQuery, callback_data: PauseAll, bot: Bot, settings: Settings, user: User) -> None:
+        repository_class = ClientRepo.get_client_manager(settings.client.type)
+        repository_class(settings).pause_all()
+        
+        await bot.answer_callback_query(
+            callback_query.id,
+            Translator.translate(Strings.PauseAllTorrents,user.locale)
+        )
 
-    else:
-        repository = ClientRepo.get_client_manager(Configs.config.client.type)
-        repository.pause(torrent_hash=callback_query.data.split("#")[1])
-        await callback_query.answer(Translator.translate(Strings.PauseTorrent, user.locale))
+
+    @router.callback_query(Pause.filter(), HasRole(UserRolesEnum.Administrator))
+    @router.callback_query(Pause.filter(), HasRole(UserRolesEnum.Manager))
+    async def pause_callback(callback_query: CallbackQuery, callback_data: Pause, bot: Bot, settings: Settings, user: User) -> None:
+        if not callback_data.torrent_hash:
+            await list_active_torrents(bot, callback_query.from_user.id, callback_query.message.id, settings, callback="pause")
+
+        else:
+            repository_class = ClientRepo.get_client_manager(settings.client.type)
+            repository_class(settings).pause(torrent_hash=callback_data.torrent_hash)
+            await callback_query.answer(Translator.translate(Strings.PauseTorrent, user.locale))
+
+    return router

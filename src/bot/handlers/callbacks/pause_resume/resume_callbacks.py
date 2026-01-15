@@ -1,30 +1,43 @@
-from pyrogram import Client
-from pyrogram.types import CallbackQuery
+from aiogram import Bot, Router
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 
-from ....filters import custom_filters
-from .....client_manager import ClientRepo
+from ....filters.callbacks import Menu, Resume, ResumeAll
+from ....filters import HasRole
+from client_manager import ClientRepo
 from ...common import list_active_torrents
-from .....settings import Configs
-from .....settings.user import User
-from .....utils import inject_user
-from .....translator import Translator, Strings
+
+from settings import Settings
+from settings.enums import UserRolesEnum
+from settings.user import User
+
+from translator import Translator, Strings
 
 
-@Client.on_callback_query(custom_filters.resume_all_filter & custom_filters.check_user_filter & (custom_filters.user_is_administrator | custom_filters.user_is_manager))
-@inject_user
-async def resume_all_callback(client: Client, callback_query: CallbackQuery, user: User) -> None:
-    repository = ClientRepo.get_client_manager(Configs.config.client.type)
-    repository.resume_all()
-    await client.answer_callback_query(callback_query.id, Translator.translate(Strings.ResumeAllTorrents, user.locale))
+def get_router():
+    router = Router()
+
+    @router.callback_query(ResumeAll.filter(), HasRole(UserRolesEnum.Administrator))
+    @router.callback_query(ResumeAll.filter(), HasRole(UserRolesEnum.Manager))
+    async def resume_all_callback(callback_query: CallbackQuery, callback_data: ResumeAll, bot: Bot, settings: Settings, user: User) -> None:
+        repository_class = ClientRepo.get_client_manager(settings.client.type)
+        repository_class(settings).resume_all()
+
+        await bot.answer_callback_query(
+            callback_query.id,
+            Translator.translate(Strings.ResumeAllTorrents, user.locale)
+        )
 
 
-@Client.on_callback_query(custom_filters.resume_filter & custom_filters.check_user_filter & (custom_filters.user_is_administrator | custom_filters.user_is_manager))
-@inject_user
-async def resume_callback(client: Client, callback_query: CallbackQuery, user: User) -> None:
-    if callback_query.data.find("#") == -1:
-        await list_active_torrents(client, callback_query.from_user.id, callback_query.message.id, "resume")
+    @router.callback_query(Resume.filter(), HasRole(UserRolesEnum.Administrator))
+    @router.callback_query(Resume.filter(), HasRole(UserRolesEnum.Manager))
+    async def resume_callback(callback_query: CallbackQuery, callback_data: Resume, bot: Bot, settings: Settings, user: User) -> None:
+        if not callback_data.torrent_hash:
+            await list_active_torrents(bot, callback_query.from_user.id, callback_query.message.id, settings, callback="resume")
 
-    else:
-        repository = ClientRepo.get_client_manager(Configs.config.client.type)
-        repository.resume(torrent_hash=callback_query.data.split("#")[1])
-        await callback_query.answer(Translator.translate(Strings.ResumeTorrent, user.locale))
+        else:
+            repository_class = ClientRepo.get_client_manager(settings.client.type)
+            repository_class(settings).resume(torrent_hash=callback_data.torrent_hash)
+
+            await callback_query.answer(Translator.translate(Strings.ResumeTorrent, user.locale))
+
+    return router

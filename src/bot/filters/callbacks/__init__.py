@@ -4,6 +4,7 @@ from .category import AddCategory, SelectCategory, CategoryMenu, RemoveCategory,
 from .add_torrents import AddMagnet, AddTorrent
 from .list import List, ListByStatus, Menu
 from .torrent_info import TorrentInfo, Export, Pause, Resume, DeleteOne
+from .pause_resume import PauseResumeMenu, Pause, PauseAll, Resume, ResumeAll
 
 
 class Menu(CallbackData, prefix="menu"):
