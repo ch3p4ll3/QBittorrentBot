@@ -2,9 +2,6 @@ from math import log, floor
 import datetime
 from typing import Dict
 
-from pydantic import HttpUrl
-
-from src.settings.enums import ClientTypeEnum, UserRolesEnum
 from src.settings.user import User
 
 
@@ -41,21 +38,6 @@ def format_progress(progress: float, width: int = 20) -> str:
     percent = int(progress * 100)
 
     return f"{percent:3d}%|{bar}|\n"
-
-
-def convert_type_from_string(input_type: str):
-    if "int" in input_type:
-        return int
-    elif "HttpUrl" in input_type:
-        return HttpUrl
-    elif "ClientTypeEnum" in input_type:
-        return ClientTypeEnum
-    elif "UserRolesEnum" in input_type:
-        return UserRolesEnum
-    elif "str" in input_type:
-        return str
-    elif "bool" in input_type:
-        return bool
 
 
 def get_value(locales_dict: Dict, key_string: str) -> str:

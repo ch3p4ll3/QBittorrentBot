@@ -1,9 +1,15 @@
 from aiogram import Bot
+from logging import getLogger
+from pathlib import Path
+from watchfiles import awatch
 
 from src.redis_helper.wrapper import RedisWrapper
 from src.client_manager.client_repo import ClientRepo
 from src.settings import Settings
 from src.settings.user import User
+
+
+logger = getLogger(__name__)
 
 
 def user_filters(users: list[User], category: str):
@@ -29,3 +35,13 @@ async def torrent_finished(bot: Bot, redis: RedisWrapper, settings: Settings):
                         pass
 
             await redis.set(i.hash, True, 10 * 86400)  # store for 10 days
+
+
+async def watch_config(path: Path, settings: Settings):
+    async for _ in awatch(path):
+        try:
+            new_settings = Settings.load_settings()
+            settings.update_from(new_settings)
+            logger.debug("Settings reloaded successfully")
+        except Exception as e:
+            logger.exception(e)
