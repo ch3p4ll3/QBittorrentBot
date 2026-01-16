@@ -2,32 +2,13 @@ from math import log, floor
 import datetime
 from typing import Dict
 
-from aiogram import Bot
+from pydantic import HttpUrl
 
-from redis_helper.wrapper import RedisWrapper
-from client_manager import ClientRepo
-from settings import Settings
-from settings.enums import ClientTypeEnum, UserRolesEnum
-from settings.user import User
+from src.settings.enums import ClientTypeEnum, UserRolesEnum
+from src.settings.user import User
 
 
-async def torrent_finished(bot: Bot, redis: RedisWrapper, settings: Settings):
-    repository_class = ClientRepo.get_client_manager(settings.client.type)
-
-    for i in repository_class(settings).get_torrents(status_filter="completed"):
-        if not await redis.exists(i.hash):
-
-            for user in settings.users:
-                if user.notify:
-                    try:
-                        await bot.send_message(user.user_id, f"torrent {i.name} has finished downloading!")
-                    except:
-                        pass
-
-            await redis.set(i.hash, True, 10 * 86400)  # store for 10 days
-
-
-def get_user_from_config(user_id: int, settings: Settings) -> User:
+def get_user_from_config(user_id: int, settings: "Settings") -> User:
     return next(
         iter(
             [i for i in settings.users if i.user_id == user_id]
@@ -84,3 +65,13 @@ def get_value(locales_dict: Dict, key_string: str) -> str:
     else:
         head, tail = key_string.split('.', 1)
         return get_value(locales_dict[head], tail)
+
+
+def inejct_new_config_data(json_data: dict):
+    json_data['redis'] = {
+        'url': None
+    }
+
+    for index, i in enumerate(json_data['users']):
+        i['notification_filter'] = []
+        json_data['users'][index] = i

@@ -1,10 +1,10 @@
 from aiogram import Bot, Router
 from aiogram.types import CallbackQuery
 
-from ...filters.callbacks import List, ListByStatus, Menu
-from ..common import list_active_torrents, send_menu
-from settings import Settings
-from redis_helper.wrapper import RedisWrapper
+from src.bot.filters.callbacks import List, ListByStatus, Menu
+from src.bot.handlers.common import list_active_torrents, send_menu
+from src.settings import Settings
+from src.redis_helper.wrapper import RedisWrapper
 
 
 def get_router():

@@ -4,13 +4,13 @@ from aiogram import Bot, Router
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.types import BufferedInputFile, CallbackQuery
 
-from client_manager import ClientRepo
-from settings import Settings
-from settings.user import User
-from translator import Translator, Strings
-from utils import convert_size, convert_eta, format_progress
+from src.client_manager.client_repo import ClientRepo
+from src.settings import Settings
+from src.settings.user import User
+from src.translator import Translator, Strings
+from src.utils import convert_size, convert_eta, format_progress
 
-from ...filters.callbacks import TorrentInfo, Export, Pause, Resume, DeleteOne, Menu
+from src.bot.filters.callbacks import TorrentInfo, Export, Pause, Resume, DeleteOne, Menu
 
 
 def get_router():

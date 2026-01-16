@@ -8,6 +8,7 @@ from .client import Client
 from .user import User
 from .telegram import Telegram
 from .redis import Redis
+from src.utils import inejct_new_config_data
 
 
 class Settings(BaseModel):
@@ -19,11 +20,11 @@ class Settings(BaseModel):
     def export_settings(self):
         settings_file_path = Path(__file__).parent.parent.parent / "data/config.yml"
 
-        with open(settings_file_path, "w") as settings_file:
+        with open(settings_file_path, "w", encoding="UTF-8") as settings_file:
             yaml.dump(self.model_dump(mode='json'), settings_file, indent=2)
     
     def update_from(self, new: "Settings") -> None:
-        for field in self.model_fields:
+        for field in Settings.model_fields:
             setattr(self, field, getattr(new, field))
 
     @classmethod
@@ -36,16 +37,14 @@ class Settings(BaseModel):
         if not yml_path.exists():
             # If old JSON config exists, convert it
             if json_path.exists():
-                with open(json_path, "r") as json_file:
+                with open(json_path, "r", encoding="UTF-8") as json_file:
                     json_data = json.load(json_file)
 
-                json_data['redis'] = {
-                    'url': None
-                }
+                inejct_new_config_data(json_data)
 
                 settings = cls(**json_data)
 
-                with open(yml_path, "w") as yml_file:
+                with open(yml_path, "w", encoding="UTF-8") as yml_file:
                     yaml.dump(settings.model_dump(mode="json"), yml_file, indent=2)
 
                 json_path.unlink()  # delete old config.json
@@ -54,13 +53,13 @@ class Settings(BaseModel):
             # Otherwise create default config
             settings = cls.get_default_settings()
 
-            with open(yml_path, "w") as yml_file:
+            with open(yml_path, "w", encoding="UTF-8") as yml_file:
                 yaml.dump(settings.model_dump(mode="json"), yml_file, indent=2)
 
             return settings
 
         # Load existing YAML config
-        with open(yml_path, "r") as yml_file:
+        with open(yml_path, "r", encoding="UTF-8") as yml_file:
             return cls(**yaml.safe_load(yml_file))
 
     @classmethod

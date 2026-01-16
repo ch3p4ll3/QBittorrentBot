@@ -1,9 +1,9 @@
 from aiogram.filters import Filter
 from aiogram.types import Message, CallbackQuery
 
-from settings import Settings
-from utils import get_user_from_config
-from settings.enums import UserRolesEnum
+from src.settings import Settings
+from src.settings.enums import UserRolesEnum
+from src.utils import get_user_from_config
 
 
 # Authorization filters

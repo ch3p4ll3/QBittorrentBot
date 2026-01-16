@@ -3,8 +3,8 @@ from typing import Dict, Any
 from aiogram import BaseMiddleware
 from aiogram.types import CallbackQuery, Message
 
-from utils import get_user_from_config
-from settings import Settings
+from src.utils import get_user_from_config
+from src.settings import Settings
 
 
 class UserMiddleware(BaseMiddleware):

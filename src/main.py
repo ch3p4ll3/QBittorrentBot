@@ -1,3 +1,4 @@
+from logging import getLogger
 import asyncio
 from pathlib import Path
 
@@ -9,18 +10,19 @@ from aiogram.enums import ParseMode
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from watchfiles import awatch
 
-from bot.handlers import get_commands_router, get_on_message_router
-from bot.handlers.callbacks import get_category_router, get_add_torrents_router, get_list_router, \
+from src.bot.handlers import get_commands_router, get_on_message_router
+from src.bot.handlers.callbacks import get_category_router, get_add_torrents_router, get_list_router, \
     get_torrent_info_router, get_resume_router, get_pause_router, get_delete_one_router, \
     get_delete_all_router, get_settings_router
 
-from bot.middlewares import UserMiddleware
+from src.bot.middlewares import UserMiddleware
 
-from utils import torrent_finished
-from redis_helper.wrapper import RedisWrapper
-from settings import Settings
-from logger import configure_logger
+from src.tasks import torrent_finished
+from src.redis_helper.wrapper import RedisWrapper
+from src.settings import Settings
+from src.logger import configure_logger
 
+logger = getLogger(__name__)
 
 
 async def watch_config(path: Path, settings: Settings):
@@ -28,9 +30,9 @@ async def watch_config(path: Path, settings: Settings):
         try:
             new_settings = Settings.load_settings()
             settings.update_from(new_settings)
-            print("Settings reloaded successfully")
+            logger.debug("Settings reloaded successfully")
         except Exception as e:
-            print("Failed to reload settings:", e)
+            logger.exception(e)
 
 
 async def main(base_path: Path) -> None:

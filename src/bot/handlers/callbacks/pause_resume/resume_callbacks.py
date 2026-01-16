@@ -1,16 +1,16 @@
 from aiogram import Bot, Router
 from aiogram.types import CallbackQuery
 
-from ....filters.callbacks import Resume, ResumeAll
-from ....filters import HasRole
-from client_manager import ClientRepo
-from ...common import list_active_torrents
+from src.bot.filters.callbacks import Resume, ResumeAll
+from src.bot.filters import HasRole
+from src.client_manager.client_repo import ClientRepo
+from src.bot.handlers.common import list_active_torrents
 
-from settings import Settings
-from settings.enums import UserRolesEnum
-from settings.user import User
+from src.settings import Settings
+from src.settings.enums import UserRolesEnum
+from src.settings.user import User
 
-from translator import Translator, Strings
+from src.translator import Translator, Strings
 
 
 def get_router():

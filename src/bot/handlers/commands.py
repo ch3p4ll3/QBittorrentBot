@@ -8,12 +8,13 @@ from aiogram.filters import CommandStart, Command
 
 import psutil
 
+from src.redis_helper.wrapper import RedisWrapper
+from src.utils import convert_size
+from src.settings import User, Settings
+from src.translator import Translator, Strings
+
 from ..filters import IsAuthorizedUser
-from redis_helper.wrapper import RedisWrapper
-from utils import convert_size
 from .common import send_menu
-from settings import User, Settings
-from translator import Translator, Strings
 
 
 def get_router():

@@ -4,13 +4,13 @@ import logging
 from aiogram import Bot
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from redis_helper.wrapper import RedisWrapper
-from settings import Settings
-from client_manager import ClientRepo
-from utils import get_user_from_config
-from settings.enums import UserRolesEnum
-from translator import Translator, Strings
-from ..filters.callbacks import CategoryAction, CategoryMenu, ListByStatus, List, TorrentInfo, SettingsMenu, DeleteMenu, PauseResumeMenu
+from src.redis_helper.wrapper import RedisWrapper
+from src.settings import Settings
+from src.client_manager.client_repo import ClientRepo
+from src.utils import get_user_from_config
+from src.settings.enums import UserRolesEnum
+from src.translator import Translator, Strings
+from src.bot.filters.callbacks import CategoryAction, CategoryMenu, ListByStatus, List, TorrentInfo, SettingsMenu, DeleteMenu, PauseResumeMenu
 
 logger = logging.getLogger(__name__)
 

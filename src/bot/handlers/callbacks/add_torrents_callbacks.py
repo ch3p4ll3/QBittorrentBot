@@ -1,14 +1,14 @@
 from aiogram import Bot, Router
 from aiogram.types import CallbackQuery
 
-from settings.user import User
-from settings.enums import UserRolesEnum
-from translator import Translator, Strings
+from src.settings.user import User
+from src.settings.enums import UserRolesEnum
+from src.translator import Translator, Strings
 
-from ...filters import HasRole
-from ...filters.callbacks import AddMagnet, AddTorrent
+from src.bot.filters import HasRole
+from src.bot.filters.callbacks import AddMagnet, AddTorrent
 
-from redis_helper.wrapper import RedisWrapper
+from src.redis_helper.wrapper import RedisWrapper
 
 
 def get_router():

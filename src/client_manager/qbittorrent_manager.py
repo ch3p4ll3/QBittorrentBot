@@ -1,9 +1,10 @@
 from io import BytesIO
+from typing import Union, List
+import logging
 
 import qbittorrentapi
-import logging
-from settings import Settings
-from typing import Union, List
+
+from src.settings import Settings
 from .client_manager import ClientManager
 
 from .mappers.mapper_repo import MapperRepo

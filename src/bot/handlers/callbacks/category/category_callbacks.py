@@ -1,15 +1,15 @@
 from aiogram import Bot, Router
 from aiogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
 
-from client_manager import ClientRepo
-from settings import Settings, User
-from settings.enums import UserRolesEnum
-from redis_helper.wrapper import RedisWrapper
+from src.client_manager.client_repo import ClientRepo
+from src.settings import Settings, User
+from src.settings.enums import UserRolesEnum
+from src.redis_helper.wrapper import RedisWrapper
 
-from ....filters import HasRole
-from ....filters.callbacks import AddCategory, SelectCategory, CategoryMenu, Menu, RemoveCategory, ModifyCategory, CategoryAction, AddMagnet, AddTorrent
+from src.bot.filters import HasRole
+from src.bot.filters.callbacks import AddCategory, SelectCategory, CategoryMenu, Menu, RemoveCategory, ModifyCategory, CategoryAction, AddMagnet, AddTorrent
 
-from translator import Translator, Strings
+from src.translator import Translator, Strings
 
 
 def get_router():

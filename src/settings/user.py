@@ -1,7 +1,7 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 
-from settings.enums import UserRolesEnum
+from src.settings.enums import UserRolesEnum
 
 
 class User(BaseModel):
@@ -9,3 +9,4 @@ class User(BaseModel):
     role: UserRolesEnum = UserRolesEnum.Reader
     locale: Optional[str] = "en"
     notify: Optional[bool] = True
+    notification_filter: Optional[List[str]] = None  # leave empty if or None for disabling notify filter, set a category name to receive notifications for specific categories

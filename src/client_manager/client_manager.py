@@ -3,7 +3,7 @@ from typing import Union, List
 from abc import ABC
 
 
-from settings import Settings
+from src.settings import Settings
 
 
 class ClientManager(ABC):
