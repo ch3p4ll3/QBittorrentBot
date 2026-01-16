@@ -7,13 +7,13 @@ from aiogram.types import Message
 from aiogram.dispatcher.router import Router
 
 from src.client_manager.client_repo import ClientRepo
-from .common import send_menu
 from src.settings import Settings
 from src.settings.user import User
-from src.utils import convert_type_from_string
 from src.bot.filters import IsAuthorizedUser, IsCommand
 from src.translator import Translator, Strings
 from src.redis_helper.wrapper import RedisWrapper
+
+from .common import send_menu
 
 
 logger = logging.getLogger(__name__)

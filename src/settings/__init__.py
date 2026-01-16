@@ -1,14 +1,15 @@
 from pathlib import Path
-
-from pydantic import BaseModel
 import json
+
 import yaml
+from pydantic import BaseModel
+
+from src.utils import inejct_new_config_data
 
 from .client import Client
 from .user import User
 from .telegram import Telegram
 from .redis import Redis
-from src.utils import inejct_new_config_data
 
 
 class Settings(BaseModel):

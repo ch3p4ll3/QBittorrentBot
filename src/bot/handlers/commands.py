@@ -1,4 +1,3 @@
-from aiogram import F
 from aiogram import Bot
 from aiogram.types import Message
 from aiogram.types.inline_keyboard_markup import InlineKeyboardMarkup

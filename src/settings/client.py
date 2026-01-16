@@ -9,12 +9,14 @@ class Client(BaseModel):
     password: str
 
     @field_validator('user')
+    @classmethod
     def user_validator(cls, v):
         if not v or not v.strip():
             raise ValueError('User cannot be empty')
         return v
 
     @field_validator('password')
+    @classmethod
     def password_validator(cls, v):
         if not v or not v.strip():
             raise ValueError('Password cannot be empty')
