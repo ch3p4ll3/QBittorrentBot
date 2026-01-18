@@ -1,7 +1,7 @@
 services:
   bot:
     build:
-      context: ..
+      context: ../..
       dockerfile: Dockerfile
 
     volumes:
