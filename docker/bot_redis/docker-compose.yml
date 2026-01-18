@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     depends_on: cache
     volumes:
-      - "./QBittorrentBot-data:/app/data"
+      - "./qbittorrent-bot-data:/app/data"
 
   cache:
     image: redis:8

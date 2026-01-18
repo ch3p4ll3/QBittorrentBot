@@ -5,4 +5,4 @@ services:
       dockerfile: Dockerfile
 
     volumes:
-      - ./data:/app/data
+      - ./qbittorrent-bot-data:/app/data
