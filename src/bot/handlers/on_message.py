@@ -34,7 +34,7 @@ def get_router():
             )
 
             if not response:
-                await message.reply_text(Translator.translate(Strings.UnableToAddMagnet, locale=user.locale))
+                await message.reply(Translator.translate(Strings.UnableToAddMagnet, locale=user.locale))
                 return
 
             await send_menu(bot, redis, settings, message.chat.id, message.message_id)
@@ -47,11 +47,15 @@ def get_router():
 
 
     async def on_torrent(message: Message, user, redis: RedisWrapper, bot: Bot, settings: Settings):
+        print(message.document)
         if ".torrent" in message.document.file_name:
             with tempfile.TemporaryDirectory() as tempdir:
                 name = f"{tempdir}/{message.document.file_name}"
                 category = (await redis.get(f"action:{message.from_user.id}")).split("#")[1]
-                await bot.download_file(tempdir, message.document.file_name)
+
+                file = await bot.get_file(message.document.file_id)
+                file_path = file.file_path
+                await bot.download_file(file_path, name)
 
                 repository_class = ClientRepo.get_client_manager(settings.client.type)
                 response = repository_class(settings).add_torrent(file_name=name, category=category)
