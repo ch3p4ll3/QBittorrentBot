@@ -48,7 +48,7 @@ def get_router():
 
         else:
             repository_class = ClientRepo.get_client_manager(settings.client.type)
-            repository_class(settings).delete_one_no_data(torrent_hash=callback_data.torrent_hash)
+            await repository_class(settings).delete_one_no_data(torrent_hash=callback_data.torrent_hash)
 
             await send_menu(bot, redis, settings, callback_query.from_user.id, callback_query.message.message_id)
 
@@ -60,7 +60,7 @@ def get_router():
 
         else:
             repository_class = ClientRepo.get_client_manager(settings.client.type)
-            repository_class(settings).delete_one_data(torrent_hash=callback_data.torrent_hash)
+            await repository_class(settings).delete_one_data(torrent_hash=callback_data.torrent_hash)
 
             await send_menu(bot, redis, settings, callback_query.from_user.id, callback_query.message.message_id)
 

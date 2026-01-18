@@ -24,7 +24,7 @@ def user_filters(users: list[User], category: str):
 async def torrent_finished(bot: Bot, redis: RedisWrapper, settings: Settings):
     repository_class = ClientRepo.get_client_manager(settings.client.type)
 
-    for i in repository_class(settings).get_torrents(status_filter="completed"):
+    for i in await repository_class(settings).get_torrents(status_filter="completed"):
         if not await redis.exists(i.hash):
 
             for user in user_filters(settings.users, i.category):

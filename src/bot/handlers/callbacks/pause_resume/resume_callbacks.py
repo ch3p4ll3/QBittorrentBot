@@ -20,7 +20,7 @@ def get_router():
     @router.callback_query(ResumeAll.filter(), HasRole(UserRolesEnum.Manager))
     async def resume_all_callback(callback_query: CallbackQuery, callback_data: ResumeAll, bot: Bot, settings: Settings, user: User) -> None:
         repository_class = ClientRepo.get_client_manager(settings.client.type)
-        repository_class(settings).resume_all()
+        await repository_class(settings).resume_all()
 
         await callback_query.answer(
             text=Translator.translate(Strings.ResumeAllTorrents, user.locale)
@@ -35,7 +35,7 @@ def get_router():
 
         else:
             repository_class = ClientRepo.get_client_manager(settings.client.type)
-            repository_class(settings).resume(torrent_hash=callback_data.torrent_hash)
+            await repository_class(settings).resume(torrent_hash=callback_data.torrent_hash)
 
             await callback_query.answer(text=Translator.translate(Strings.ResumeTorrent, user.locale))
 

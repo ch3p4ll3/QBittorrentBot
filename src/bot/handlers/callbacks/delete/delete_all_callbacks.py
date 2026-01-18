@@ -62,7 +62,7 @@ def get_router():
     @router.callback_query(DeleteAllNoData.filter(), HasRole(UserRolesEnum.Administrator))
     async def delete_all_with_no_data_callback(callback_query: CallbackQuery, callback_data: DeleteAllNoData, bot: Bot, settings: Settings, redis: RedisWrapper, user: User) -> None:
         repository_class = ClientRepo.get_client_manager(settings.client.type)
-        repository_class(settings).delete_all_no_data()
+        await repository_class(settings).delete_all_no_data()
 
         await bot.answer_callback_query(callback_query.id, Translator.translate(Strings.DeletedAll, user.locale))
         await send_menu(bot, redis, settings, callback_query.from_user.id, callback_query.message.message_id)
@@ -71,7 +71,7 @@ def get_router():
     @router.callback_query(DeleteAllData.filter(), HasRole(UserRolesEnum.Administrator))
     async def delete_all_with_data_callback(callback_query: CallbackQuery, callback_data: DeleteAllData, bot: Bot, settings: Settings, redis: RedisWrapper, user: User) -> None:
         repository_class = ClientRepo.get_client_manager(settings.client.type)
-        repository_class(settings).delete_all_data()
+        await repository_class(settings).delete_all_data()
 
         await bot.answer_callback_query(callback_query.id, Translator.translate(Strings.DeletedAllData, user.locale))
         await send_menu(bot, redis, settings, callback_query.from_user.id, callback_query.message.message_id)

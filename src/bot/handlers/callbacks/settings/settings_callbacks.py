@@ -41,7 +41,7 @@ def get_router():
     @router.callback_query(EditClientMenu.filter(), HasRole(UserRolesEnum.Administrator))
     async def edit_client_settings_callback(callback_query: CallbackQuery, callback_data: EditClientMenu, bot: Bot, settings: Settings, user: User) -> None:
         repository_class = ClientRepo.get_client_manager(settings.client.type)
-        speed_limit = repository_class(settings).get_speed_limit_mode()
+        speed_limit = await repository_class(settings).get_speed_limit_mode()
 
         speed_limit_status = Translator.translate(Strings.Enabled if speed_limit else Strings.Disabled, user.locale)
 
@@ -74,7 +74,7 @@ def get_router():
     @router.callback_query(ToggleSpeedLimit.filter(), HasRole(UserRolesEnum.Administrator))
     async def toggle_speed_limit_callback(callback_query: CallbackQuery, callback_data: ToggleSpeedLimit, bot: Bot, settings: Settings, user: User) -> None:
         repository_class = ClientRepo.get_client_manager(settings.client.type)
-        speed_limit = repository_class(settings).toggle_speed_limit()
+        speed_limit = await repository_class(settings).toggle_speed_limit()
 
         speed_limit_status = Translator.translate(Strings.Enabled if speed_limit else Strings.Disabled, user.locale)
 
@@ -116,7 +116,7 @@ def get_router():
     async def check_connection_callback(callback_query: CallbackQuery, callback_data: CheckConnection, bot: Bot, settings: Settings, user: User) -> None:
         try:
             repository_class = ClientRepo.get_client_manager(settings.client.type)
-            version = repository_class(settings).check_connection()
+            version = await repository_class(settings).check_connection()
 
             await callback_query.answer(Translator.translate(Strings.ClientConnectionOk, user.locale, version=version), show_alert=True)
         except Exception:

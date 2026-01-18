@@ -81,7 +81,7 @@ async def list_active_torrents(
 ) -> None:
     user = get_user_from_config(chat_id, settings)
     repository_class = ClientRepo.get_client_manager(settings.client.type)
-    torrents = repository_class(settings).get_torrents(status_filter=status_filter)
+    torrents = await repository_class(settings).get_torrents(status_filter=status_filter)
 
     # Status filter buttons
     categories_buttons = [

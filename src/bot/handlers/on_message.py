@@ -28,7 +28,7 @@ def get_router():
             category = (await redis.get(f"action:{message.from_user.id}")).split("#")[1]
 
             repository_class = ClientRepo.get_client_manager(settings.client.type)
-            response = repository_class(settings).add_magnet(
+            response = await repository_class(settings).add_magnet(
                 magnet_link=magnet_link,
                 category=category
             )
@@ -58,7 +58,7 @@ def get_router():
                 await bot.download_file(file_path, name)
 
                 repository_class = ClientRepo.get_client_manager(settings.client.type)
-                response = repository_class(settings).add_torrent(file_name=name, category=category)
+                response = await repository_class(settings).add_torrent(file_name=name, category=category)
 
                 if not response:
                     await message.reply(Translator.translate(Strings.UnableToAddTorrent, locale=user.locale))
@@ -86,11 +86,11 @@ def get_router():
         repository_class = ClientRepo.get_client_manager(settings.client.type)
 
         if "modify" in action:
-            repository_class(settings).edit_category(name=name, save_path=message.text.replace("\\", ""))
+            await repository_class(settings).edit_category(name=name, save_path=message.text.replace("\\", ""))
             await send_menu(bot, redis, settings, message.chat.id, message.message_id)
             return
 
-        repository_class(settings).create_category(name=name, save_path=message.text.replace("\\", ""))
+        await repository_class(settings).create_category(name=name, save_path=message.text.replace("\\", ""))
         await send_menu(bot, redis, settings, message.chat.id, message.message_id)
 
 
