@@ -1,0 +1,17 @@
+[project]
+name = "QBittorrentBot"
+version = "3.0.0"
+description = "This bot can control qbittorrent easily from Telegram! You can add magnet or torrent files, have a list of active downloads, delete, pause and restart downloads."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "aiogram>=3.24.0",
+    "aiohttp-socks>=0.11.0",
+    "apscheduler>=3.11.2",
+    "psutil>=7.2.1",
+    "pydantic>=2.12.5",
+    "pyyaml>=6.0.3",
+    "qbittorrent-api>=2025.11.1",
+    "redis>=7.1.0",
+    "watchfiles>=1.1.1",
+]

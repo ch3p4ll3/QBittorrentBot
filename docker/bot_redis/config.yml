@@ -1,0 +1,33 @@
+client:
+  type: qbittorrent
+  host: http://localhost:8080/
+  user: admin
+  password: adminadmin
+
+redis:
+  url: redis://cache:6379/0
+
+telegram:
+  bot_token: PUT_YOUR_TELEGRAM_BOT_TOKEN_HERE
+  proxy: null
+
+users:
+  - user_id: 123456789
+    role: administrator
+    notify: true
+    notification_filter: null
+    locale: en
+
+  - user_id: 987654321
+    role: manager
+    notify: true
+    notification_filter:
+      - Movies
+      - TV
+    locale: en
+
+  - user_id: 192837465
+    role: reader
+    notify: false
+    notification_filter: null
+    locale: it

@@ -3,103 +3,89 @@ from typing import Union, List
 from abc import ABC
 
 
+from src.settings import Settings
+
+
 class ClientManager(ABC):
-    @classmethod
-    def add_magnet(cls, magnet_link: Union[str, List[str]], category: str = None) -> bool:
+    def __init__(self, settings: Settings):
+        self.settings = settings
+    
+    def add_magnet(self, magnet_link: Union[str, List[str]], category: str = None) -> bool:
         """Add one or multiple magnet links with or without a category, return true if successful"""
         raise NotImplementedError
-
-    @classmethod
-    def add_torrent(cls, file_name: str, category: str = None) -> bool:
+    
+    def add_torrent(self, file_name: str, category: str = None) -> bool:
         """Add one torrent file with or without a category, return true if successful"""
         raise NotImplementedError
-
-    @classmethod
-    def resume_all(cls) -> None:
+    
+    def resume_all(self) -> None:
         """Resume all torrents"""
         raise NotImplementedError
 
-    @classmethod
-    def pause_all(cls) -> None:
+    def pause_all(self) -> None:
         """Pause all torrents"""
         raise NotImplementedError
 
-    @classmethod
-    def resume(cls, torrent_hash: str) -> None:
+    def resume(self, torrent_hash: str) -> None:
         """Resume a specific torrent"""
         raise NotImplementedError
 
-    @classmethod
-    def pause(cls, torrent_hash: str) -> None:
+    def pause(self, torrent_hash: str) -> None:
         """Pause a specific torrent"""
         raise NotImplementedError
-
-    @classmethod
-    def delete_one_no_data(cls, torrent_hash: str) -> None:
+    
+    def delete_one_no_data(self, torrent_hash: str) -> None:
         """Delete a specific torrent without deleting the data"""
         raise NotImplementedError
-
-    @classmethod
-    def delete_one_data(cls, torrent_hash: str) -> None:
+    
+    def delete_one_data(self, torrent_hash: str) -> None:
         """Delete a specific torrent deleting the data"""
         raise NotImplementedError
-
-    @classmethod
-    def delete_all_no_data(cls) -> None:
+    
+    def delete_all_no_data(self) -> None:
         """Delete all torrents without deleting the data"""
         raise NotImplementedError
 
-    @classmethod
-    def delete_all_data(cls) -> None:
+    def delete_all_data(self) -> None:
         """Delete all torrents deleting the data"""
         raise NotImplementedError
 
-    @classmethod
-    def get_categories(cls):
+    def get_categories(self):
         """Get categories"""
         raise NotImplementedError
-
-    @classmethod
-    def get_torrent(cls, torrent_hash: str, status_filter: str = None):
+    
+    def get_torrent(self, torrent_hash: str, status_filter: str = None):
         """Get a torrent info with or without a status filter"""
         raise NotImplementedError
-
-    @classmethod
-    def get_torrents(cls, torrent_hash: str = None, status_filter: str = None):
+    
+    def get_torrents(self, torrent_hash: str = None, status_filter: str = None):
         """Get a torrent info with or without a status filter"""
         raise NotImplementedError
-
-    @classmethod
-    def edit_category(cls, name: str, save_path: str) -> None:
+    
+    def edit_category(self, name: str, save_path: str) -> None:
         """Edit a category save path"""
         raise NotImplementedError
-
-    @classmethod
-    def create_category(cls, name: str, save_path: str) -> None:
+    
+    def create_category(self, name: str, save_path: str) -> None:
         """Create a new category"""
         raise NotImplementedError
-
-    @classmethod
-    def remove_category(cls, name: str) -> None:
+    
+    def remove_category(self, name: str) -> None:
         """Delete a category"""
         raise NotImplementedError
-
-    @classmethod
-    def check_connection(cls) -> str:
+    
+    def check_connection(self) -> str:
         """Check connection with Client"""
         raise NotImplementedError
-
-    @classmethod
-    def export_torrent(cls, torrent_hash: str) -> BytesIO:
+    
+    def export_torrent(self, torrent_hash: str) -> BytesIO:
         """Export a .torrent file for the torrent."""
         raise NotImplementedError
-
-    @classmethod
-    def get_speed_limit_mode(cls) -> bool:
+    
+    def get_speed_limit_mode(self) -> bool:
         """Get speed limit of the client, returns True if speed limit is active"""
         raise NotImplementedError
-
-    @classmethod
-    def toggle_speed_limit(cls) -> bool:
+    
+    def toggle_speed_limit(self) -> bool:
         """Toggle speed limit of the client, returns True if speed limit is active"""
         raise NotImplementedError

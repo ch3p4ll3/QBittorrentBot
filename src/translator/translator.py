@@ -2,7 +2,8 @@ import json
 from pathlib import Path
 from typing import Dict
 from string import Template
-from ..utils import get_value
+
+from src.utils import get_value
 
 
 def load_locales(locales_path: Path) -> Dict:

@@ -10,122 +10,188 @@
 
 # QBittorrentBot
 
-With this bot telegram you can manage your qbittorrent with a few simple clicks. Thanks to QBittorrentBot you can have a list of all the files in download / upload, add torrents and magnets.  
-You can add more magnets by simply placing one link per line, e.g. 
-```
-magnet:?xt=...  
-magnet:?xt=...  
-```
-You can also pause, resume, delete and add/remove and modify categories.
+QBittorrentBot is a Telegram bot that allows you to control your **qBittorrent** client directly through Telegram. With this bot, you can manage your torrent downloads, add magnet links, and much more—all from within your chat.
 
-# Table Of Contents
-- [QBittorrentBot](#qbittorrentbot)
-- [Table Of Contents](#table-of-contents)
-  - [Warning!](#warning)
-  - [Configuration](#configuration)
-    - [Retrieve Telegram API ID and API HASH](#retrieve-telegram-api-id-and-api-hash)
-    - [JSON Configuration](#json-configuration)
-  - [Running](#running)
-    - [Build docker](#build-docker)
-    - [Running without docker](#running-without-docker)
-  - [Contributing Translations on Transifex](#contributing-translations-on-transifex)
-  - [How to enable the qBittorrent Web UI](#how-to-enable-the-qbittorrent-web-ui)
-  - [Contributors ✨](#contributors-)
+You can add multiple magnet links by simply placing one per line:
 
+```
+magnet:?xt=...
+magnet:?xt=...
+```
+
+The bot allows you to:
+
+* **List active torrents**
+* **Pause/resume torrents**
+* **Delete torrents**
+* **Add, remove, and modify categories**
+
+# Table of Contents
+
+* [QBittorrentBot](#qbittorrentbot)
+* [Table Of Contents](#table-of-contents)
+
+  * [Warning!](#warning)
+  * [Configuration](#configuration)
+
+    * [Retrieve Telegram API ID and API HASH](#retrieve-telegram-api-id-and-api-hash)
+    * [YAML Configuration](#yaml-configuration)
+  * [Running](#running)
+
+    * [Build Docker](#build-docker)
+    * [Running Without Docker](#running-without-docker)
+  * [Contributing Translations on Transifex](#contributing-translations-on-transifex)
+  * [How to Enable the qBittorrent Web UI](#how-to-enable-the-qbittorrent-web-ui)
+  * [Contributors ✨](#contributors-)
 
 ## Warning!
-Since version V2, the mapping of the configuration file has been changed. Make sure you have modified it correctly before starting the bot
+
+Since version **V2**, the configuration format has changed. Please ensure your configuration file is updated correctly before starting the bot.
 
 ## Configuration
+
 ### Retrieve Telegram API ID and API HASH
-With the change of library to [pyrogram](https://docs.pyrogram.org/) you will need the API_ID and API_HASH. Check [here](https://core.telegram.org/api/obtaining_api_id) to find out how to recover them.
-### JSON Configuration
-Edit the config.json.template file and rename it to config.json. 
-The config file is stored in the mounted /app/config/ volume
 
-```json5
-{
-    "client": {
-        "type": "qbittorrent",
-        "host": "http://192.168.178.102:8080",
-        "user": "admin",
-        "password": "admin"
-    },
-    "telegram": {
-        "bot_token": "1111111:AAAAAAAA-BBBBBBBBB",
-        "api_id": 1111,
-        "api_hash": "aaaaaaaa",
-        "proxy": {  // optional
-            "scheme": "http",
-            "hostname": "myproxy.local",
-            "port": 8080,
-            "username": "admin",  // optional
-            "password": "admin"  // optional
-        }
-    },
+As part of the transition to **Aiogram**, you no longer need the **API_ID** and **API_HASH**. You only need your **bot_token** to authenticate with the Telegram API.
 
-    "users": [
-        {
-            "user_id": 123456,
-            "notify": false,
-            "locale": "en",  // optional, default "en"
-            "role": "administrator"  // optional, default "administrator"
-        },
-        {
-            "user_id": 78910,
-            "notify": true,
-            "locale": "it",
-            "role": "administrator"
-        }
-    ]
-}
+### YAML Configuration
+
+QBittorrentBot now uses a **YAML** configuration file, replacing the old **JSON** format. The new configuration format includes settings for the qBittorrent client, Telegram bot, Redis (optional), and user roles.
+
+Here’s an example configuration (`config.yml`):
+
+```yaml
+client:
+  type: qbittorrent
+  host: http://localhost:8080/
+  user: admin
+  password: adminadmin
+
+redis:
+  url: redis://localhost:6379/0
+
+telegram:
+  bot_token: PUT_YOUR_TELEGRAM_BOT_TOKEN_HERE
+  proxy: null
+
+users:
+  - user_id: 123456789
+    role: administrator
+    notify: true
+    notification_filter: null
+    locale: en
+
+  - user_id: 987654321
+    role: manager
+    notify: true
+    notification_filter:
+      - Movies
+      - TV
+    locale: es
+
+  - user_id: 192837465
+    role: reader
+    notify: false
+    notification_filter: null
+    locale: it
 ```
-Note: If notify is true then the user will receive a notification whenever a torrent has finished downloading
+
+* **`client`**: Configuration for the **qBittorrent** client (host, username, password).
+* **`telegram`**: Telegram bot settings (bot token, proxy settings if applicable).
+* **`redis`**: Optional, for Redis configuration (useful for persistence and session management).
+* **`users`**: List of users, each with settings for notifications, locale, and role.
+
+### Important:
+
+* If **`notify`** is set to `true`, the user will receive notifications when a torrent finishes downloading.
 
 ## Running
-Pull and run the image with: `docker run -d -v /home/user/docker/QBittorrentBot:/app/config:rw --name qbittorrent-bot ch3p4ll3/qbittorrent-bot:latest`
-### Build docker
-- Clone this repo ```git clone https://github.com/ch3p4ll3/QBittorrentBot.git```
-- Move in the project directory
-- Create a config.json file
-- Run `docker build -t qbittorrent-bot:latest . && docker run -d -v /home/user/docker/QBittorrentBot:/app/config:rw --name qbittorrent-bot qbittorrent-bot:latest`
 
-### Running without docker
-- Clone this repo `git clone https://github.com/ch3p4ll3/QBittorrentBot.git`
-- Move in the project directory
-- Install dependencies with `pip3 install -r requirements.txt`
-- Create a config.json file
-- Start the bot with `python3 main.py`
+### Build Docker
+
+To run **QBittorrentBot** with Docker, follow these steps:
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/ch3p4ll3/QBittorrentBot.git
+   ```
+
+2. Move into the project directory:
+
+   ```bash
+   cd QBittorrentBot
+   ```
+
+3. Create your **`config.yml`** file.
+
+4. In the project folder, navigate to the `docker/` directory, where the `docker-compose.yml` example file is located.
+
+   ```bash
+   docker compose up -d
+   ```
+
+The `docker-compose.yml` file should already be pre-configured for you. It will automatically build the image and start the container.
+
+This method will also mount the `/app/config/` volume, ensuring that the bot uses your configuration settings.
+
+### Running Without Docker
+
+If you prefer to run the bot without Docker, you can follow these steps:
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/ch3p4ll3/QBittorrentBot.git
+   ```
+
+2. Move into the project directory:
+
+   ```bash
+   cd QBittorrentBot
+   ```
+
+3. Install dependencies:
+
+   ```bash
+   pip3 install -r requirements.txt
+   ```
+
+4. Create your **`config.yml`** file.
+
+5. Start the bot:
+
+   ```bash
+   python3 main.py
+   ```
 
 ## Contributing Translations on Transifex
-QBittorrentBot is an open-source project that relies on the contributions of its community members to provide translations for its users. If you are multilingual and would like to help us make QBittorrentBot more accessible to a wider audience, you can contribute by adding new translations or improving existing ones using Transifex:
 
-- Visit the [QBittorrentBot Transifex Project](https://app.transifex.com/ch3p4ll3/qbittorrentbot/).
+**QBittorrentBot** is an open-source project that thrives with contributions from the community. If you’re multilingual and want to help make **QBittorrentBot** accessible to more users, you can contribute translations via Transifex.
 
-- If you don't have a Transifex account, sign up for one. If you already have an account, log in.
+Here’s how you can help:
 
-- Navigate to the "Languages" tab to view the available languages. Choose the language you want to contribute to.
+1. Visit the [QBittorrentBot Transifex Project](https://app.transifex.com/ch3p4ll3/qbittorrentbot/).
+2. Sign up or log in to your Transifex account.
+3. Navigate to the "Languages" tab and select the language you’d like to contribute to.
+4. Find the string you want to translate and submit your translation.
+5. If your language isn’t listed, you can request its addition.
+6. Once your translations are reviewed and approved, they will be included in the project.
 
-- Locate the specific string you wish to translate. Please note that the text between "${" and "}" should not be edited, as they are placeholders for dynamic content.
+Thank you for contributing!
 
-- Click on the string you want to translate, enter your translation in the provided field, and save your changes.
+## How to Enable the qBittorrent Web UI
 
-- If your language is not listed, you can request its addition.
+To allow the bot to interact with your **qBittorrent** client, you need to enable the **Web UI**. Here’s how to do it:
 
-- Once you have completed your translations, submit them for review. The project maintainers will review and approve your contributions.
+1. Open **qBittorrent** and go to the menu bar.
+2. Navigate to **Tools > Options**.
+3. In the new window, select the **Web UI** tab.
+4. Enable **Enable the Web User Interface (Remote control)**.
+5. Choose a port (default is **8080**).
+6. Set a **username** and **password** (default: **admin** / **adminadmin**).
 
-Thank you for helping improve QBittorrentBot with your valuable translations!
-
-## How to enable the qBittorrent Web UI
-For the bot to work, it requires qbittorrent to have the web interface active. 
-You can activate it by going on the menu bar, go to **Tools > Options** qBittorrent WEB UI
-
-- In the new window, choose **Web UI** option
-- Check the **Enable the Web User Interface (Remote control)** option
-- Choose a port (by default 8080)
-- Set username and password (by default username: admin / password: adminadmin)
-
-Click on Ok to save settings.
+Click **OK** to save the settings.
 
 ## Contributors ✨
 
@@ -153,4 +219,3 @@ This project follows the [all-contributors](https://github.com/all-contributors/
 ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=ch3p4ll3/QBittorrentBot&type=Date)](https://star-history.com/#ch3p4ll3/QBittorrentBot&Date)
-

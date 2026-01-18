@@ -2,36 +2,14 @@ from math import log, floor
 import datetime
 from typing import Dict
 
-from pydantic import HttpUrl
-from pyrogram.errors.exceptions import UserIsBlocked
-
-from src import db_management
-from src.client_manager import ClientRepo
-from .configs import Configs
-from .configs.enums import ClientTypeEnum, UserRolesEnum
-from .configs.user import User
+from src.settings.user import User
 
 
-async def torrent_finished(app):
-    repository = ClientRepo.get_client_manager(Configs.config.client.type)
-
-    for i in repository.get_torrents(status_filter="completed"):
-        if db_management.read_completed_torrents(i.hash) is None:
-
-            for user in Configs.config.users:
-                if user.notify:
-                    try:
-                        await app.send_message(user.user_id, f"torrent {i.name} has finished downloading!")
-                    except UserIsBlocked:
-                        pass
-            db_management.write_completed_torrents(i.hash)
-
-
-def get_user_from_config(user_id: int) -> User:
+def get_user_from_config(user_id: int, settings: "Settings") -> User:
     return next(
         iter(
-            [i for i in Configs.config.users if i.user_id == user_id]
-        )
+            [i for i in settings.users if i.user_id == user_id]
+        ), None
     )
 
 
@@ -49,19 +27,17 @@ def convert_eta(n) -> str:
     return str(datetime.timedelta(seconds=n))
 
 
-def convert_type_from_string(input_type: str):
-    if "int" in input_type:
-        return int
-    elif "HttpUrl" in input_type:
-        return HttpUrl
-    elif "ClientTypeEnum" in input_type:
-        return ClientTypeEnum
-    elif "UserRolesEnum" in input_type:
-        return UserRolesEnum
-    elif "str" in input_type:
-        return str
-    elif "bool" in input_type:
-        return bool
+def format_progress(progress: float, width: int = 20) -> str:
+    """
+    progress: float from 0.0 to 1.0
+    """
+    progress = max(0.0, min(progress, 1.0))
+    filled = int(progress * width)
+
+    bar = "█" * filled + "░" * (width - filled)
+    percent = int(progress * 100)
+
+    return f"{percent:3d}%|{bar}|\n"
 
 
 def get_value(locales_dict: Dict, key_string: str) -> str:
@@ -73,9 +49,11 @@ def get_value(locales_dict: Dict, key_string: str) -> str:
         return get_value(locales_dict[head], tail)
 
 
-def inject_user(func):
-    async def wrapper(client, message):
-        user = get_user_from_config(message.from_user.id)
-        await func(client, message, user)
-    
-    return wrapper
+def inejct_new_config_data(json_data: dict):
+    json_data['redis'] = {
+        'url': None
+    }
+
+    for index, i in enumerate(json_data['users']):
+        i['notification_filter'] = []
+        json_data['users'][index] = i
