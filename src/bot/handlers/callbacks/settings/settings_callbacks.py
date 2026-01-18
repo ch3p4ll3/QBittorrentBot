@@ -54,7 +54,7 @@ def get_router():
         await bot.edit_message_text(
             chat_id=callback_query.from_user.id,
             message_id=callback_query.message.message_id,
-            text=Translator.translate(Strings.EditClientSettings, user.locale, client_type=settings.client.type, configs=confs),
+            text=Translator.translate(Strings.EditClientSettings, user.locale, client_type=settings.client.type.value.title(), configs=confs),
             reply_markup=InlineKeyboardMarkup(
                 inline_keyboard=[
                     [
