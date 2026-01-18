@@ -1,7 +1,6 @@
 from io import BytesIO
 from typing import Union, List
 import logging
-import asyncio
 
 import qbittorrentapi
 
