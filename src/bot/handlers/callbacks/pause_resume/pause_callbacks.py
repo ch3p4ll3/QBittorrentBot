@@ -45,7 +45,7 @@ def get_router():
     async def pause_all_callback(callback_query: CallbackQuery, callback_data: PauseAll, bot: Bot, settings: Settings, user: User) -> None:
         repository_class = ClientRepo.get_client_manager(settings.client.type)
         await repository_class(settings).pause_all()
-        
+
         await callback_query.answer(
             text=Translator.translate(Strings.PauseAllTorrents,user.locale)
         )

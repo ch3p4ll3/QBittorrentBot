@@ -1,5 +1,5 @@
 from aiogram import Bot, Router
-from aiogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
+from aiogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
 
 from src.settings import Settings
 from src.settings.user import User
@@ -9,7 +9,6 @@ from src.translator import Translator, Strings
 from src.bot.filters import HasRole
 from src.bot.filters.callbacks import SettingsMenu, Menu, EditClientMenu, ReloadSettingsMenu, ToggleSpeedLimit, CheckConnection
 
-from src.redis_helper.wrapper import RedisWrapper
 from src.client_manager.client_repo import ClientRepo
 
 

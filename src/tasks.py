@@ -31,8 +31,8 @@ async def torrent_finished(bot: Bot, redis: RedisWrapper, settings: Settings):
                 if user.notify:
                     try:
                         await bot.send_message(user.user_id, f"torrent {i.name} has finished downloading!")
-                    except:
-                        pass
+                    except Exception as e:
+                        logger.exception(e)
 
             await redis.set(i.hash, True, 10 * 86400)  # store for 10 days
 

@@ -23,7 +23,7 @@ class Settings(BaseModel):
 
         with open(settings_file_path, "w", encoding="UTF-8") as settings_file:
             yaml.dump(self.model_dump(mode='json'), settings_file, indent=2)
-    
+
     def update_from(self, new: "Settings") -> None:
         for field in Settings.model_fields:
             setattr(self, field, getattr(new, field))

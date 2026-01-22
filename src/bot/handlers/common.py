@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 async def send_menu(bot: Bot, redis: RedisWrapper, settings: Settings, chat_id: int, message_id: Optional[int] = None) -> None:
     user = get_user_from_config(chat_id, settings)
-    
+
     # Build buttons
     buttons = [
         [InlineKeyboardButton(text=Translator.translate(Strings.MenuList, user.locale), callback_data=List().pack())]

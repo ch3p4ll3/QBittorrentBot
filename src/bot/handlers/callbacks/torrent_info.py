@@ -59,7 +59,7 @@ def get_router():
 
         buttons = [
             [
-                InlineKeyboardButton( 
+                InlineKeyboardButton(
                     text=Translator.translate(Strings.ExportTorrentBtn, user.locale),
                     callback_data=Export(torrent_hash=callback_data.torrent_hash).pack()
                 )

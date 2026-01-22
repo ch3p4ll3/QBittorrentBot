@@ -1,4 +1,3 @@
-import logging
 from logging import config
 from os.path import exists
 from os import mkdir
@@ -54,4 +53,4 @@ def configure_logger(base_path):
     }
 
     # Apply logging configuration
-    logging.config.dictConfig(logging_config)
+    config.dictConfig(logging_config)

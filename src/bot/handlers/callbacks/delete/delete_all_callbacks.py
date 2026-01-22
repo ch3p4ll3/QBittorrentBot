@@ -15,7 +15,7 @@ from src.translator import Translator, Strings
 
 def get_router():
     router = Router()
-    
+
     @router.callback_query(DeleteMenu.filter(), HasRole(UserRolesEnum.Administrator))
     async def menu_delete_callback(callback_query: CallbackQuery, callback_data: DeleteMenu, bot: Bot, user: User) -> None:
         await bot.edit_message_text(

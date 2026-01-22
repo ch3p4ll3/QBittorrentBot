@@ -7,15 +7,3 @@ class TorrentInfo(CallbackData, prefix="torrentInfo"):
 
 class Export(CallbackData, prefix="export"):
     torrent_hash: str
-
-
-class Pause(CallbackData, prefix="pause"):
-    torrent_hash: str
-
-
-class Resume(CallbackData, prefix="resume"):
-    torrent_hash: str
-
-
-class DeleteOne(CallbackData, prefix="delete_one"):
-    torrent_hash: str
