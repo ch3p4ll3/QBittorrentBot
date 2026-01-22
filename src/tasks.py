@@ -24,15 +24,15 @@ def user_filters(users: list[User], category: str):
 async def torrent_finished(bot: Bot, redis: RedisWrapper, settings: Settings):
     repository_class = ClientRepo.get_client_manager(settings.client.type)
 
-    for i in repository_class(settings).get_torrents(status_filter="completed"):
+    for i in await repository_class(settings).get_torrents(status_filter="completed"):
         if not await redis.exists(i.hash):
 
             for user in user_filters(settings.users, i.category):
                 if user.notify:
                     try:
                         await bot.send_message(user.user_id, f"torrent {i.name} has finished downloading!")
-                    except:
-                        pass
+                    except Exception as e:
+                        logger.exception(e)
 
             await redis.set(i.hash, True, 10 * 86400)  # store for 10 days
 

@@ -1,5 +1,6 @@
 from src.settings.enums import ClientTypeEnum
-from .qbittorrent_manager import QbittorrentManager, ClientManager
+from .qbittorrent_manager import QbittorrentManager
+from .client_manager import ClientManager
 
 
 class ClientRepo:

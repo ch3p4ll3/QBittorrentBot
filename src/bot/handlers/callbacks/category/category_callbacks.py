@@ -116,7 +116,7 @@ def get_router():
         ]
 
         repository_class = ClientRepo.get_client_manager(settings.client.type)
-        repository_class(settings).remove_category(callback_data.category)
+        await repository_class(settings).remove_category(callback_data.category)
 
         await bot.edit_message_text(
             chat_id=callback_query.from_user.id,
@@ -150,7 +150,7 @@ def get_router():
         buttons = []
 
         repository_class = ClientRepo.get_client_manager(settings.client.type)
-        categories = repository_class(settings).get_categories()
+        categories = await repository_class(settings).get_categories()
         callback_type = AddMagnet if callback_data.action.startswith('add_magnet') else AddTorrent
 
         for i in categories:

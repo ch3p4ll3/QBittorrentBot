@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 async def send_menu(bot: Bot, redis: RedisWrapper, settings: Settings, chat_id: int, message_id: Optional[int] = None) -> None:
     user = get_user_from_config(chat_id, settings)
-    
+
     # Build buttons
     buttons = [
         [InlineKeyboardButton(text=Translator.translate(Strings.MenuList, user.locale), callback_data=List().pack())]
@@ -81,7 +81,7 @@ async def list_active_torrents(
 ) -> None:
     user = get_user_from_config(chat_id, settings)
     repository_class = ClientRepo.get_client_manager(settings.client.type)
-    torrents = repository_class(settings).get_torrents(status_filter=status_filter)
+    torrents = await repository_class(settings).get_torrents(status_filter=status_filter)
 
     # Status filter buttons
     categories_buttons = [

@@ -19,7 +19,7 @@ def get_router():
     @router.callback_query(TorrentInfo.filter())
     async def torrent_info_callback(callback_query: CallbackQuery, callback_data: TorrentInfo, settings: Settings, bot: Bot, user: User) -> None:
         repository_class = ClientRepo.get_client_manager(settings.client.type)
-        torrent = repository_class(settings).get_torrent(callback_data.torrent_hash)
+        torrent = await repository_class(settings).get_torrent(callback_data.torrent_hash)
 
         text_to_send = f"{torrent.name}\n"
 
@@ -59,7 +59,7 @@ def get_router():
 
         buttons = [
             [
-                InlineKeyboardButton( 
+                InlineKeyboardButton(
                     text=Translator.translate(Strings.ExportTorrentBtn, user.locale),
                     callback_data=Export(torrent_hash=callback_data.torrent_hash).pack()
                 )
@@ -101,7 +101,7 @@ def get_router():
     @router.callback_query(Export.filter())
     async def export_callback(callback_query: CallbackQuery, callback_data: Export, settings: Settings, bot: Bot) -> None:
         repository_class = ClientRepo.get_client_manager(settings.client.type)
-        file_bytes = repository_class(settings).export_torrent(callback_data.torrent_hash)
+        file_bytes = await repository_class(settings).export_torrent(callback_data.torrent_hash)
 
         await bot.send_document(
             callback_query.from_user.id,

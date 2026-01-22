@@ -1,7 +1,7 @@
 from aiogram.filters import Filter
 from aiogram.types import Message
 
-from .user import GetUser, HasRole, IsAuthorizedUser
+from .user import GetUser, HasRole, IsAuthorizedUser    # noqa: F401
 
 
 class IsCommand(Filter):

@@ -1,2 +1,2 @@
-from .translator import Translator
-from .strings import Strings
+from .translator import Translator  # noqa: F401
+from .strings import Strings        # noqa: F401
