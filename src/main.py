@@ -5,6 +5,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
+from aiogram.fsm.storage.redis import RedisStorage
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
@@ -26,27 +27,31 @@ async def main(base_path: Path) -> None:
 
     # Initialize Bot instance with default bot properties which will be passed to all API calls
     session = None
+    storage = None
 
     if settings.telegram.proxy is not None:
         session = AiohttpSession(proxy=settings.telegram.proxy.connection_string)
 
+    if settings.redis.url is not None:
+        storage = RedisStorage.from_url(settings.redis.url)
+
     bot = Bot(
         token=settings.telegram.bot_token,
         default=DefaultBotProperties(
-            parse_mode=ParseMode.MARKDOWN
+            parse_mode=ParseMode.MARKDOWN,
         ),
-        session=session
+        session=session,
+        storage=storage
     )
 
     # All handlers should be attached to the Router (or Dispatcher)
     dp = Dispatcher()
 
     # create Redis client
-    redis_client = RedisWrapper(url=settings.redis.url)
+    redis_client = RedisWrapper(url=settings.redis.url) # TO BE REMOVED WHEN FINISHED
     await redis_client.connect()
 
     # register it in dp.dependencies
-    dp["redis"] = redis_client
     dp["settings"] = settings
 
     dp.message.middleware(UserMiddleware(settings))

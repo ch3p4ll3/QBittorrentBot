@@ -5,13 +5,14 @@ from aiogram import F
 from aiogram import Bot
 from aiogram.types import Message
 from aiogram.dispatcher.router import Router
+from aiogram.fsm.context import FSMContext
 
 from src.client_manager.client_repo import ClientRepo
 from src.settings import Settings
 from src.settings.user import User
 from src.bot.filters import IsAuthorizedUser, IsCommand
 from src.translator import Translator, Strings
-from src.redis_helper.wrapper import RedisWrapper
+from src.bot.fsm import AddMagnetForm, AddTorrent, AddCategory, EditCategory
 
 from .common import send_menu
 
@@ -22,10 +23,12 @@ logger = logging.getLogger(__name__)
 def get_router():
     router = Router()
 
-    async def on_magnet(message: Message, user, redis: RedisWrapper, bot: Bot, settings: Settings):
+    @router.message(~F.from_user.is_bot, ~IsCommand(), IsAuthorizedUser(), AddMagnetForm.send_magnets)
+    async def on_magnet(message: Message, user: User, state: FSMContext, bot: Bot, settings: Settings):
         if message.text.startswith("magnet:?xt"):
             magnet_link = message.text.split("\n")
-            category = (await redis.get(f"action:{message.from_user.id}")).split("#")[1]
+
+            category = (await state.get_data())['select_category']
 
             repository_class = ClientRepo.get_client_manager(settings.client.type)
             response = await repository_class(settings).add_magnet(
@@ -37,8 +40,8 @@ def get_router():
                 await message.reply(Translator.translate(Strings.UnableToAddMagnet, locale=user.locale))
                 return
 
-            await send_menu(bot, redis, settings, message.chat.id, message.message_id)
-            await redis.set(f"action:{message.from_user.id}", None)
+            await send_menu(bot, state, settings, message.chat.id, message.message_id)
+            await state.clear()
 
         else:
             await message.reply(
@@ -46,12 +49,12 @@ def get_router():
             )
 
 
-    async def on_torrent(message: Message, user, redis: RedisWrapper, bot: Bot, settings: Settings):
-        print(message.document)
+    @router.message(~F.from_user.is_bot, ~IsCommand(), IsAuthorizedUser(), AddTorrent.send_torrent)
+    async def on_torrent(message: Message, user: User, state: FSMContext, bot: Bot, settings: Settings):
         if ".torrent" in message.document.file_name:
             with tempfile.TemporaryDirectory() as tempdir:
                 name = f"{tempdir}/{message.document.file_name}"
-                category = (await redis.get(f"action:{message.from_user.id}")).split("#")[1]
+                category = (await state.get_data())['select_category']
 
                 file = await bot.get_file(message.document.file_id)
                 file_path = file.file_path
@@ -64,8 +67,8 @@ def get_router():
                     await message.reply(Translator.translate(Strings.UnableToAddTorrent, locale=user.locale))
                     return
 
-            await send_menu(bot, redis, settings, message.chat.id, message.message_id)
-            await redis.set(f"action:{message.from_user.id}", None)
+            await send_menu(bot, state, settings, message.chat.id, message.message_id)
+            await state.clear()
 
         else:
             await message.reply(
@@ -73,46 +76,35 @@ def get_router():
             )
 
 
-    async def on_category_name(message: Message, redis: RedisWrapper):
-        await redis.set(f"action:{message.from_user.id}", f"category_dir#{message.text}")
+    @router.message(~F.from_user.is_bot, ~IsCommand(), IsAuthorizedUser(), AddCategory.category_name)
+    async def on_category_name(message: Message, state: FSMContext):
+        await state.update_data(name=message.text)
+        await state.set_state(AddCategory.category_directory)
+
         await message.reply(
             Translator.translate(Strings.CategoryPath, category_name=message.text)
         )
 
 
-    async def on_category_directory(message: Message, action, redis: RedisWrapper, bot: Bot, settings: Settings):
-        name: str = (await redis.get(f"action:{message.from_user.id}")).split("#")[1]
+    @router.message(~F.from_user.is_bot, ~IsCommand(), IsAuthorizedUser(), AddCategory.category_directory)
+    async def on_category_create(message: Message, state: FSMContext, bot: Bot, settings: Settings):
+        category_name = (await state.get_data())['category_name']
 
         repository_class = ClientRepo.get_client_manager(settings.client.type)
 
-        if "modify" in action:
-            await repository_class(settings).edit_category(name=name, save_path=message.text.replace("\\", ""))
-            await send_menu(bot, redis, settings, message.chat.id, message.message_id)
-            return
-
-        await repository_class(settings).create_category(name=name, save_path=message.text.replace("\\", ""))
-        await send_menu(bot, redis, settings, message.chat.id, message.message_id)
+        await repository_class(settings).create_category(name=category_name, save_path=message.text.replace("\\", ""))
+        await send_menu(bot, state, settings, message.chat.id, message.message_id)
+        await state.clear()
 
 
-    @router.message(~F.from_user.is_bot, ~IsCommand(), IsAuthorizedUser())
-    async def on_message(message: Message, redis: RedisWrapper, bot: Bot, settings: Settings, user: User) -> None:
-        action = await redis.get(f"action:{message.from_user.id}") or ""
+    @router.message(~F.from_user.is_bot, ~IsCommand(), IsAuthorizedUser(), EditCategory.category_directory)
+    async def on_category_edit(message: Message, state: FSMContext, bot: Bot, settings: Settings):
+        category_name = (await state.get_data())['category_name']
 
-        if "magnet" in action:
-            await on_magnet(message, user, redis, bot, settings)
+        repository_class = ClientRepo.get_client_manager(settings.client.type)
 
-        elif "torrent" in action and message.document:
-            await on_torrent(message, user, redis, bot, settings)
-
-        elif action == "category_name":
-            await on_category_name(message, redis)
-
-        elif "category_dir" in action:
-            await on_category_directory(message, action, redis, bot, settings)
-
-        else:
-            await message.reply(
-                Translator.translate(Strings.CommandDoesNotExist, locale=user.locale)
-            )
+        await repository_class(settings).edit_category(name=category_name, save_path=message.text.replace("\\", ""))
+        await send_menu(bot, state, settings, message.chat.id, message.message_id)
+        await state.clear()
 
     return router

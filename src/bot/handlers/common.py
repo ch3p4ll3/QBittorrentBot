@@ -3,8 +3,8 @@ import logging
 
 from aiogram import Bot
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.fsm.context import FSMContext
 
-from src.redis_helper.wrapper import RedisWrapper
 from src.settings import Settings
 from src.client_manager.client_repo import ClientRepo
 from src.utils import get_user_from_config
@@ -15,7 +15,7 @@ from src.bot.filters.callbacks import CategoryAction, CategoryMenu, ListByStatus
 logger = logging.getLogger(__name__)
 
 
-async def send_menu(bot: Bot, redis: RedisWrapper, settings: Settings, chat_id: int, message_id: Optional[int] = None) -> None:
+async def send_menu(bot: Bot, state: FSMContext, settings: Settings, chat_id: int, message_id: Optional[int] = None) -> None:
     user = get_user_from_config(chat_id, settings)
 
     # Build buttons
@@ -45,7 +45,7 @@ async def send_menu(bot: Bot, redis: RedisWrapper, settings: Settings, chat_id: 
             [InlineKeyboardButton(text=Translator.translate(Strings.Settings, user.locale), callback_data=SettingsMenu().pack())]
         ]
 
-    await redis.set(f"action:{chat_id}", None)
+    await state.clear()
     markup = InlineKeyboardMarkup(inline_keyboard=buttons)
 
     try:

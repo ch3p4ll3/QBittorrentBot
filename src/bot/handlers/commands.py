@@ -4,6 +4,7 @@ from aiogram.types.inline_keyboard_markup import InlineKeyboardMarkup
 from aiogram.types.inline_keyboard_button import InlineKeyboardButton
 from aiogram.dispatcher.router import Router
 from aiogram.filters import CommandStart, Command
+from aiogram.fsm.context import FSMContext
 
 import psutil
 
@@ -36,10 +37,10 @@ def get_router():
 
 
     @router.message(CommandStart(), IsAuthorizedUser())
-    async def start_command(message: Message, redis: RedisWrapper, bot: Bot, settings: Settings) -> None:
+    async def start_command(message: Message, state: FSMContext, bot: Bot, settings: Settings) -> None:
         """Start the bot."""
-        await redis.set(f"action:{message.from_user.id}", None)
-        await send_menu(bot, redis, settings, message.chat.id, message.message_id)
+        await state.clear()
+        await send_menu(bot, state, settings, message.chat.id, message.message_id)
 
 
     @router.message(Command("stats"), IsAuthorizedUser())
