@@ -1,1 +1,1 @@
-from .qbittorrent_manager import QbittorrentManager
+from .qbittorrent_manager import QbittorrentManager # noqa: F401
