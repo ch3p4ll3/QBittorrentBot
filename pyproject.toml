@@ -1,6 +1,6 @@
 [project]
 name = "QBittorrentBot"
-version = "3.0.0"
+version = "3.0.1"
 description = "This bot can control qbittorrent easily from Telegram! You can add magnet or torrent files, have a list of active downloads, delete, pause and restart downloads."
 readme = "README.md"
 requires-python = ">=3.13"
