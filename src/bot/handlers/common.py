@@ -9,8 +9,8 @@ from src.settings import Settings
 from src.client_manager.client_repo import ClientRepo
 from src.utils import get_user_from_config
 from src.settings.enums import UserRolesEnum
-from src.translator import Translator, Strings
 from src.bot.filters.callbacks import CategoryAction, CategoryMenu, ListByStatus, List, TorrentInfo, SettingsMenu, DeleteMenu, PauseResumeMenu
+from aiogram.utils.i18n import gettext as _
 
 logger = logging.getLogger(__name__)
 
@@ -20,29 +20,29 @@ async def send_menu(bot: Bot, redis: RedisWrapper, settings: Settings, chat_id: 
 
     # Build buttons
     buttons = [
-        [InlineKeyboardButton(text=Translator.translate(Strings.MenuList, user.locale), callback_data=List().pack())]
+        [InlineKeyboardButton(text=_("\uD83D\uDCDD List"), callback_data=List().pack())]
     ]
 
     if user.role in [UserRolesEnum.Manager, UserRolesEnum.Administrator]:
         buttons += [
             [
                 InlineKeyboardButton(
-                    text=Translator.translate(Strings.AddMagnet, user.locale),
+                    text=_("➕ Add Magnet"),
                     callback_data=CategoryAction(action="add_magnet").pack()
                 ),
                 InlineKeyboardButton(
-                    text=Translator.translate(Strings.AddTorrent, user.locale),
+                    text=_("➕ Add Torrent"),
                     callback_data=CategoryAction(action="add_torrent").pack()
                 )
             ],
-            [InlineKeyboardButton(text=Translator.translate(Strings.PauseResume, user.locale), callback_data=PauseResumeMenu().pack())]
+            [InlineKeyboardButton(text=_("⏯ Pause/Resume"), callback_data=PauseResumeMenu().pack())]
         ]
 
     if user.role == UserRolesEnum.Administrator:
         buttons += [
-            [InlineKeyboardButton(text=Translator.translate(Strings.Delete, user.locale), callback_data=DeleteMenu().pack())],
-            [InlineKeyboardButton(text=Translator.translate(Strings.Categories, user.locale), callback_data=CategoryMenu().pack())],
-            [InlineKeyboardButton(text=Translator.translate(Strings.Settings, user.locale), callback_data=SettingsMenu().pack())]
+            [InlineKeyboardButton(text=_("\uD83D\uDDD1 Delete"), callback_data=DeleteMenu().pack())],
+            [InlineKeyboardButton(text=_("\uD83D\uDCC2 Categories"), callback_data=CategoryMenu().pack())],
+            [InlineKeyboardButton(text=_("⚙\uFE0F Settings"), callback_data=SettingsMenu().pack())]
         ]
 
     await redis.set(f"action:{chat_id}", None)
@@ -53,20 +53,20 @@ async def send_menu(bot: Bot, redis: RedisWrapper, settings: Settings, chat_id: 
             await bot.edit_message_text(
                 chat_id=chat_id,
                 message_id=message_id,
-                text=Translator.translate(Strings.Menu, user.locale),
+                text=_("Welcome to QBittorrent Bot"),
                 reply_markup=markup
             )
         else:
             await bot.send_message(
                 chat_id=chat_id,
-                text=Translator.translate(Strings.Menu, user.locale),
+                text=_("Welcome to QBittorrent Bot"),
                 reply_markup=markup
             )
     except Exception as e:
         logger.warning(f"Failed to edit menu message, sending new one: {e}")
         await bot.send_message(
             chat_id=chat_id,
-            text=Translator.translate(Strings.Menu, user.locale),
+            text=_("Welcome to QBittorrent Bot"),
             reply_markup=markup
         )
 
@@ -86,15 +86,27 @@ async def list_active_torrents(
     # Status filter buttons
     categories_buttons = [
         InlineKeyboardButton(
-            text=Translator.translate(Strings.ListFilterDownloading, user.locale, active='*' if status_filter == 'downloading' else ''),
+            text=_("⏳ {active} Downloading"
+                .format(
+                    active='*' if status_filter == 'downloading' else ''
+                )
+            ),
             callback_data=ListByStatus(status="downloading").pack()
         ),
         InlineKeyboardButton(
-            text=Translator.translate(Strings.ListFilterCompleted, user.locale, active='*' if status_filter == 'completed' else ''),
+            text=_("✔\uFE0F {active} Completed"
+                .format(
+                    active='*' if status_filter == 'completed' else ''
+                )
+            ),
             callback_data=ListByStatus(status="completed").pack()
         ),
         InlineKeyboardButton(
-            text=Translator.translate(Strings.ListFilterPaused, user.locale, active='*' if status_filter == 'paused' else ''),
+            text=_("⏸\uFE0F {active} Paused"
+                .format(
+                    active='*' if status_filter == 'paused' else ''
+                )
+            ),
             callback_data=ListByStatus(status="paused").pack()
         )
     ]
@@ -102,18 +114,18 @@ async def list_active_torrents(
     buttons = [categories_buttons]
 
     if not torrents:
-        buttons.append([InlineKeyboardButton(text=Translator.translate(Strings.BackToMenu, user.locale), callback_data="menu")])
+        buttons.append([InlineKeyboardButton(text=_("\uD83D\uDD19 Menu"), callback_data="menu")])
         try:
             await bot.edit_message_text(
                 chat_id=chat_id,
                 message_id=message_id,
-                text=Translator.translate(Strings.NoTorrents, user.locale),
+                text=_("There are no torrents"),
                 reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons)
             )
         except Exception:
             await bot.send_message(
                 chat_id=chat_id,
-                text=Translator.translate(Strings.NoTorrents, user.locale),
+                text=_("There are no torrents"),
                 reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons)
             )
         return
@@ -125,7 +137,7 @@ async def list_active_torrents(
         else:
             buttons.append([InlineKeyboardButton(text=torrent.name, callback_data=TorrentInfo(torrent_hash=torrent.hash).pack())])
 
-    buttons.append([InlineKeyboardButton(text=Translator.translate(Strings.BackToMenu, user.locale), callback_data="menu")])
+    buttons.append([InlineKeyboardButton(text=_("\uD83D\uDD19 Menu"), callback_data="menu")])
     markup = InlineKeyboardMarkup(inline_keyboard=buttons)
 
     try:
@@ -134,6 +146,6 @@ async def list_active_torrents(
         # fallback: send a new message
         await bot.send_message(
             chat_id=chat_id,
-            text=Translator.translate(Strings.Menu, user.locale),
+            text=_("\uD83D\uDD19 Menu"),
             reply_markup=markup
         )

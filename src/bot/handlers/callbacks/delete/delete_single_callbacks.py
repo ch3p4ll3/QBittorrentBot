@@ -1,5 +1,6 @@
 from aiogram import Bot, Router
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
+from aiogram.utils.i18n import gettext as _
 
 from src.bot.filters.callbacks import DeleteOne, Menu, DeleteOneData, DeleteOneNoData
 from src.bot.filters import HasRole
@@ -10,7 +11,6 @@ from src.settings import Settings
 from src.settings.enums import UserRolesEnum
 from src.settings.user import User
 from src.redis_helper.wrapper import RedisWrapper
-from src.translator import Translator, Strings
 
 
 def get_router():
@@ -24,13 +24,13 @@ def get_router():
         else:
             buttons = [
                 [
-                    InlineKeyboardButton(text=Translator.translate(Strings.DeleteSingleBtn, user.locale), callback_data=DeleteOneNoData(torrent_hash=callback_data.torrent_hash).pack())
+                    InlineKeyboardButton(text=_("🗑 Delete torrent"), callback_data=DeleteOneNoData(torrent_hash=callback_data.torrent_hash).pack())
                 ],
                 [
-                    InlineKeyboardButton(text=Translator.translate(Strings.DeleteSingleDataBtn, user.locale), callback_data=DeleteOneData(torrent_hash=callback_data.torrent_hash).pack())
+                    InlineKeyboardButton(text=_("🗑 Delete torrent and data"), callback_data=DeleteOneData(torrent_hash=callback_data.torrent_hash).pack())
                 ],
                 [
-                    InlineKeyboardButton(text=Translator.translate(Strings.BackToMenu, user.locale), callback_data=Menu().pack())
+                    InlineKeyboardButton(text=_("\uD83D\uDD19 Menu"), callback_data=Menu().pack())
                 ]
             ]
 

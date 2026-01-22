@@ -3,11 +3,11 @@
 from aiogram import Bot, Router
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.types import BufferedInputFile, CallbackQuery
+from aiogram.utils.i18n import gettext as _
 
 from src.client_manager.client_repo import ClientRepo
 from src.settings import Settings
 from src.settings.user import User
-from src.translator import Translator, Strings
 from src.utils import convert_size, convert_eta, format_progress
 
 from src.bot.filters.callbacks import TorrentInfo, Export, Pause, Resume, DeleteOne, Menu
@@ -24,67 +24,67 @@ def get_router():
         text_to_send = f"{torrent.name}\n"
 
         if torrent.progress == 1:
-            text_to_send += Translator.translate(Strings.TorrentCompleted, user.locale)
+            text_to_send += _("**COMPLETED**\n")
 
         else:
             text_to_send += format_progress(torrent.progress)
 
         if "stalled" not in torrent.state:
-            text_to_send += Translator.translate(
-                Strings.TorrentState,
-                user.locale,
-                current_state=torrent.state.capitalize(),
-                download_speed=convert_size(torrent.dlspeed)
+            text_to_send += _("**State:** {current_state} \n**Download Speed:** {download_speed}/s\n"
+                .format(
+                    current_state=torrent.state.capitalize(),
+                    download_speed=convert_size(torrent.dlspeed)
+                )
             )
 
-        text_to_send += Translator.translate(
-            Strings.TorrentSize,
-            user.locale,
-            torrent_size=convert_size(torrent.size)
+        text_to_send += _("**Size:** {torrent_size}\n"
+            .format(
+                torrent_size=convert_size(torrent.size)
+            )
         )
 
         if "stalled" not in torrent.state:
-            text_to_send += Translator.translate(
-                Strings.TorrentEta,
-                user.locale,
-                torrent_eta=convert_eta(int(torrent.eta))
+            text_to_send += _("**ETA:** {torrent_eta}\n"
+                .format(
+                    torrent_eta=convert_eta(int(torrent.eta))
+                )
             )
 
         if torrent.category:
-            text_to_send += Translator.translate(
-                Strings.TorrentCategory,
-                user.locale,
-                torrent_category=torrent.category
+            text_to_send += _("**Category:** {torrent_category}\n"
+                .format(
+                    torrent_category=torrent.category
+                )
             )
 
         buttons = [
             [
                 InlineKeyboardButton(
-                    text=Translator.translate(Strings.ExportTorrentBtn, user.locale),
+                    text=_("💾 Export torrent"),
                     callback_data=Export(torrent_hash=callback_data.torrent_hash).pack()
                 )
             ],
             [
                 InlineKeyboardButton(
-                    text=Translator.translate(Strings.PauseTorrentBtn, user.locale),
+                    text=_("⏸ Pause"),
                     callback_data=Pause(torrent_hash=callback_data.torrent_hash).pack()
                 )
             ],
             [
                 InlineKeyboardButton(
-                    text=Translator.translate(Strings.ResumeTorrentBtn, user.locale),
+                    text=_("▶️ Resume"),
                     callback_data=Resume(torrent_hash=callback_data.torrent_hash).pack()
                 )
             ],
             [
                 InlineKeyboardButton(
-                    text=Translator.translate(Strings.DeleteTorrentBtn, user.locale),
+                    text=_("🗑 Delete"),
                     callback_data=DeleteOne(torrent_hash=callback_data.torrent_hash).pack()
                 )
             ],
             [
                 InlineKeyboardButton(
-                    text=Translator.translate(Strings.BackToMenu, user.locale),
+                    text=_("\uD83D\uDD19 Menu"),
                     callback_data=Menu().pack()
                 )
             ]

@@ -5,6 +5,8 @@ from aiogram import Bot, Dispatcher
 from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
+from aiogram.utils.i18n import I18n
+from aiogram.utils.i18n.middleware import SimpleI18nMiddleware
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
@@ -40,6 +42,12 @@ async def main(base_path: Path) -> None:
 
     # All handlers should be attached to the Router (or Dispatcher)
     dp = Dispatcher()
+
+
+    locales_path = Path(__file__).parent / "locales"
+    i18n = I18n(path=locales_path, default_locale="en", domain="messages")
+    i18n_middleware = SimpleI18nMiddleware(i18n)
+    dp.message.middleware(i18n_middleware)
 
     # create Redis client
     redis_client = RedisWrapper(url=settings.redis.url)

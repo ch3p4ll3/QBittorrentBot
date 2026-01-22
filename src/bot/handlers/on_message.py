@@ -5,12 +5,12 @@ from aiogram import F
 from aiogram import Bot
 from aiogram.types import Message
 from aiogram.dispatcher.router import Router
+from aiogram.utils.i18n import gettext as _
 
 from src.client_manager.client_repo import ClientRepo
 from src.settings import Settings
 from src.settings.user import User
 from src.bot.filters import IsAuthorizedUser, IsCommand
-from src.translator import Translator, Strings
 from src.redis_helper.wrapper import RedisWrapper
 
 from .common import send_menu
@@ -34,7 +34,7 @@ def get_router():
             )
 
             if not response:
-                await message.reply(Translator.translate(Strings.UnableToAddMagnet, locale=user.locale))
+                await message.reply(_("Unable to add magnet link"))
                 return
 
             await send_menu(bot, redis, settings, message.chat.id, message.message_id)
@@ -42,12 +42,11 @@ def get_router():
 
         else:
             await message.reply(
-                Translator.translate(Strings.InvalidMagnet, locale=user.locale)
+                _("This magnet link is invalid! Retry")
             )
 
 
     async def on_torrent(message: Message, user, redis: RedisWrapper, bot: Bot, settings: Settings):
-        print(message.document)
         if ".torrent" in message.document.file_name:
             with tempfile.TemporaryDirectory() as tempdir:
                 name = f"{tempdir}/{message.document.file_name}"
@@ -61,7 +60,7 @@ def get_router():
                 response = await repository_class(settings).add_torrent(file_name=name, category=category)
 
                 if not response:
-                    await message.reply(Translator.translate(Strings.UnableToAddTorrent, locale=user.locale))
+                    await message.reply(_("Unable to add torrent file"))
                     return
 
             await send_menu(bot, redis, settings, message.chat.id, message.message_id)
@@ -69,14 +68,18 @@ def get_router():
 
         else:
             await message.reply(
-                Translator.translate(Strings.InvalidTorrent, locale=user.locale)
+                _("This is not a torrent file! Retry")
             )
 
 
     async def on_category_name(message: Message, redis: RedisWrapper):
         await redis.set(f"action:{message.from_user.id}", f"category_dir#{message.text}")
         await message.reply(
-            Translator.translate(Strings.CategoryPath, category_name=message.text)
+            _("Please, send the path for the category {category_name}"
+                .format(
+                    category_name=message.text
+                )
+            )
         )
 
 
@@ -112,7 +115,7 @@ def get_router():
 
         else:
             await message.reply(
-                Translator.translate(Strings.CommandDoesNotExist, locale=user.locale)
+                _("The command does not exist")
             )
 
     return router
