@@ -18,7 +18,7 @@ class QbittorrentManager(ClientManager):
     def __init__(self, settings: Settings):
         self.settings = settings
         super().__init__(settings)
-    
+
     def _client(self) -> AsyncQbittorrentClient:
         return AsyncQbittorrentClient(**self.settings.client.connection_string)
 
