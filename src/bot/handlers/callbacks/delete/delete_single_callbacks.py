@@ -30,7 +30,7 @@ def get_router():
                     InlineKeyboardButton(text=_("🗑 Delete torrent and data"), callback_data=DeleteOneData(torrent_hash=callback_data.torrent_hash).pack())
                 ],
                 [
-                    InlineKeyboardButton(text=_("\uD83D\uDD19 Menu"), callback_data=Menu().pack())
+                    InlineKeyboardButton(text=_("🔙 Menu"), callback_data=Menu().pack())
                 ]
             ]
 

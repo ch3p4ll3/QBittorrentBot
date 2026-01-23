@@ -29,7 +29,7 @@ def get_router():
                         InlineKeyboardButton(text=_("🔄 Reload Settings"), callback_data=ReloadSettingsMenu().pack())
                     ],
                     [
-                        InlineKeyboardButton(text=_("\uD83D\uDD19 Menu"), callback_data=Menu().pack())
+                        InlineKeyboardButton(text=_("🔙 Menu"), callback_data=Menu().pack())
                     ]
                 ]
             )

@@ -31,7 +31,7 @@ def get_router():
                         InlineKeyboardButton(text=_("🗑 Delete All"), callback_data=DeleteAll().pack())
                     ],
                     [
-                        InlineKeyboardButton(text=_("\uD83D\uDD19 Menu"), callback_data=Menu().pack())
+                        InlineKeyboardButton(text=_("🔙 Menu"), callback_data=Menu().pack())
                     ]
                 ]
             )
@@ -48,7 +48,7 @@ def get_router():
                 InlineKeyboardButton(text=_("🗑 Delete all torrents and data"), callback_data=DeleteAllData().pack())
             ],
             [
-                InlineKeyboardButton(text=_("\uD83D\uDD19 Menu"), callback_data=Menu().pack())
+                InlineKeyboardButton(text=_("🔙 Menu"), callback_data=Menu().pack())
             ]
         ]
 

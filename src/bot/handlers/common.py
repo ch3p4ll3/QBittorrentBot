@@ -20,7 +20,7 @@ async def send_menu(bot: Bot, redis: RedisWrapper, settings: Settings, chat_id: 
 
     # Build buttons
     buttons = [
-        [InlineKeyboardButton(text=_("\uD83D\uDCDD List"), callback_data=List().pack())]
+        [InlineKeyboardButton(text=_("📝 List"), callback_data=List().pack())]
     ]
 
     if user.role in [UserRolesEnum.Manager, UserRolesEnum.Administrator]:
@@ -40,9 +40,9 @@ async def send_menu(bot: Bot, redis: RedisWrapper, settings: Settings, chat_id: 
 
     if user.role == UserRolesEnum.Administrator:
         buttons += [
-            [InlineKeyboardButton(text=_("\uD83D\uDDD1 Delete"), callback_data=DeleteMenu().pack())],
-            [InlineKeyboardButton(text=_("\uD83D\uDCC2 Categories"), callback_data=CategoryMenu().pack())],
-            [InlineKeyboardButton(text=_("⚙\uFE0F Settings"), callback_data=SettingsMenu().pack())]
+            [InlineKeyboardButton(text=_("🗑 Delete"), callback_data=DeleteMenu().pack())],
+            [InlineKeyboardButton(text=_("📂 Categories"), callback_data=CategoryMenu().pack())],
+            [InlineKeyboardButton(text=_("⚙️ Settings"), callback_data=SettingsMenu().pack())]
         ]
 
     await redis.set(f"action:{chat_id}", None)
@@ -94,7 +94,7 @@ async def list_active_torrents(
             callback_data=ListByStatus(status="downloading").pack()
         ),
         InlineKeyboardButton(
-            text=_("✔\uFE0F {active} Completed"
+            text=_("✔️ {active} Completed"
                 .format(
                     active='*' if status_filter == 'completed' else ''
                 )
@@ -102,7 +102,7 @@ async def list_active_torrents(
             callback_data=ListByStatus(status="completed").pack()
         ),
         InlineKeyboardButton(
-            text=_("⏸\uFE0F {active} Paused"
+            text=_("⏸️ {active} Paused"
                 .format(
                     active='*' if status_filter == 'paused' else ''
                 )
@@ -114,7 +114,7 @@ async def list_active_torrents(
     buttons = [categories_buttons]
 
     if not torrents:
-        buttons.append([InlineKeyboardButton(text=_("\uD83D\uDD19 Menu"), callback_data="menu")])
+        buttons.append([InlineKeyboardButton(text=_("🔙 Menu"), callback_data="menu")])
         try:
             await bot.edit_message_text(
                 chat_id=chat_id,
@@ -137,7 +137,7 @@ async def list_active_torrents(
         else:
             buttons.append([InlineKeyboardButton(text=torrent.name, callback_data=TorrentInfo(torrent_hash=torrent.hash).pack())])
 
-    buttons.append([InlineKeyboardButton(text=_("\uD83D\uDD19 Menu"), callback_data="menu")])
+    buttons.append([InlineKeyboardButton(text=_("🔙 Menu"), callback_data="menu")])
     markup = InlineKeyboardMarkup(inline_keyboard=buttons)
 
     try:
@@ -146,6 +146,6 @@ async def list_active_torrents(
         # fallback: send a new message
         await bot.send_message(
             chat_id=chat_id,
-            text=_("\uD83D\uDD19 Menu"),
+            text=_("🔙 Menu"),
             reply_markup=markup
         )

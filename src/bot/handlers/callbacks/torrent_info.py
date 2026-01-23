@@ -84,7 +84,7 @@ def get_router():
             ],
             [
                 InlineKeyboardButton(
-                    text=_("\uD83D\uDD19 Menu"),
+                    text=_("🔙 Menu"),
                     callback_data=Menu().pack()
                 )
             ]

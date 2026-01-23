@@ -31,7 +31,7 @@ def get_router():
                     [
                         InlineKeyboardButton(text=_("📝 Modify Category"), callback_data=SelectCategory(action="modify_category").pack())],
                     [
-                        InlineKeyboardButton(text=_("\uD83D\uDD19 Menu"), callback_data=Menu().pack())
+                        InlineKeyboardButton(text=_("🔙 Menu"), callback_data=Menu().pack())
                     ]
                 ]
             )
@@ -44,7 +44,7 @@ def get_router():
         button = InlineKeyboardMarkup(
             inline_keyboard=[
                 [
-                    InlineKeyboardButton(text=_("\uD83D\uDD19 Menu"), callback_data=Menu().pack())
+                    InlineKeyboardButton(text=_("🔙 Menu"), callback_data=Menu().pack())
                 ]
             ]
         )
@@ -74,7 +74,7 @@ def get_router():
         categories = repository_class_class(settings).get_categories()
 
         if categories is None:
-            buttons.append([InlineKeyboardButton(text=_("\uD83D\uDD19 Menu"), callback_data=Menu().pack())])
+            buttons.append([InlineKeyboardButton(text=_("🔙 Menu"), callback_data=Menu().pack())])
 
             await bot.edit_message_text(
                 chat_id=callback_query.from_user.id,
@@ -88,7 +88,7 @@ def get_router():
         for _, i in enumerate(categories):
             buttons.append([InlineKeyboardButton(text=i, callback_data=f"{callback_data.action}:{i}")])
 
-        buttons.append([InlineKeyboardButton(text=_("\uD83D\uDD19 Menu"), callback_data=Menu().pack())])
+        buttons.append([InlineKeyboardButton(text=_("🔙 Menu"), callback_data=Menu().pack())])
 
         try:
             await bot.edit_message_text(
@@ -110,7 +110,7 @@ def get_router():
     async def remove_category_callback(callback_query: CallbackQuery, callback_data: RemoveCategory, bot: Bot, settings: Settings) -> None:
         buttons = [
             [
-                InlineKeyboardButton(text=_("\uD83D\uDD19 Menu"), callback_data=Menu().pack())
+                InlineKeyboardButton(text=_("🔙 Menu"), callback_data=Menu().pack())
             ]
         ]
 
@@ -133,7 +133,7 @@ def get_router():
     async def modify_category_callback(callback_query: CallbackQuery, callback_data: ModifyCategory, bot: Bot, redis: RedisWrapper) -> None:
         buttons = [
             [
-                InlineKeyboardButton(text=_("\uD83D\uDD19 Menu"), callback_data=Menu().pack())
+                InlineKeyboardButton(text=_("🔙 Menu"), callback_data=Menu().pack())
             ]
         ]
 
@@ -164,7 +164,7 @@ def get_router():
             buttons.append([InlineKeyboardButton(text=i, callback_data=callback_type(category=i).pack())])
 
         buttons.append([InlineKeyboardButton(text="None", callback_data=callback_type(category=None).pack())])
-        buttons.append([InlineKeyboardButton(text=_("\uD83D\uDD19 Menu"), callback_data=Menu().pack())])
+        buttons.append([InlineKeyboardButton(text=_("🔙 Menu"), callback_data=Menu().pack())])
 
         try:
             await bot.edit_message_text(

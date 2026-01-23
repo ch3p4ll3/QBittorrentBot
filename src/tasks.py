@@ -34,7 +34,7 @@ async def torrent_finished(bot: Bot, redis: RedisWrapper, settings: Settings):
                     try:
                         await bot.send_message(
                             user.user_id, 
-                            _("torrent {name} has finished downloading!"
+                            _("Torrent {name} has finished downloading!"
                                 .format(
                                     name=i.name
                                 )

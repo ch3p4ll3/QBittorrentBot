@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-01-23 08:17+0100\n"
+"POT-Creation-Date: 2026-01-23 11:24+0100\n"
 "PO-Revision-Date: 2026-01-22 15:29+0100\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -20,7 +20,7 @@ msgstr ""
 
 #: src/tasks.py:37
 #, python-brace-format
-msgid "torrent {name} has finished downloading!"
+msgid "Torrent {name} has finished downloading!"
 msgstr ""
 
 #: src/bot/handlers/commands.py:35
@@ -38,8 +38,8 @@ msgid ""
 msgstr ""
 
 #: src/bot/handlers/common.py:23
-msgid "\\ud83d\\udcdd List"
-msgstr "test"
+msgid "📝 List"
+msgstr ""
 
 #: src/bot/handlers/common.py:30
 msgid "➕ Add Magnet"
@@ -53,12 +53,13 @@ msgstr ""
 msgid "⏯ Pause/Resume"
 msgstr ""
 
-#: src/bot/handlers/common.py:43
-msgid "\\ud83d\\uddd1 Delete"
+#: src/bot/handlers/callbacks/delete/delete_all_callbacks.py:28
+#: src/bot/handlers/callbacks/torrent_info.py:81 src/bot/handlers/common.py:43
+msgid "🗑 Delete"
 msgstr ""
 
 #: src/bot/handlers/common.py:44
-msgid "\\ud83d\\udcc2 Categories"
+msgid "📂 Categories"
 msgstr ""
 
 #: src/bot/handlers/common.py:45
@@ -99,7 +100,7 @@ msgstr ""
 #: src/bot/handlers/callbacks/settings/settings_callbacks.py:32
 #: src/bot/handlers/callbacks/torrent_info.py:87 src/bot/handlers/common.py:117
 #: src/bot/handlers/common.py:140 src/bot/handlers/common.py:149
-msgid "\\ud83d\\udd19 Menu"
+msgid "🔙 Menu"
 msgstr ""
 
 #: src/bot/handlers/common.py:122 src/bot/handlers/common.py:128
@@ -177,11 +178,6 @@ msgstr ""
 #: src/bot/handlers/callbacks/pause_resume/pause_callbacks.py:27
 #: src/bot/handlers/callbacks/torrent_info.py:75
 msgid "▶️ Resume"
-msgstr ""
-
-#: src/bot/handlers/callbacks/delete/delete_all_callbacks.py:28
-#: src/bot/handlers/callbacks/torrent_info.py:81
-msgid "🗑 Delete"
 msgstr ""
 
 #: src/bot/handlers/callbacks/category/category_callbacks.py:22
@@ -346,4 +342,19 @@ msgstr ""
 #: src/bot/handlers/callbacks/settings/settings_callbacks.py:141
 msgid "✅ Settings Reloaded"
 msgstr ""
+
+#~ msgid "torrent {name} has finished downloading!"
+#~ msgstr ""
+
+#~ msgid "\\ud83d\\udcdd List"
+#~ msgstr "test"
+
+#~ msgid "\\ud83d\\uddd1 Delete"
+#~ msgstr ""
+
+#~ msgid "\\ud83d\\udcc2 Categories"
+#~ msgstr ""
+
+#~ msgid "\\ud83d\\udd19 Menu"
+#~ msgstr ""
 
