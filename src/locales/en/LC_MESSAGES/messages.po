@@ -347,7 +347,7 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "\\ud83d\\udcdd List"
-#~ msgstr "test"
+#~ msgstr ""
 
 #~ msgid "\\ud83d\\uddd1 Delete"
 #~ msgstr ""
