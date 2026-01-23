@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-01-22 16:40+0100\n"
+"POT-Creation-Date: 2026-01-23 08:17+0100\n"
 "PO-Revision-Date: 2026-01-22 15:29+0100\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -18,11 +18,16 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: src/bot/handlers/commands.py:36
+#: src/tasks.py:37
+#, python-brace-format
+msgid "torrent {name} has finished downloading!"
+msgstr ""
+
+#: src/bot/handlers/commands.py:35
 msgid "You are not authorized to use this bot"
 msgstr ""
 
-#: src/bot/handlers/commands.py:54
+#: src/bot/handlers/commands.py:53
 #, python-brace-format
 msgid ""
 "**============SYSTEM============**\n"

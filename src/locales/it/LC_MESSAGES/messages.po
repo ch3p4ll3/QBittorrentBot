@@ -7,22 +7,28 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-01-22 16:40+0100\n"
-"PO-Revision-Date: 2026-01-22 15:38+0100\n"
+"POT-Creation-Date: 2026-01-23 08:17+0100\n"
+"PO-Revision-Date: 2026-01-23 08:36+0100\n"
 "Last-Translator: \n"
-"Language: it\n"
 "Language-Team: it <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.17.0\n"
+"X-Generator: Poedit 3.6\n"
 
-#: src/bot/handlers/commands.py:36
+#: src/tasks.py:37
+#, python-brace-format
+msgid "torrent {name} has finished downloading!"
+msgstr "Il torrent {name} è stato scaricato!"
+
+#: src/bot/handlers/commands.py:35
 msgid "You are not authorized to use this bot"
 msgstr "Non sei autorizzato ad usare questo bot"
 
-#: src/bot/handlers/commands.py:54
+#: src/bot/handlers/commands.py:53
 #, python-brace-format
 msgid ""
 "**============SYSTEM============**\n"
@@ -31,6 +37,11 @@ msgid ""
 "**Free Memory:** {free_memory} of {total_memory} ({memory_percent}%)\n"
 "**Disks usage:** {disk_used} of {disk_total} ({disk_percent}%)"
 msgstr ""
+"**============SISTEMA============**\n"
+"**Utilizzo CPU:** {cpu_usage}%\n"
+"**Temperatura CPU:** {cpu_temp}°C\n"
+"**Memoria libera:** {free_memory} of {total_memory} ({memory_percent}%)\n"
+"**Utilizzo disco:** {disk_used} of {disk_total} ({disk_percent}%)"
 
 #: src/bot/handlers/common.py:23
 msgid "\\ud83d\\udcdd List"
@@ -54,7 +65,7 @@ msgstr "\\ud83d\\uddd1 Cancella"
 
 #: src/bot/handlers/common.py:44
 msgid "\\ud83d\\udcc2 Categories"
-msgstr "\\ud83d\\udcc2 Categories"
+msgstr "\\ud83d\\udcc2 Categorie"
 
 #: src/bot/handlers/common.py:45
 msgid "⚙️ Settings"
@@ -99,47 +110,44 @@ msgstr "\\ud83d\\udd19 Menu"
 
 #: src/bot/handlers/common.py:122 src/bot/handlers/common.py:128
 msgid "There are no torrents"
-msgstr "Non ci sono torrents"
+msgstr "Non ci sono torrent"
 
 #: src/bot/handlers/on_message.py:37
 msgid "Unable to add magnet link"
-msgstr ""
+msgstr "Impossibile aggiungere il magnet link"
 
 #: src/bot/handlers/on_message.py:45
 msgid "This magnet link is invalid! Retry"
-msgstr ""
+msgstr "Questo magnet link non è valido! Riprova"
 
 #: src/bot/handlers/on_message.py:63
-#, fuzzy
 msgid "Unable to add torrent file"
-msgstr "➕ Aggiungi Torrent"
+msgstr "Impossibile aggiungere file torrent"
 
 #: src/bot/handlers/on_message.py:71
 msgid "This is not a torrent file! Retry"
-msgstr ""
+msgstr "Questo non è un torrent file! Riprova"
 
 #: src/bot/handlers/on_message.py:78
 #, python-brace-format
 msgid "Please, send the path for the category {category_name}"
-msgstr ""
+msgstr "Invia il path per la categoria {category_name}"
 
 #: src/bot/handlers/on_message.py:118
 msgid "The command does not exist"
-msgstr ""
+msgstr "Il comando non esiste"
 
 #: src/bot/handlers/callbacks/add_torrents_callbacks.py:22
-#, fuzzy
 msgid "Send a magnet link"
-msgstr "➕ Aggiungi Magnet"
+msgstr "Invia un magnet link"
 
 #: src/bot/handlers/callbacks/add_torrents_callbacks.py:29
-#, fuzzy
 msgid "Send a torrent file"
-msgstr "➕ Aggiungi Torrent"
+msgstr "Invia un file torrent"
 
 #: src/bot/handlers/callbacks/torrent_info.py:27
 msgid "**COMPLETED**\n"
-msgstr ""
+msgstr "**COMPLETATO**\n"
 
 #: src/bot/handlers/callbacks/torrent_info.py:33
 #, python-brace-format
@@ -147,180 +155,168 @@ msgid ""
 "**State:** {current_state} \n"
 "**Download Speed:** {download_speed}/s\n"
 msgstr ""
+"**Stato:** {current_state} \n"
+"**Velocità download:** {download_speed}/s\n"
 
 #: src/bot/handlers/callbacks/torrent_info.py:40
 #, python-brace-format
 msgid "**Size:** {torrent_size}\n"
-msgstr ""
+msgstr "**Peso:** {torrent_size}\n"
 
 #: src/bot/handlers/callbacks/torrent_info.py:47
 #, python-brace-format
 msgid "**ETA:** {torrent_eta}\n"
-msgstr ""
+msgstr "**ETA:** {torrent_eta}\n"
 
 #: src/bot/handlers/callbacks/torrent_info.py:54
 #, python-brace-format
 msgid "**Category:** {torrent_category}\n"
-msgstr ""
+msgstr "**Categoria:** {torrent_category}\n"
 
 #: src/bot/handlers/callbacks/torrent_info.py:63
-#, fuzzy
 msgid "💾 Export torrent"
-msgstr "➕ Aggiungi Torrent"
+msgstr "💾 Esporta torrent"
 
 #: src/bot/handlers/callbacks/pause_resume/pause_callbacks.py:26
 #: src/bot/handlers/callbacks/torrent_info.py:69
 msgid "⏸ Pause"
-msgstr ""
+msgstr "⏸ Pausa"
 
 #: src/bot/handlers/callbacks/pause_resume/pause_callbacks.py:27
 #: src/bot/handlers/callbacks/torrent_info.py:75
-#, fuzzy
 msgid "▶️ Resume"
-msgstr "⏯ Pausa/Riprendi"
+msgstr "▶️ Riprendi"
 
 #: src/bot/handlers/callbacks/delete/delete_all_callbacks.py:28
 #: src/bot/handlers/callbacks/torrent_info.py:81
 msgid "🗑 Delete"
-msgstr ""
+msgstr "🗑 Elimina"
 
 #: src/bot/handlers/callbacks/category/category_callbacks.py:22
-#, fuzzy
 msgid "Pause/Resume a download"
-msgstr "⏯ Pausa/Riprendi"
+msgstr "Pausa/Riprendi un download"
 
 #: src/bot/handlers/callbacks/category/category_callbacks.py:26
-#, fuzzy
 msgid "➕ Add Category"
-msgstr "➕ Aggiungi Torrent"
+msgstr "➕ Aggiungi Categoria"
 
 #: src/bot/handlers/callbacks/category/category_callbacks.py:29
 msgid "🗑 Remove Category"
-msgstr ""
+msgstr "🗑 Rimuovi Categoria"
 
 #: src/bot/handlers/callbacks/category/category_callbacks.py:32
 msgid "📝 Modify Category"
-msgstr ""
+msgstr "📝 Modifica Categoria"
 
 #: src/bot/handlers/callbacks/category/category_callbacks.py:56
 #: src/bot/handlers/callbacks/category/category_callbacks.py:63
 msgid "Send the category name"
-msgstr ""
+msgstr "Invia il nome della categoria"
 
 #: src/bot/handlers/callbacks/category/category_callbacks.py:82
-#, fuzzy
 msgid "There are no categories"
-msgstr "Non ci sono torrents"
+msgstr "Non ci sono categorie"
 
 #: src/bot/handlers/callbacks/category/category_callbacks.py:97
 #: src/bot/handlers/callbacks/category/category_callbacks.py:104
 #: src/bot/handlers/callbacks/category/category_callbacks.py:173
 #: src/bot/handlers/callbacks/category/category_callbacks.py:180
 msgid "Choose a category:"
-msgstr ""
+msgstr "Seleziona una categoria"
 
 #: src/bot/handlers/callbacks/category/category_callbacks.py:123
 #, python-brace-format
 msgid "The category {category_name} has been removed"
-msgstr ""
+msgstr "The category {category_name} has been removed"
 
 #: src/bot/handlers/callbacks/category/category_callbacks.py:145
 #, python-brace-format
 msgid "Send new path for category {category_name}"
-msgstr ""
+msgstr "Invia il path per la categoria {category_name}"
 
 #: src/bot/handlers/callbacks/delete/delete_all_callbacks.py:31
 msgid "🗑 Delete All"
-msgstr ""
+msgstr "🗑 Elimina Tutti"
 
 #: src/bot/handlers/callbacks/delete/delete_all_callbacks.py:45
-#, fuzzy
 msgid "🗑 Delete all torrents"
-msgstr "Non ci sono torrents"
+msgstr "🗑 Elimina tutti i torrents"
 
 #: src/bot/handlers/callbacks/delete/delete_all_callbacks.py:48
 msgid "🗑 Delete all torrents and data"
-msgstr ""
+msgstr "🗑 Elimina tutti i torrents e dati"
 
 #: src/bot/handlers/callbacks/delete/delete_all_callbacks.py:67
-#, fuzzy
 msgid "Deleted all torrents"
-msgstr "Non ci sono torrents"
+msgstr "Elimina tutti i torrents"
 
 #: src/bot/handlers/callbacks/delete/delete_all_callbacks.py:76
 msgid "Deleted all torrents and data"
-msgstr ""
+msgstr "Elimina tutti i torrents e dati"
 
 #: src/bot/handlers/callbacks/delete/delete_single_callbacks.py:27
-#, fuzzy
 msgid "🗑 Delete torrent"
-msgstr "➕ Aggiungi Torrent"
+msgstr "🗑 Elimina torrent"
 
 #: src/bot/handlers/callbacks/delete/delete_single_callbacks.py:30
 msgid "🗑 Delete torrent and data"
-msgstr ""
+msgstr "🗑 Elimina torrent e dati"
 
 #: src/bot/handlers/callbacks/pause_resume/pause_callbacks.py:22
-#, fuzzy
 msgid "Pause/Resume a torrent"
-msgstr "⏯ Pausa/Riprendi"
+msgstr "Pausa/Riprendi un torrent"
 
 #: src/bot/handlers/callbacks/pause_resume/pause_callbacks.py:30
 msgid "⏸ Pause All"
-msgstr ""
+msgstr "⏸ Pausa tutti"
 
 #: src/bot/handlers/callbacks/pause_resume/pause_callbacks.py:31
-#, fuzzy
 msgid "▶️ Resume All"
-msgstr "⏯ Pausa/Riprendi"
+msgstr "▶️ Riprendi tutti"
 
 #: src/bot/handlers/callbacks/pause_resume/pause_callbacks.py:48
-#, fuzzy
 msgid "Paused all torrents"
-msgstr "➕ Aggiungi Torrent"
+msgstr "Pausa tutti i torrents"
 
 #: src/bot/handlers/callbacks/pause_resume/pause_callbacks.py:61
 msgid "Torrent Paused"
-msgstr ""
+msgstr "Torrent in pausa"
 
 #: src/bot/handlers/callbacks/pause_resume/resume_callbacks.py:25
-#, fuzzy
 msgid "Resumed all torrents"
-msgstr "➕ Aggiungi Torrent"
+msgstr "Riprendi tutti i torrents"
 
 #: src/bot/handlers/callbacks/pause_resume/resume_callbacks.py:39
 msgid "Torrent Resumed"
-msgstr ""
+msgstr "Torrent ripreso"
 
 #: src/bot/handlers/callbacks/settings/settings_callbacks.py:22
 msgid "QBittorrentBot Settings"
-msgstr ""
+msgstr "Impostazioni QBittorrent Bot"
 
 #: src/bot/handlers/callbacks/settings/settings_callbacks.py:26
-#, fuzzy
 msgid "📥 Client Settings"
-msgstr "⚙️ Impostazioni"
+msgstr "📥 Impostazioni client"
 
 #: src/bot/handlers/callbacks/settings/settings_callbacks.py:29
-#, fuzzy
 msgid "🔄 Reload Settings"
-msgstr "⚙️ Impostazioni"
+msgstr "🔄 Ricarica impostazioni"
 
 #: src/bot/handlers/callbacks/settings/settings_callbacks.py:44
 #: src/bot/handlers/callbacks/settings/settings_callbacks.py:84
 msgid "✅ Enabled"
-msgstr ""
+msgstr "✅ Abilitato"
 
 #: src/bot/handlers/callbacks/settings/settings_callbacks.py:44
 #: src/bot/handlers/callbacks/settings/settings_callbacks.py:84
 msgid "❌ Disabled"
-msgstr ""
+msgstr "❌ Disabilitato"
 
 #: src/bot/handlers/callbacks/settings/settings_callbacks.py:46
 #: src/bot/handlers/callbacks/settings/settings_callbacks.py:86
 #, python-brace-format
 msgid "**Speed Limit**: {speed_limit_status}"
-msgstr ""
+msgstr "**Limite velocità**: {speed_limit_status}"
 
 #: src/bot/handlers/callbacks/settings/settings_callbacks.py:52
 #: src/bot/handlers/callbacks/settings/settings_callbacks.py:92
@@ -330,34 +326,34 @@ msgid ""
 "\n"
 "{configs}"
 msgstr ""
+"Modifica le impostazioni del client {client_type} \n"
+"\n"
+"{configs}"
 
 #: src/bot/handlers/callbacks/settings/settings_callbacks.py:66
 #: src/bot/handlers/callbacks/settings/settings_callbacks.py:106
 msgid "🐢 Toggle Speed Limit"
-msgstr ""
+msgstr "🐢 Toggle limite di velocità"
 
 #: src/bot/handlers/callbacks/settings/settings_callbacks.py:69
 #: src/bot/handlers/callbacks/settings/settings_callbacks.py:109
 msgid "✅ Check Client connection"
-msgstr ""
+msgstr "✅ Controlla la connessione al client"
 
 #: src/bot/handlers/callbacks/settings/settings_callbacks.py:72
 #: src/bot/handlers/callbacks/settings/settings_callbacks.py:112
-#, fuzzy
 msgid "🔙 Settings"
-msgstr "⚙️ Impostazioni"
+msgstr "🔙 Impostazioni"
 
 #: src/bot/handlers/callbacks/settings/settings_callbacks.py:127
 #, python-brace-format
 msgid "✅ The connection works. QBittorrent version: {version}"
-msgstr ""
+msgstr "✅ La connessione funziona. Versione QBittorrent: {version}"
 
 #: src/bot/handlers/callbacks/settings/settings_callbacks.py:134
 msgid "❌ Unable to establish connection with QBittorrent"
-msgstr ""
+msgstr "❌ Impossibile stabilire una connessione con QBittorrent"
 
 #: src/bot/handlers/callbacks/settings/settings_callbacks.py:141
-#, fuzzy
 msgid "✅ Settings Reloaded"
-msgstr "⚙️ Impostazioni"
-
+msgstr "✅ Impostazioni ricaricate"

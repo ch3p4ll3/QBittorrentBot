@@ -10,8 +10,7 @@ import psutil
 
 from src.redis_helper.wrapper import RedisWrapper
 from src.utils import convert_size
-from src.settings import User, Settings
-from src.translator import Translator, Strings
+from src.settings import Settings
 
 from ..filters import IsAuthorizedUser
 from .common import send_menu

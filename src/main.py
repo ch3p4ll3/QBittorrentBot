@@ -47,7 +47,9 @@ async def main(base_path: Path) -> None:
     locales_path = Path(__file__).parent / "locales"
     i18n = I18n(path=locales_path, default_locale="en", domain="messages")
     i18n_middleware = SimpleI18nMiddleware(i18n)
+    
     dp.message.middleware(i18n_middleware)
+    dp.callback_query.middleware(i18n_middleware)
 
     # create Redis client
     redis_client = RedisWrapper(url=settings.redis.url)
