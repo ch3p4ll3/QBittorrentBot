@@ -5,7 +5,7 @@
 
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 # QBittorrentBot
@@ -205,6 +205,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/bushig"><img src="https://avatars.githubusercontent.com/u/2815779?v=4?s=100" width="100px;" alt="Bogdan"/><br /><sub><b>Bogdan</b></sub></a><br /><a href="https://github.com/ch3p4ll3/QBittorrentBot/commits?author=bushig" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/joey00797"><img src="https://avatars.githubusercontent.com/u/52893618?v=4?s=100" width="100px;" alt="joey00797"/><br /><sub><b>joey00797</b></sub></a><br /><a href="#translation-joey00797" title="Translation">🌍</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/rdfortega"><img src="https://avatars.githubusercontent.com/u/19917918?v=4?s=100" width="100px;" alt="Rodolfo Ortega"/><br /><sub><b>Rodolfo Ortega</b></sub></a><br /><a href="#translation-rdfortega" title="Translation">🌍</a></td>
     </tr>
   </tbody>
 </table>
