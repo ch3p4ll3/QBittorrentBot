@@ -6,7 +6,6 @@ from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.utils.i18n import I18n
-from aiogram.utils.i18n.middleware import SimpleI18nMiddleware
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 

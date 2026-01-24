@@ -55,9 +55,8 @@ class CustomI18nMiddleware(I18nMiddleware):
         event_from_user: AiogramUser | None = data.get("event_from_user")
 
         if user is not None and user.locale is not None:
-            if user.locale not in self.i18n.available_locales:
-                return self.i18n.default_locale
-            return user.locale
+            if user.locale in self.i18n.available_locales:
+                return user.locale
 
         if event_from_user is None or event_from_user.language_code is None:
             return self.i18n.default_locale
