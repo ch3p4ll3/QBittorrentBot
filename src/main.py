@@ -15,7 +15,7 @@ from src.bot.handlers.callbacks import get_category_router, get_add_torrents_rou
     get_torrent_info_router, get_resume_router, get_pause_router, get_delete_one_router, \
     get_delete_all_router, get_settings_router
 
-from src.bot.middlewares import UserMiddleware
+from src.bot.middlewares import UserMiddleware, CustomI18nMiddleware
 
 from src.tasks import torrent_finished, watch_config
 from src.redis_helper.wrapper import RedisWrapper
@@ -46,10 +46,6 @@ async def main(base_path: Path) -> None:
 
     locales_path = Path(__file__).parent / "locales"
     i18n = I18n(path=locales_path, default_locale="en", domain="messages")
-    i18n_middleware = SimpleI18nMiddleware(i18n)
-    
-    dp.message.middleware(i18n_middleware)
-    dp.callback_query.middleware(i18n_middleware)
 
     # create Redis client
     redis_client = RedisWrapper(url=settings.redis.url)
@@ -61,6 +57,8 @@ async def main(base_path: Path) -> None:
 
     dp.message.middleware(UserMiddleware(settings))
     dp.callback_query.middleware(UserMiddleware(settings))
+    dp.message.middleware(CustomI18nMiddleware(i18n))
+    dp.callback_query.middleware(CustomI18nMiddleware(i18n))
 
     # register routers
     dp.include_router(get_on_message_router())
