@@ -9,7 +9,7 @@ By contributing to QBittorrentBot, you can help improve this valuable tool for q
 ## Adding translations
 If you are multilingual and would like to help us make QBittorrentBot more accessible to a wider audience, you can contribute by adding new translations or improving existing ones using Transifex:
 
-- Visit the [QBittorrentBot Transifex Project](https://app.transifex.com/ch3p4ll3/qbittorrentbot/).
+- Visit the [QBittorrentBot Transifex Project](https://app.transifex.com/ch3p4ll3/qbittorrent-bot/).
 
 - If you don't have a Transifex account, sign up for one. If you already have an account, log in.
 

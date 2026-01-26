@@ -28,21 +28,20 @@ The bot allows you to:
 
 # Table of Contents
 
-* [QBittorrentBot](#qbittorrentbot)
-* [Table Of Contents](#table-of-contents)
-
-  * [Warning!](#warning)
-  * [Configuration](#configuration)
-
-    * [Retrieve Telegram API ID and API HASH](#retrieve-telegram-api-id-and-api-hash)
-    * [YAML Configuration](#yaml-configuration)
-  * [Running](#running)
-
-    * [Build Docker](#build-docker)
-    * [Running Without Docker](#running-without-docker)
-  * [Contributing Translations on Transifex](#contributing-translations-on-transifex)
-  * [How to Enable the qBittorrent Web UI](#how-to-enable-the-qbittorrent-web-ui)
-  * [Contributors ✨](#contributors-)
+- [QBittorrentBot](#qbittorrentbot)
+- [Table of Contents](#table-of-contents)
+  - [Warning!](#warning)
+  - [Configuration](#configuration)
+    - [Retrieve Telegram API ID and API HASH](#retrieve-telegram-api-id-and-api-hash)
+    - [YAML Configuration](#yaml-configuration)
+    - [Important:](#important)
+  - [Running](#running)
+    - [Build Docker](#build-docker)
+    - [Running Without Docker](#running-without-docker)
+  - [Contributing Translations on Transifex](#contributing-translations-on-transifex)
+  - [How to Enable the qBittorrent Web UI](#how-to-enable-the-qbittorrent-web-ui)
+  - [Contributors ✨](#contributors-)
+  - [Star History](#star-history)
 
 ## Warning!
 
@@ -171,7 +170,7 @@ If you prefer to run the bot without Docker, you can follow these steps:
 
 Here’s how you can help:
 
-1. Visit the [QBittorrentBot Transifex Project](https://app.transifex.com/ch3p4ll3/qbittorrentbot/).
+1. Visit the [QBittorrentBot Transifex Project](https://app.transifex.com/ch3p4ll3/qbittorrent-bot/).
 2. Sign up or log in to your Transifex account.
 3. Navigate to the "Languages" tab and select the language you’d like to contribute to.
 4. Find the string you want to translate and submit your translation.
