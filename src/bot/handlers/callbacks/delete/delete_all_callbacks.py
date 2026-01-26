@@ -1,5 +1,6 @@
 from aiogram import Bot, Router
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
+from aiogram.utils.i18n import gettext as _
 
 from src.bot.filters.callbacks import DeleteMenu, Menu, DeleteOne, DeleteAll, DeleteAllData, DeleteAllNoData
 from src.bot.filters import HasRole
@@ -10,7 +11,6 @@ from src.settings import Settings
 from src.settings.enums import UserRolesEnum
 from src.settings.user import User
 from src.redis_helper.wrapper import RedisWrapper
-from src.translator import Translator, Strings
 
 
 def get_router():
@@ -25,13 +25,13 @@ def get_router():
             reply_markup=InlineKeyboardMarkup(
                 inline_keyboard=[
                     [
-                        InlineKeyboardButton(text=Translator.translate(Strings.DeleteTorrentBtn, user.locale), callback_data=DeleteOne(torrent_hash="").pack())
+                        InlineKeyboardButton(text=_("🗑 Delete"), callback_data=DeleteOne(torrent_hash="").pack())
                     ],
                     [
-                        InlineKeyboardButton(text=Translator.translate(Strings.DeleteAllMenuBtn, user.locale), callback_data=DeleteAll().pack())
+                        InlineKeyboardButton(text=_("🗑 Delete All"), callback_data=DeleteAll().pack())
                     ],
                     [
-                        InlineKeyboardButton(text=Translator.translate(Strings.BackToMenu, user.locale), callback_data=Menu().pack())
+                        InlineKeyboardButton(text=_("🔙 Menu"), callback_data=Menu().pack())
                     ]
                 ]
             )
@@ -42,13 +42,13 @@ def get_router():
     async def delete_all_callback(callback_query: CallbackQuery, callback_data: DeleteAll, bot: Bot, user: User) -> None:
         buttons = [
             [
-                InlineKeyboardButton(text=Translator.translate(Strings.DeleteAllBtn, user.locale), callback_data=DeleteAllNoData().pack())
+                InlineKeyboardButton(text=_("🗑 Delete all torrents"), callback_data=DeleteAllNoData().pack())
             ],
             [
-                InlineKeyboardButton(text=Translator.translate(Strings.DeleteAllData, user.locale), callback_data=DeleteAllData().pack())
+                InlineKeyboardButton(text=_("🗑 Delete all torrents and data"), callback_data=DeleteAllData().pack())
             ],
             [
-                InlineKeyboardButton(text=Translator.translate(Strings.BackToMenu, user.locale), callback_data=Menu().pack())
+                InlineKeyboardButton(text=_("🔙 Menu"), callback_data=Menu().pack())
             ]
         ]
 
@@ -64,7 +64,7 @@ def get_router():
         repository_class = ClientRepo.get_client_manager(settings.client.type)
         await repository_class(settings).delete_all_no_data()
 
-        await bot.answer_callback_query(callback_query.id, Translator.translate(Strings.DeletedAll, user.locale))
+        await bot.answer_callback_query(callback_query.id, _("Deleted all torrents"))
         await send_menu(bot, redis, settings, callback_query.from_user.id, callback_query.message.message_id)
 
 
@@ -73,7 +73,7 @@ def get_router():
         repository_class = ClientRepo.get_client_manager(settings.client.type)
         await repository_class(settings).delete_all_data()
 
-        await bot.answer_callback_query(callback_query.id, Translator.translate(Strings.DeletedAllData, user.locale))
+        await bot.answer_callback_query(callback_query.id, _("Deleted all torrents and data"))
         await send_menu(bot, redis, settings, callback_query.from_user.id, callback_query.message.message_id)
 
     return router

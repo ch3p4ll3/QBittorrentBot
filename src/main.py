@@ -5,6 +5,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
+from aiogram.utils.i18n import I18n
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
@@ -13,7 +14,7 @@ from src.bot.handlers.callbacks import get_category_router, get_add_torrents_rou
     get_torrent_info_router, get_resume_router, get_pause_router, get_delete_one_router, \
     get_delete_all_router, get_settings_router
 
-from src.bot.middlewares import UserMiddleware
+from src.bot.middlewares import UserMiddleware, CustomI18nMiddleware
 
 from src.tasks import torrent_finished, watch_config
 from src.redis_helper.wrapper import RedisWrapper
@@ -41,6 +42,10 @@ async def main(base_path: Path) -> None:
     # All handlers should be attached to the Router (or Dispatcher)
     dp = Dispatcher()
 
+
+    locales_path = Path(__file__).parent / "locales"
+    i18n = I18n(path=locales_path, default_locale="en", domain="messages")
+
     # create Redis client
     redis_client = RedisWrapper(url=settings.redis.url)
     await redis_client.connect()
@@ -51,6 +56,8 @@ async def main(base_path: Path) -> None:
 
     dp.message.middleware(UserMiddleware(settings))
     dp.callback_query.middleware(UserMiddleware(settings))
+    dp.message.middleware(CustomI18nMiddleware(i18n))
+    dp.callback_query.middleware(CustomI18nMiddleware(i18n))
 
     # register routers
     dp.include_router(get_on_message_router())

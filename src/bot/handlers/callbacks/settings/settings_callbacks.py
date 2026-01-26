@@ -1,10 +1,9 @@
 from aiogram import Bot, Router
 from aiogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.utils.i18n import gettext as _
 
 from src.settings import Settings
-from src.settings.user import User
 from src.settings.enums import UserRolesEnum
-from src.translator import Translator, Strings
 
 from src.bot.filters import HasRole
 from src.bot.filters.callbacks import SettingsMenu, Menu, EditClientMenu, ReloadSettingsMenu, ToggleSpeedLimit, CheckConnection
@@ -16,21 +15,21 @@ def get_router():
     router = Router()
 
     @router.callback_query(SettingsMenu.filter(), HasRole(UserRolesEnum.Administrator))
-    async def settings_callback(callback_query: CallbackQuery, callback_data: SettingsMenu, bot: Bot, user: User) -> None:
+    async def settings_callback(callback_query: CallbackQuery, callback_data: SettingsMenu, bot: Bot) -> None:
         await bot.edit_message_text(
             chat_id=callback_query.from_user.id,
             message_id=callback_query.message.message_id,
-            text=Translator.translate(Strings.Menu, user.locale),
+            text=_("QBittorrentBot Settings"),
             reply_markup=InlineKeyboardMarkup(
                 inline_keyboard=[
                     [
-                        InlineKeyboardButton(text=Translator.translate(Strings.ClientSettings, user.locale), callback_data=EditClientMenu().pack())
+                        InlineKeyboardButton(text=_("📥 Client Settings"), callback_data=EditClientMenu().pack())
                     ],
                     [
-                        InlineKeyboardButton(text=Translator.translate(Strings.ReloadSettings, user.locale), callback_data=ReloadSettingsMenu().pack())
+                        InlineKeyboardButton(text=_("🔄 Reload Settings"), callback_data=ReloadSettingsMenu().pack())
                     ],
                     [
-                        InlineKeyboardButton(text=Translator.translate(Strings.BackToMenu, user.locale), callback_data=Menu().pack())
+                        InlineKeyboardButton(text=_("🔙 Menu"), callback_data=Menu().pack())
                     ]
                 ]
             )
@@ -38,32 +37,39 @@ def get_router():
 
 
     @router.callback_query(EditClientMenu.filter(), HasRole(UserRolesEnum.Administrator))
-    async def edit_client_settings_callback(callback_query: CallbackQuery, callback_data: EditClientMenu, bot: Bot, settings: Settings, user: User) -> None:
+    async def edit_client_settings_callback(callback_query: CallbackQuery, callback_data: EditClientMenu, bot: Bot, settings: Settings) -> None:
         repository_class = ClientRepo.get_client_manager(settings.client.type)
         speed_limit = await repository_class(settings).get_speed_limit_mode()
 
-        speed_limit_status = Translator.translate(Strings.Enabled if speed_limit else Strings.Disabled, user.locale)
+        speed_limit_status = _("✅ Enabled") if speed_limit else _("❌ Disabled")
 
-        confs = Translator.translate(
-            Strings.SpeedLimitStatus,
-            user.locale,
-            speed_limit_status=speed_limit_status
+        confs = _("**Speed Limit**: {speed_limit_status}"
+            .format(
+                speed_limit_status=speed_limit_status
+            )
+        )
+
+        text = _("Edit {client_type} client settings \n\n{configs}"
+            .format(
+                client_type=settings.client.type.value.title(),
+                configs=confs
+            )
         )
 
         await bot.edit_message_text(
             chat_id=callback_query.from_user.id,
             message_id=callback_query.message.message_id,
-            text=Translator.translate(Strings.EditClientSettings, user.locale, client_type=settings.client.type.value.title(), configs=confs),
+            text=text,
             reply_markup=InlineKeyboardMarkup(
                 inline_keyboard=[
                     [
-                        InlineKeyboardButton(text=Translator.translate(Strings.ToggleSpeedLimit, user.locale), callback_data=ToggleSpeedLimit().pack())
+                        InlineKeyboardButton(text=_("🐢 Toggle Speed Limit"), callback_data=ToggleSpeedLimit().pack())
                     ],
                     [
-                        InlineKeyboardButton(text=Translator.translate(Strings.CheckClientConnection, user.locale), callback_data=CheckConnection().pack())
+                        InlineKeyboardButton(text=_("✅ Check Client connection"), callback_data=CheckConnection().pack())
                     ],
                     [
-                        InlineKeyboardButton(text=Translator.translate(Strings.BackToSettings, user.locale), callback_data=SettingsMenu().pack())
+                        InlineKeyboardButton(text=_("🔙 Settings"), callback_data=SettingsMenu().pack())
                     ]
                 ]
             )
@@ -71,40 +77,39 @@ def get_router():
 
 
     @router.callback_query(ToggleSpeedLimit.filter(), HasRole(UserRolesEnum.Administrator))
-    async def toggle_speed_limit_callback(callback_query: CallbackQuery, callback_data: ToggleSpeedLimit, bot: Bot, settings: Settings, user: User) -> None:
+    async def toggle_speed_limit_callback(callback_query: CallbackQuery, callback_data: ToggleSpeedLimit, bot: Bot, settings: Settings) -> None:
         repository_class = ClientRepo.get_client_manager(settings.client.type)
         speed_limit = await repository_class(settings).toggle_speed_limit()
 
-        speed_limit_status = Translator.translate(Strings.Enabled if speed_limit else Strings.Disabled, user.locale)
+        speed_limit_status = _("✅ Enabled") if speed_limit else _("❌ Disabled")
 
-        confs = Translator.translate(
-            Strings.SpeedLimitStatus,
-            user.locale,
-            speed_limit_status=speed_limit_status
+        confs = _("**Speed Limit**: {speed_limit_status}"
+            .format(
+                speed_limit_status=speed_limit_status
+            )
         )
 
-        speed_limit_status = Translator.translate(Strings.Enabled if speed_limit else Strings.Disabled, user.locale)
-
-        confs = Translator.translate(
-            Strings.SpeedLimitStatus,
-            user.locale,
-            speed_limit_status=speed_limit_status
+        text = _("Edit {client_type} client settings \n\n{configs}"
+            .format(
+                client_type=settings.client.type.value.title(),
+                configs=confs
+            )
         )
 
         await bot.edit_message_text(
             chat_id=callback_query.from_user.id,
             message_id=callback_query.message.message_id,
-            text=Translator.translate(Strings.EditClientSettings, user.locale, client_type=settings.client.type, configs=confs),
+            text=text,
             reply_markup=InlineKeyboardMarkup(
                 inline_keyboard=[
                     [
-                        InlineKeyboardButton(text=Translator.translate(Strings.ToggleSpeedLimit, user.locale), callback_data=ToggleSpeedLimit().pack())
+                        InlineKeyboardButton(text=_("🐢 Toggle Speed Limit"), callback_data=ToggleSpeedLimit().pack())
                     ],
                     [
-                        InlineKeyboardButton(text=Translator.translate(Strings.CheckClientConnection, user.locale), callback_data=CheckConnection().pack())
+                        InlineKeyboardButton(text=_("✅ Check Client connection"), callback_data=CheckConnection().pack())
                     ],
                     [
-                        InlineKeyboardButton(text=Translator.translate(Strings.BackToSettings, user.locale), callback_data=SettingsMenu().pack())
+                        InlineKeyboardButton(text=_("🔙 Settings"), callback_data=SettingsMenu().pack())
                     ]
                 ]
             )
@@ -112,21 +117,28 @@ def get_router():
 
 
     @router.callback_query(CheckConnection.filter(), HasRole(UserRolesEnum.Administrator))
-    async def check_connection_callback(callback_query: CallbackQuery, callback_data: CheckConnection, bot: Bot, settings: Settings, user: User) -> None:
+    async def check_connection_callback(callback_query: CallbackQuery, callback_data: CheckConnection, bot: Bot, settings: Settings) -> None:
         try:
             repository_class = ClientRepo.get_client_manager(settings.client.type)
             version = await repository_class(settings).check_connection()
 
-            await callback_query.answer(Translator.translate(Strings.ClientConnectionOk, user.locale, version=version), show_alert=True)
+            await callback_query.answer(
+                _(
+                    "✅ The connection works. QBittorrent version: {version}"
+                        .format(
+                            version=version
+                        )
+                ), show_alert=True
+            )
         except Exception:
-            await callback_query.answer(Translator.translate(Strings.ClientConnectionBad, user.locale), show_alert=True)
+            await callback_query.answer(_("❌ Unable to establish connection with QBittorrent"), show_alert=True)
 
 
     @router.callback_query(ReloadSettingsMenu.filter(), HasRole(UserRolesEnum.Administrator))
-    async def reload_settings_callback(callback_query: CallbackQuery, callback_data: ReloadSettingsMenu, bot: Bot, settings: Settings, user: User) -> None:
+    async def reload_settings_callback(callback_query: CallbackQuery, callback_data: ReloadSettingsMenu, bot: Bot, settings: Settings) -> None:
         new_settings = Settings.load_settings()
         settings.update_from(new_settings)
-        await callback_query.answer(Translator.translate(Strings.SettingsReloaded, user.locale), show_alert=True)
+        await callback_query.answer(_("✅ Settings Reloaded"), show_alert=True)
 
 
     return router

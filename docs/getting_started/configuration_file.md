@@ -95,7 +95,7 @@ Authorized users of QBittorrentBot.
 | notify              | bool                            | Whether to notify user about new torrents.                  |
 | notification_filter | list                            | List of categories to notify. Null or empty = all torrents. |
 | role                | [UserRolesEnum](#userrolesenum) | Role of the user. Default: `administrator`.                 |
-| locale              | str                             | User language. Default: `en`.                               |
+| locale              | str                             | User language. If not set, the language set on Telegram will be used. If not available, it will be set to English. |
 
 ---
 
@@ -143,13 +143,14 @@ redis://[user:password]@host:port/db
 
 ### Languages
 
-| Name             | Value   |
-| ---------------- | ------- |
-| English          | `en`    |
-| Spanish          | `es`    |
-| Italian          | `it`    |
-| Ukrainian        | `uk_UA` |
-| Russian(Ukraine) | `ru_UA` |
+| Name                | Value   |
+| ------------------- | ------- |
+| English             | `en`    |
+| Spanish             | `es`    |
+| Italian             | `it`    |
+| Ukrainian           | `uk`    |
+| Russian             | `ru`    |
+| Portuguese (Brazil) | `pt`    |
 
 ---
 

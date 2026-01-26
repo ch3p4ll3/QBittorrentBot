@@ -1,4 +1,6 @@
 from aiogram import Bot
+from aiogram.utils.i18n import gettext as _
+
 from logging import getLogger
 from pathlib import Path
 from watchfiles import awatch
@@ -30,7 +32,14 @@ async def torrent_finished(bot: Bot, redis: RedisWrapper, settings: Settings):
             for user in user_filters(settings.users, i.category):
                 if user.notify:
                     try:
-                        await bot.send_message(user.user_id, f"torrent {i.name} has finished downloading!")
+                        await bot.send_message(
+                            user.user_id, 
+                            _("Torrent {name} has finished downloading!"
+                                .format(
+                                    name=i.name
+                                )
+                            )
+                        )
                     except Exception as e:
                         logger.exception(e)
 

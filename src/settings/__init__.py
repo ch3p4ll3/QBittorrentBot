@@ -80,7 +80,6 @@ class Settings(BaseModel):
                 {
                 "user_id": 123456789,
                 "role": "administrator",
-                "locale": "en",
                 "notify": True
                 }
             ],
