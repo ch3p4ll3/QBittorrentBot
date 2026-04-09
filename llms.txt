@@ -1,0 +1,23 @@
+﻿# QBittorrentBot
+
+> QBittorrentBot is a Telegram bot that allows you to control your qBittorrent downloads from your Telegram account.
+
+- [QBittorrentBot](https://ch3p4ll3.github.io/QBittorrentBot/index.md): QBittorrentBot
+- [Getting Started](https://ch3p4ll3.github.io/QBittorrentBot/getting_started/index.md): QBittorrentBot is a Telegram bot that allows you to control your qBittorrent client from within the Telegram messaging app. This makes it easy to add new torrents, manage your existing downloads, and get status updates without having to switch between applications.
+- [Advanced](https://ch3p4ll3.github.io/QBittorrentBot/advanced/index.md): This section will speigate the advanced functions of the bot, such as creating new client managers, and managing user roles
+- [Contributing](https://ch3p4ll3.github.io/QBittorrentBot/contributing.md): QBittorrentBot is an open-source Telegram bot that enables seamless management of qBittorrent downloads directly from Telegram.
+- [FAQ](https://ch3p4ll3.github.io/QBittorrentBot/faq.md): QBittorrentBot is a Telegram bot that allows you to control your qBittorrent downloads directly from within Telegram. It enables users to add torrents, manage downloads, monitor progress, and interact with the torrent client—all through simple commands in a Telegram chat.
+- [Screenshots](https://ch3p4ll3.github.io/QBittorrentBot/screenshots/index.md): Main Menu (Administrator view)
+
+## Getting Started
+
+- [Configuration File](https://ch3p4ll3.github.io/QBittorrentBot/getting_started/configuration_file.md): The configuration file serves as a central repository for all the necessary information that the QBittorrentBot needs to operate effectively. It defines
+- [Installation](https://ch3p4ll3.github.io/QBittorrentBot/getting_started/installation.md): To start using the bot, you must first create a directory that will contain Docker Compose, configuration files, logs, and runtime data.
+- [Migrating to V3](https://ch3p4ll3.github.io/QBittorrentBot/getting_started/migrating_to_v3.md): Version 3 of QBittorrentBot introduces significant internal changes, including a full rewrite of the codebase, the switch to Aiogram, and new runtime data management via Redis.
+
+## Advanced
+
+- [Add new client manager](https://ch3p4ll3.github.io/QBittorrentBot/advanced/add_new_client_manager.md): Adding a new client manager to QBittorrentBot involves creating a new class that implements the ClientManager interface. This interface defines the methods that the bot uses to interact with the client, such as adding, removing, pausing, and resuming torrents.
+- [Configure Proxy for Telegram](https://ch3p4ll3.github.io/QBittorrentBot/advanced/telegram_proxy.md): QBittorrent Bot can be configured to use a Telegram proxy to connect to the Telegram API. This is useful if you are behind a firewall or need to route traffic through a proxy to reach Telegram's servers.
+- [Add new entries in configuration file](https://ch3p4ll3.github.io/QBittorrentBot/advanced/add_entries_configuration.md): Adding a new entry to the QBittorrentBot configuration file involves several steps:
+- [Managing users roles](https://ch3p4ll3.github.io/QBittorrentBot/advanced/manager_user_roles.md): QBittorrentBot provides a user role management system to control access to different actions and functionalities within the bot. The system defines three roles: Reader, Manager, and Admin, each with increasing permissions and capabilities.
