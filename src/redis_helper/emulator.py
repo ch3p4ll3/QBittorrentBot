@@ -15,6 +15,10 @@ class RedisEmulator:
         self._persist_path = persist_path
         self._load()
 
+    @property
+    def persist_path(self) -> Optional[Path]:
+        return self._persist_path
+
     def _load(self):
         if not self._persist_path or not self._persist_path.exists():
             return
@@ -63,11 +67,11 @@ class RedisEmulator:
 
     async def set(self, key: str, value: Any, ex: int | None = None) -> None:
         async with self._lock:
-            expires_at = time.time() + ex if ex else None
+            expires_at = time.time() + ex if ex is not None else None
             self._storage[key] = {"value": value, "expires_at": expires_at}
             snapshot = dict(self._storage)
         self._save(snapshot)
-        if ex:
+        if ex is not None:
             asyncio.create_task(self._expire(key, expires_at))
 
     async def delete(self, key: str) -> None:

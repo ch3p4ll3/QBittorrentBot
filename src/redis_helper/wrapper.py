@@ -19,8 +19,8 @@ class RedisWrapper:
 
     async def connect(self):
         if not self._url or not redis:
-            if self._emulator._persist_path:
-                logging.warning(f"Redis disabled, using file-backed emulator ({self._emulator._persist_path})")
+            if self._emulator.persist_path:
+                logging.warning(f"Redis disabled, using file-backed emulator ({self._emulator.persist_path})")
             else:
                 logging.warning("Redis disabled, using in-memory emulator (data will not survive restarts)")
             self._client = self._emulator
@@ -32,8 +32,8 @@ class RedisWrapper:
             self._client = client
             logging.info("Connected to Redis")
         except Exception as e:
-            if self._emulator._persist_path:
-                logging.warning(f"Redis unavailable ({e}), falling back to file-backed emulator ({self._emulator._persist_path})")
+            if self._emulator.persist_path:
+                logging.warning(f"Redis unavailable ({e}), falling back to file-backed emulator ({self._emulator.persist_path})")
             else:
                 logging.warning(f"Redis unavailable ({e}), falling back to in-memory emulator (data will not survive restarts)")
             self._client = self._emulator
