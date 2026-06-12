@@ -10,7 +10,7 @@ from typing import Any, Optional
 class RedisEmulator:
     def __init__(self, persist_path: Optional[Path] = None):
         """In-memory Redis emulator with optional JSON persistence across restarts."""
-        self._storage: dict[str, dict] = {}
+        self._storage: dict[str, dict[str, Any]] = {}
         self._lock = asyncio.Lock()
         self._persist_path = persist_path
         self._load()
@@ -72,11 +72,11 @@ class RedisEmulator:
 
     async def set(self, key: str, value: Any, ex: int | None = None) -> None:
         async with self._lock:
-            expires_at = time.time() + ex if ex is not None else None
+            expires_at = time.time() + ex if ex is not None and ex > 0 else None
             self._storage[key] = {"value": value, "expires_at": expires_at}
             snapshot = dict(self._storage)
         self._save(snapshot)
-        if ex is not None:
+        if ex is not None and ex > 0:
             asyncio.create_task(self._expire(key, expires_at))
 
     async def delete(self, key: str) -> None:
