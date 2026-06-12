@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
     <meta name="turbo-root" content="/QBittorrentBot">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.5.3.832499236736">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.834560025271">
 
     <!-- See retype.com -->
-    <meta name="generator" content="Retype 4.5.3">
+    <meta name="generator" content="Retype 4.6.0">
 
     <!-- Primary Meta Tags -->
     <title>Configuration File</title>
@@ -38,12 +38,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.5.3.832499236736" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.834560025271" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.5.3.832499236736" data-turbo-eval="false" defer></script>
-    <script data-cfasync="false" src="../../resources/js/retype.js?v=4.5.3" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.5.3.832499236736" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.5.3.832499236736" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.834560025271" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.834560025271" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.834560025271" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -182,6 +182,12 @@ users:
 <hr>
 <h2 id="client">Client</h2>
 <p>Defines the qBittorrent client configuration.</p>
+<retype-table copy-text="| Name     | Type                              | Remarks                                    |
+| -------- | --------------------------------- | ------------------------------------------ |
+| type     | [ClientTypeEnum](#clienttypeenum) | The type of client.                        |
+| host     | [HttpUrl](#httpurl)               | The IP/hostname of the qBittorrent server. |
+| user     | str                               | Username for the qBittorrent server.       |
+| password | str                               | Password for the qBittorrent server.       |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
@@ -215,6 +221,7 @@ users:
 </tbody>
 </table>
 </div>
+</retype-table>
 <hr>
 <h2 id="redis">Redis</h2>
 <p>Redis stores temporary runtime data. If omitted or <code translate="no" v-pre>url</code> is <code translate="no" v-pre>null</code>, an <strong>in-memory dictionary</strong> is used.</p>
@@ -234,6 +241,9 @@ users:
         </div>
     </div>
 </div>
+<retype-table copy-text="| Name | Type                  | Remarks                                               |
+| ---- | --------------------- | ----------------------------------------------------- |
+| url  | [RedisDsn](#redisdsn) | Redis connection string. Set `null` to disable Redis. |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
@@ -252,9 +262,14 @@ users:
 </tbody>
 </table>
 </div>
+</retype-table>
 <hr>
 <h2 id="telegram">Telegram</h2>
 <p>Telegram bot configuration.</p>
+<retype-table copy-text="| Name      | Type                                              | Remarks                                  |
+| --------- | ------------------------------------------------- | ---------------------------------------- |
+| bot_token | str                                               | Bot token for QBittorrentBot. Required.  |
+| proxy     | [TelegramProxySettings](#telegram-proxy-settings) | Optional. Proxy for Telegram connection. |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
@@ -278,8 +293,15 @@ users:
 </tbody>
 </table>
 </div>
+</retype-table>
 <h3 id="telegram-proxy-settings">Telegram Proxy Settings</h3>
 <p>Supports SOCKS4/5 or HTTP proxies, with optional authentication.</p>
+<retype-table copy-text="| Name     | Type                                          | Remarks                             |
+| -------- | --------------------------------------------- | ----------------------------------- |
+| scheme   | [TelegramProxyScheme](#telegram-proxy-scheme) | Protocol used for proxy connection. |
+| hostname | str                                           | Proxy host address.                 |
+| username | str                                           | Optional. Proxy username.           |
+| password | str                                           | Optional. Proxy password.           |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
@@ -313,9 +335,17 @@ users:
 </tbody>
 </table>
 </div>
+</retype-table>
 <hr>
 <h2 id="users">Users</h2>
 <p>Authorized users of QBittorrentBot.</p>
+<retype-table copy-text="| Name                | Type                            | Remarks                                                     |
+| ------------------- | ------------------------------- | ----------------------------------------------------------- |
+| user_id             | int                             | Telegram user ID.                                           |
+| notify              | bool                            | Whether to notify user about new torrents.                  |
+| notification_filter | list                            | List of categories to notify. Null or empty = all torrents. |
+| role                | [UserRolesEnum](#userrolesenum) | Role of the user. Default: `administrator`.                 |
+| locale              | str                             | User language. If not set, the language set on Telegram will be used. If not available, it will be set to English. |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
@@ -354,9 +384,13 @@ users:
 </tbody>
 </table>
 </div>
+</retype-table>
 <hr>
 <h2 id="enums">Enums</h2>
 <h3 id="clienttypeenum">ClientTypeEnum</h3>
+<retype-table copy-text="| Name        | Type | Value         |
+| ----------- | ---- | ------------- |
+| QBittorrent | str  | `qbittorrent` |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
@@ -375,7 +409,13 @@ users:
 </tbody>
 </table>
 </div>
+</retype-table>
 <h3 id="userrolesenum">UserRolesEnum</h3>
+<retype-table copy-text="| Name          | Type | Value           | Remarks                                                         |
+| ------------- | ---- | --------------- | --------------------------------------------------------------- |
+| Reader        | str  | `reader`        | Can only view torrents.                                         |
+| Manager       | str  | `manager`       | Can view and manage torrents.                                   |
+| Administrator | str  | `administrator` | Full access, including configuration edits and torrent removal. |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
@@ -408,7 +448,13 @@ users:
 </tbody>
 </table>
 </div>
+</retype-table>
 <h3 id="telegram-proxy-scheme">Telegram Proxy Scheme</h3>
+<retype-table copy-text="| Name  | Type | Value    |
+| ----- | ---- | -------- |
+| Sock4 | str  | `socks4` |
+| Sock5 | str  | `socks5` |
+| Http  | str  | `http`   |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
@@ -437,6 +483,7 @@ users:
 </tbody>
 </table>
 </div>
+</retype-table>
 <hr>
 <h2 id="other-types">Other Types</h2>
 <h3 id="httpurl">HttpUrl</h3>
@@ -451,6 +498,14 @@ users:
 <pre translate="no" class="language-none"><code v-pre class="language-none">redis://[user:password]@host:port/db</code></pre>
 </doc-codeblock></div>
 <h3 id="languages">Languages</h3>
+<retype-table copy-text="| Name                | Value   |
+| ------------------- | ------- |
+| English             | `en`    |
+| Spanish             | `es`    |
+| Italian             | `it`    |
+| Ukrainian           | `uk`    |
+| Russian             | `ru`    |
+| Portuguese (Brazil) | `pt`    |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
@@ -487,6 +542,7 @@ users:
 </tbody>
 </table>
 </div>
+</retype-table>
 <hr>
 <h2 id="ready-to-use-configyml-examples">Ready-to-Use <code translate="no" v-pre>config.yml</code> Examples</h2>
 <h3 id="1-basic-no-redis-single-user">1. Basic (no Redis, single user)</h3>
