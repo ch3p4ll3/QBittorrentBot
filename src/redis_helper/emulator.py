@@ -28,12 +28,17 @@ class RedisEmulator:
                 raw = json.load(f)
 
             now = time.time()
-            self._storage = {
-                k: v for k, v in raw.items()
-                if v.get("expires_at") is None or v["expires_at"] > now
-            }
+            normalized = {}
+            for k, v in raw.items():
+                # accept both the current {"value":…,"expires_at":…} shape and
+                # any older flat {key: value} shape written by a previous version
+                if not isinstance(v, dict) or "value" not in v:
+                    v = {"value": v, "expires_at": None}
+                if v.get("expires_at") is None or v["expires_at"] > now:
+                    normalized[k] = v
+            self._storage = normalized
         except Exception as e:
-            logging.warning(f"Could not load emulator state from disk: {e}")
+            logging.exception(f"Could not load emulator state from disk: {e}")
 
     def _save(self, snapshot: dict) -> None:
         if not self._persist_path:
@@ -48,7 +53,7 @@ class RedisEmulator:
                 tmp = Path(f.name)
             tmp.replace(self._persist_path)
         except Exception as e:
-            logging.warning(f"Could not persist emulator state to disk: {e}")
+            logging.exception(f"Could not persist emulator state to disk: {e}")
 
     async def get(self, key: str) -> Optional[Any]:
         snapshot = None
