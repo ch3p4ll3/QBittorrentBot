@@ -51,11 +51,9 @@ Defines the qBittorrent client configuration.
 
 ## Redis
 
-Redis stores temporary runtime data. If omitted or `url` is `null`, an **in-memory dictionary** is used.
+Redis stores runtime data used to track which completed torrents have already triggered a notification, preventing duplicate alerts across restarts.
 
-!!!warning
-Using in-memory storage is **not recommended for production** — all data is lost when the bot restarts.
-!!!
+If `url` is `null` or omitted, the bot falls back to a file-backed in-memory store that persists its state to `data/torrent_cache.json`. This is suitable for single-instance setups. Redis is recommended for production or multi-instance deployments.
 
 | Name | Type                  | Remarks                                               |
 | ---- | --------------------- | ----------------------------------------------------- |

@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 from typing import Any, Optional
 
 from .emulator import RedisEmulator
@@ -10,10 +11,10 @@ except ImportError:
 
 
 class RedisWrapper:
-    def __init__(self, url: Optional[str] = None):
+    def __init__(self, url: Optional[str] = None, persist_path: Optional[Path] = None):
         self._url = url
         self._client = None
-        self._emulator = RedisEmulator()
+        self._emulator = RedisEmulator(persist_path=persist_path)
 
     async def connect(self):
         if not self._url or not redis:

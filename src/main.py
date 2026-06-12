@@ -47,7 +47,10 @@ async def main(base_path: Path) -> None:
     i18n = I18n(path=locales_path, default_locale="en", domain="messages")
 
     # create Redis client
-    redis_client = RedisWrapper(url=settings.redis.url)
+    redis_client = RedisWrapper(
+        url=settings.redis.url,
+        persist_path=base_path / "data" / "torrent_cache.json"
+    )
     await redis_client.connect()
 
     # register it in dp.dependencies
