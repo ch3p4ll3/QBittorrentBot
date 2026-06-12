@@ -2,12 +2,14 @@ import asyncio
 import json
 import time
 import logging
+import tempfile
 from pathlib import Path
 from typing import Any, Optional
 
 
 class RedisEmulator:
     def __init__(self, persist_path: Optional[Path] = None):
+        """In-memory Redis emulator with optional JSON persistence across restarts."""
         self._storage: dict[str, dict] = {}
         self._lock = asyncio.Lock()
         self._persist_path = persist_path
@@ -18,7 +20,7 @@ class RedisEmulator:
             return
 
         try:
-            with open(self._persist_path, "r") as f:
+            with open(self._persist_path, "r", encoding="utf-8") as f:
                 raw = json.load(f)
 
             now = time.time()
@@ -35,8 +37,12 @@ class RedisEmulator:
 
         try:
             self._persist_path.parent.mkdir(parents=True, exist_ok=True)
-            with open(self._persist_path, "w") as f:
+            with tempfile.NamedTemporaryFile(
+                "w", encoding="utf-8", dir=self._persist_path.parent, delete=False, suffix=".tmp"
+            ) as f:
                 json.dump(self._storage, f)
+                tmp = Path(f.name)
+            tmp.replace(self._persist_path)
         except Exception as e:
             logging.warning(f"Could not persist emulator state to disk: {e}")
 
@@ -44,6 +50,11 @@ class RedisEmulator:
         async with self._lock:
             entry = self._storage.get(key)
             if entry is None:
+                return None
+            expires_at = entry.get("expires_at")
+            if expires_at is not None and time.time() > expires_at:
+                self._storage.pop(key)
+                self._save()
                 return None
             return entry["value"]
 

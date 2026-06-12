@@ -12,6 +12,7 @@ except ImportError:
 
 class RedisWrapper:
     def __init__(self, url: Optional[str] = None, persist_path: Optional[Path] = None):
+        """Unified Redis client that falls back to a persistent in-memory emulator when no URL is given."""
         self._url = url
         self._client = None
         self._emulator = RedisEmulator(persist_path=persist_path)
