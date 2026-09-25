@@ -5,7 +5,7 @@
 
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 # QBittorrentBot
@@ -203,6 +203,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/joey00797"><img src="https://avatars.githubusercontent.com/u/52893618?v=4?s=100" width="100px;" alt="joey00797"/><br /><sub><b>joey00797</b></sub></a><br /><a href="#translation-joey00797" title="Translation">🌍</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/rdfortega"><img src="https://avatars.githubusercontent.com/u/19917918?v=4?s=100" width="100px;" alt="Rodolfo Ortega"/><br /><sub><b>Rodolfo Ortega</b></sub></a><br /><a href="#translation-rdfortega" title="Translation">🌍</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/fiveh"><img src="https://avatars.githubusercontent.com/u/12550241?v=4?s=100" width="100px;" alt="Andrew Miroshnichenko"/><br /><sub><b>Andrew Miroshnichenko</b></sub></a><br /><a href="https://github.com/ch3p4ll3/QBittorrentBot/commits?author=fiveh" title="Code">💻</a> <a href="https://github.com/ch3p4ll3/QBittorrentBot/issues?q=author%3Afiveh" title="Bug reports">🐛</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/SokolovYaroslav"><img src="https://avatars.githubusercontent.com/u/22151264?v=4?s=100" width="100px;" alt="Yaroslav Sokolov"/><br /><sub><b>Yaroslav Sokolov</b></sub></a><br /><a href="https://github.com/ch3p4ll3/QBittorrentBot/commits?author=SokolovYaroslav" title="Code">💻</a> <a href="https://github.com/ch3p4ll3/QBittorrentBot/issues?q=author%3ASokolovYaroslav" title="Bug reports">🐛</a></td>
     </tr>
   </tbody>
 </table>
