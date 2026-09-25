@@ -14,6 +14,17 @@ from ..entities.torrent import Torrent
 logger = logging.getLogger(__name__)
 
 
+def _added_ok(result) -> bool:
+    # qBittorrent < 5.1 answers "Ok."/"Fails."; >= 5.1 answers JSON
+    # (TorrentsAddedMetadata) with success/pending/failure counts.
+    if isinstance(result, str):
+        return result == "Ok."
+    try:
+        return (result.get("success_count", 0) + result.get("pending_count", 0)) > 0
+    except AttributeError:
+        return False
+
+
 class QbittorrentManager(ClientManager):
     def __init__(self, settings: Settings):
         self.settings = settings
@@ -30,7 +41,7 @@ class QbittorrentManager(ClientManager):
             logger.debug(f"Adding magnet with category {category}")
             result = await qbt.call(qbt.client.torrents_add, urls=magnet_link, category=category)
 
-        return result == "Ok."
+        return _added_ok(result)
 
     async def add_torrent(self, file_name: str, category: str = None) -> bool:
         if category == "None":
@@ -40,7 +51,7 @@ class QbittorrentManager(ClientManager):
             async with self._client() as qbt:
                 logger.debug(f"Adding torrent with category {category}")
                 result = await qbt.call(qbt.client.torrents_add, torrent_files=file_name, category=category)
-            return result == "Ok."
+            return _added_ok(result)
 
         except qbittorrentapi.exceptions.UnsupportedMediaType415Error:
             pass
