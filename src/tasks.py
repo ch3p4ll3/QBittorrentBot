@@ -49,7 +49,7 @@ async def torrent_finished(bot: Bot, redis: RedisWrapper, settings: Settings, i1
                     except Exception as e:
                         logger.exception(e)
 
-            await redis.set(i.hash, 1, 10 * 86400)  # store for 10 days
+            await redis.set(i.hash, 1)  # no TTL: an expired marker re-sends the notification
 
 
 async def watch_config(path: Path, settings: Settings):
