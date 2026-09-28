@@ -23,7 +23,7 @@ class RedisWrapper:
             return
 
         try:
-            client = redis.from_url(self._url, decode_responses=True)
+            client = redis.from_url(str(self._url), decode_responses=True)
             await client.ping()
             self._client = client
             logging.info("Connected to Redis")

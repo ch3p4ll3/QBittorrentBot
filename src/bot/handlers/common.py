@@ -45,7 +45,7 @@ async def send_menu(bot: Bot, redis: RedisWrapper, settings: Settings, chat_id: 
             [InlineKeyboardButton(text=_("⚙️ Settings"), callback_data=SettingsMenu().pack())]
         ]
 
-    await redis.set(f"action:{chat_id}", None)
+    await redis.delete(f"action:{chat_id}")
     markup = InlineKeyboardMarkup(inline_keyboard=buttons)
 
     try:

@@ -37,7 +37,7 @@ def get_router():
                 return
 
             await send_menu(bot, redis, settings, message.chat.id, message.message_id)
-            await redis.set(f"action:{message.from_user.id}", None)
+            await redis.delete(f"action:{message.from_user.id}")
 
         else:
             await message.reply(
@@ -71,7 +71,7 @@ def get_router():
                 #return
 
             await send_menu(bot, redis, settings, message.chat.id, message.message_id)
-            await redis.set(f"action:{message.from_user.id}", None)
+            await redis.delete(f"action:{message.from_user.id}")
 
         else:
             await message.reply(

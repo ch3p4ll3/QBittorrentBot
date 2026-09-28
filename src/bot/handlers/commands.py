@@ -38,7 +38,7 @@ def get_router():
     @router.message(CommandStart(), IsAuthorizedUser())
     async def start_command(message: Message, redis: RedisWrapper, bot: Bot, settings: Settings) -> None:
         """Start the bot."""
-        await redis.set(f"action:{message.from_user.id}", None)
+        await redis.delete(f"action:{message.from_user.id}")
         await send_menu(bot, redis, settings, message.chat.id, message.message_id)
 
 
