@@ -3,10 +3,14 @@
 ![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/ch3p4ll3/QBittorrentBot/docker-image.yml)
 ![Docker Pulls](https://img.shields.io/docker/pulls/ch3p4ll3/qbittorrent-bot)
 
-
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
+
+> [!NOTE]
+> **This project is no longer actively maintained.**
+> I've moved to the *arr stack for my media workflow and no longer use this bot day to day, so new features and bug fixes from me will be rare.
+> Pull requests are still very welcome, and I'll update dependencies from time to time to keep things working.
 
 # QBittorrentBot
 
