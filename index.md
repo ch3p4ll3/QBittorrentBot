@@ -1,5 +1,11 @@
 # QBittorrentBot
 
+!!!warning This project is no longer actively maintained
+I've moved to the *arr stack for my media workflow and no longer use this bot day to day, so new features and bug fixes from me will be rare.
+
+Pull requests are still very welcome, and I'll update dependencies from time to time to keep things working.
+!!!
+
 QBittorrentBot is a Telegram bot that allows you to control your qBittorrent downloads from your Telegram account. 
 
 This means that you can add, remove, pause, resume, and delete torrents, as well as view a list of your active downloads, all without having to open the qBittorrent application.

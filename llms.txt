@@ -1,6 +1,6 @@
 ﻿# QBittorrentBot
 
-> QBittorrentBot is a Telegram bot that allows you to control your qBittorrent downloads from your Telegram account.
+> I've moved to the *arr stack for my media workflow and no longer use this bot day to day, so new features and bug fixes from me will be rare.
 
 - [QBittorrentBot](https://ch3p4ll3.github.io/QBittorrentBot/index.md): QBittorrentBot
 - [Getting Started](https://ch3p4ll3.github.io/QBittorrentBot/getting_started/index.md): QBittorrentBot is a Telegram bot that allows you to control your qBittorrent client from within the Telegram messaging app. This makes it easy to add new torrents, manage your existing downloads, and get status updates without having to switch between applications.
