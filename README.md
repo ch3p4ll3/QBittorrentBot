@@ -222,3 +222,22 @@ This project follows the [all-contributors](https://github.com/all-contributors/
 ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=ch3p4ll3/QBittorrentBot&type=Date)](https://star-history.com/#ch3p4ll3/QBittorrentBot&Date)
+
+## RSS management (fork addition)
+
+Administrators can manage qBittorrent's RSS downloader from Telegram:
+
+| Command | What it does |
+|---|---|
+| `/rss` | Show feeds (host only) and download rules |
+| `/rss_addfeed <name> <url>` | Add a feed. Your message is deleted afterwards because feed URLs often contain passkeys |
+| `/rss_delfeed <name>` | Remove a feed |
+| `/rss_addrule <name> \| <feed or all> \| <must contain> \| [must not contain] \| [category]` | Add and enable a rule |
+| `/rss_delrule <name>` | Remove a rule |
+| `/rss_toggle <name>` | Enable or disable a rule |
+| `/rss_help` | Show this help in the chat |
+
+Example: `/rss_addrule shows | myfeed | Foo 1080p | 720p | TV`
+
+Feed URLs are never printed back. Only users with the `administrator` role can use these commands.
+Tests for the parsing helpers: `python -m tests.test_rss_utils`.

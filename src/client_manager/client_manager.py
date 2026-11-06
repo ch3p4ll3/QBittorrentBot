@@ -93,3 +93,27 @@ class ClientManager(ABC):
     async def toggle_speed_limit(self) -> bool:
         """Toggle speed limit of the client, returns True if speed limit is active"""
         raise NotImplementedError
+
+    async def rss_get_feeds(self) -> dict:
+        """Return all RSS feeds as {path: url}"""
+        raise NotImplementedError
+
+    async def rss_add_feed(self, name: str, url: str) -> None:
+        """Add an RSS feed"""
+        raise NotImplementedError
+
+    async def rss_remove_feed(self, name: str) -> None:
+        """Remove an RSS feed"""
+        raise NotImplementedError
+
+    async def rss_get_rules(self) -> dict:
+        """Return all RSS auto-download rules as {name: rule definition}"""
+        raise NotImplementedError
+
+    async def rss_set_rule(self, name: str, rule_def: dict) -> None:
+        """Create or update an RSS auto-download rule"""
+        raise NotImplementedError
+
+    async def rss_remove_rule(self, name: str) -> None:
+        """Remove an RSS auto-download rule"""
+        raise NotImplementedError

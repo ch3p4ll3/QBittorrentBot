@@ -170,3 +170,44 @@ class QbittorrentManager(ClientManager):
         async with self._client() as qbt:
             await qbt.call(qbt.client.transfer.setSpeedLimitsMode)
             return qbt.client.transfer.speedLimitsMode == "1"
+
+    @staticmethod
+    def _flatten_feeds(items: dict, prefix: str = "") -> dict:
+        """RSS items are a tree of folders and feeds; feeds carry a 'url'. Returns {path: url}."""
+        feeds = {}
+        for name, value in (items or {}).items():
+            path = f"{prefix}{name}"
+            if isinstance(value, dict) and "url" in value:
+                feeds[path] = value["url"]
+            elif isinstance(value, dict):
+                feeds.update(QbittorrentManager._flatten_feeds(value, prefix=f"{path}\\"))
+        return feeds
+
+    async def rss_get_feeds(self) -> dict:
+        async with self._client() as qbt:
+            items = await qbt.call(qbt.client.rss_items, include_feed_data=False)
+        return self._flatten_feeds(items)
+
+    async def rss_add_feed(self, name: str, url: str) -> None:
+        logger.debug(f"Adding RSS feed {name}")
+        async with self._client() as qbt:
+            await qbt.call(qbt.client.rss_add_feed, url=url, item_path=name)
+
+    async def rss_remove_feed(self, name: str) -> None:
+        logger.debug(f"Removing RSS feed {name}")
+        async with self._client() as qbt:
+            await qbt.call(qbt.client.rss_remove_item, item_path=name)
+
+    async def rss_get_rules(self) -> dict:
+        async with self._client() as qbt:
+            return dict(await qbt.call(qbt.client.rss_rules))
+
+    async def rss_set_rule(self, name: str, rule_def: dict) -> None:
+        logger.debug(f"Setting RSS rule {name}")
+        async with self._client() as qbt:
+            await qbt.call(qbt.client.rss_set_rule, rule_name=name, rule_def=rule_def)
+
+    async def rss_remove_rule(self, name: str) -> None:
+        logger.debug(f"Removing RSS rule {name}")
+        async with self._client() as qbt:
+            await qbt.call(qbt.client.rss_remove_rule, rule_name=name)
