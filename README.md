@@ -227,7 +227,7 @@ This project follows the [all-contributors](https://github.com/all-contributors/
 
 Administrators can manage qBittorrent's RSS downloader from Telegram.
 
-**With buttons:** `/start` -> **📡 RSS** (or `/rss_menu`):
+**With buttons:** `/start` -> **📡 RSS**, or simply `/rss`:
 
 * **👀 Watch for a name** - pick a feed, send the words to wait for (for example `Foo Show 1080p`), pick a category.
   Everything already in the feed is marked as read first, so only uploads that appear from now on are downloaded.
@@ -238,7 +238,8 @@ Administrators can manage qBittorrent's RSS downloader from Telegram.
 
 | Command | What it does |
 |---|---|
-| `/rss` | Show feeds (host only) and download rules |
+| `/rss` | Open the RSS button menu (same as `/start` -> RSS) |
+| `/rss_list` | Show feeds (host only) and download rules as text |
 | `/rss_addfeed <name> <url>` | Add a feed. Your message is deleted afterwards because feed URLs often contain passkeys |
 | `/rss_delfeed <name>` | Remove a feed |
 | `/rss_addrule <name> \| <feed or all> \| <must contain> \| [must not contain] \| [category]` | Add and enable a rule |

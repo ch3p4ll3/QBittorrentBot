@@ -18,7 +18,8 @@ logger = logging.getLogger(__name__)
 
 HELP = (
     "RSS commands (administrators only)\n\n"
-    "/rss - show feeds and rules\n"
+    "/rss - open the RSS menu (buttons)\n"
+    "/rss_list - show feeds and rules as text\n"
     "/rss_addfeed <name> <url> - add a feed (no spaces in the name)\n"
     "/rss_delfeed <name> - remove a feed\n"
     "/rss_addrule <name> | <feed or all> | <must contain> | [must not contain] | [category]\n"
@@ -51,7 +52,7 @@ def get_router():
             return False
         return True
 
-    @router.message(Command("rss"), IsAuthorizedUser())
+    @router.message(Command("rss_list"), IsAuthorizedUser())
     async def rss_overview(message: Message, settings: Settings) -> None:
         if not await guard(message, settings):
             return
@@ -81,7 +82,7 @@ def get_router():
             lines.append(f"        match: {rule.get('mustContain') or '-'}" + (f"  ({'; '.join(extra)})" if extra else ""))
         if not rules:
             lines.append("  none")
-        lines += ["", "/rss_addfeed /rss_delfeed /rss_addrule /rss_delrule /rss_toggle"]
+        lines += ["", "/rss opens the button menu. Text commands: /rss_addfeed /rss_delfeed /rss_addrule /rss_delrule /rss_toggle"]
         await reply(message, "\n".join(lines))
 
     @router.message(Command("rss_help"), IsAuthorizedUser())

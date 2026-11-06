@@ -92,8 +92,8 @@ async def main(base_path: Path) -> None:
         await bot.set_my_commands([
             BotCommand(command="start", description="Open the main menu"),
             BotCommand(command="stats", description="System stats"),
-            BotCommand(command="rss_menu", description="RSS buttons: watch for a name, feeds, rules"),
-            BotCommand(command="rss", description="Show RSS feeds and rules"),
+            BotCommand(command="rss", description="RSS menu: watch for a name, feeds, rules"),
+            BotCommand(command="rss_list", description="Show RSS feeds and rules as text"),
             BotCommand(command="rss_help", description="RSS commands help"),
             BotCommand(command="rss_addfeed", description="Add a feed: name url"),
             BotCommand(command="rss_delfeed", description="Remove a feed: name"),

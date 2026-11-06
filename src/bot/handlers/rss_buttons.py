@@ -107,7 +107,7 @@ def get_router():
         await q.answer()
         await show_menu(bot, redis, q.from_user.id, q.message.message_id)
 
-    @router.message(Command("rss_menu"), IsAuthorizedUser())
+    @router.message(Command("rss", "rss_menu"), IsAuthorizedUser())
     async def on_menu_command(message: Message, bot: Bot, redis: RedisWrapper, settings: Settings) -> None:
         user = get_user_from_config(message.from_user.id, settings)
         if not user or user.role != UserRolesEnum.Administrator:
