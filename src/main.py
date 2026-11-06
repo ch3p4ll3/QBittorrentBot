@@ -1,7 +1,9 @@
 import asyncio
+import logging
 from pathlib import Path
 
 from aiogram import Bot, Dispatcher
+from aiogram.types import BotCommand
 from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
@@ -83,6 +85,22 @@ async def main(base_path: Path) -> None:
     watcher_task = asyncio.create_task(
         watch_config(base_path / "data/config.yml", settings)
     )
+
+    # publish the command list so Telegram shows it in the "/" menu
+    try:
+        await bot.set_my_commands([
+            BotCommand(command="start", description="Open the main menu"),
+            BotCommand(command="stats", description="System stats"),
+            BotCommand(command="rss", description="Show RSS feeds and rules"),
+            BotCommand(command="rss_help", description="RSS commands help"),
+            BotCommand(command="rss_addfeed", description="Add a feed: name url"),
+            BotCommand(command="rss_delfeed", description="Remove a feed: name"),
+            BotCommand(command="rss_addrule", description="Add a rule: name | feed | contain | not | category"),
+            BotCommand(command="rss_delrule", description="Remove a rule: name"),
+            BotCommand(command="rss_toggle", description="Enable or disable a rule: name"),
+        ])
+    except Exception as e:
+        logging.warning(f"Could not set bot commands: {e}")
 
     # start bot polling (this runs forever)
     try:
