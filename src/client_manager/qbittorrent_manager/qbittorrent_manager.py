@@ -198,6 +198,10 @@ class QbittorrentManager(ClientManager):
         async with self._client() as qbt:
             await qbt.call(qbt.client.rss_remove_item, item_path=name)
 
+    async def rss_mark_all_read(self, name: str) -> None:
+        async with self._client() as qbt:
+            await qbt.call(qbt.client.rss_mark_as_read, item_path=name)
+
     async def rss_get_rules(self) -> dict:
         async with self._client() as qbt:
             return dict(await qbt.call(qbt.client.rss_rules))

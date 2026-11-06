@@ -1,8 +1,30 @@
 """Pure helpers for the /rss commands (no Telegram or qBittorrent calls, easy to test)."""
+import hashlib
 from typing import Optional
 from urllib.parse import urlparse
 
 MAX_NAME_LEN = 80
+
+
+def short_id(name: str) -> str:
+    """Stable short id for a feed/rule/category name, used in button callback data (64 byte limit)."""
+    return hashlib.sha1(name.encode("utf-8")).hexdigest()[:10]
+
+
+def find_by_id(names, item_id: str) -> Optional[str]:
+    """Return the name whose short_id matches item_id, or None."""
+    return next((n for n in names if short_id(n) == item_id), None)
+
+
+def unique_name(name: str, existing) -> str:
+    """Return name, or 'name (2)', 'name (3)'... if it is already taken."""
+    taken = set(existing)
+    if name not in taken:
+        return name
+    n = 2
+    while f"{name} ({n})" in taken:
+        n += 1
+    return f"{name} ({n})"
 
 
 def feed_host(url: str) -> str:

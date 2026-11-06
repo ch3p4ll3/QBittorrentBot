@@ -11,7 +11,7 @@ from aiogram.utils.i18n import I18n
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
-from src.bot.handlers import get_commands_router, get_on_message_router, get_rss_router
+from src.bot.handlers import get_commands_router, get_on_message_router, get_rss_router, get_rss_buttons_router
 from src.bot.handlers.callbacks import get_category_router, get_add_torrents_router, get_list_router, \
     get_torrent_info_router, get_resume_router, get_pause_router, get_delete_one_router, \
     get_delete_all_router, get_settings_router
@@ -63,6 +63,7 @@ async def main(base_path: Path) -> None:
 
     # register routers
     dp.include_router(get_rss_router())
+    dp.include_router(get_rss_buttons_router())
     dp.include_router(get_on_message_router())
     dp.include_router(get_commands_router())
     dp.include_router(get_add_torrents_router())
@@ -91,6 +92,7 @@ async def main(base_path: Path) -> None:
         await bot.set_my_commands([
             BotCommand(command="start", description="Open the main menu"),
             BotCommand(command="stats", description="System stats"),
+            BotCommand(command="rss_menu", description="RSS buttons: watch for a name, feeds, rules"),
             BotCommand(command="rss", description="Show RSS feeds and rules"),
             BotCommand(command="rss_help", description="RSS commands help"),
             BotCommand(command="rss_addfeed", description="Add a feed: name url"),

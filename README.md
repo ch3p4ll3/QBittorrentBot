@@ -225,7 +225,16 @@ This project follows the [all-contributors](https://github.com/all-contributors/
 
 ## RSS management (fork addition)
 
-Administrators can manage qBittorrent's RSS downloader from Telegram:
+Administrators can manage qBittorrent's RSS downloader from Telegram.
+
+**With buttons:** `/start` -> **📡 RSS** (or `/rss_menu`):
+
+* **👀 Watch for a name** - pick a feed, send the words to wait for (for example `Foo Show 1080p`), pick a category.
+  Everything already in the feed is marked as read first, so only uploads that appear from now on are downloaded.
+* **📡 Feeds / 📋 Rules** - tap an item to enable, disable or remove it (removal asks for confirmation).
+* **➕ Add feed** - send `name url`; your message is deleted afterwards because feed URLs often contain passkeys.
+
+**With commands:**
 
 | Command | What it does |
 |---|---|

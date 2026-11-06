@@ -10,7 +10,7 @@ from src.settings import Settings
 from src.client_manager.client_repo import ClientRepo
 from src.utils import get_user_from_config
 from src.settings.enums import UserRolesEnum
-from src.bot.filters.callbacks import CategoryAction, CategoryMenu, ListByStatus, List, TorrentInfo, SettingsMenu, DeleteMenu, PauseResumeMenu, Menu
+from src.bot.filters.callbacks import CategoryAction, CategoryMenu, ListByStatus, List, TorrentInfo, SettingsMenu, DeleteMenu, PauseResumeMenu, Menu, RssMenu
 
 logger = logging.getLogger(__name__)
 
@@ -42,6 +42,7 @@ async def send_menu(bot: Bot, redis: RedisWrapper, settings: Settings, chat_id: 
         buttons += [
             [InlineKeyboardButton(text=_("🗑 Delete"), callback_data=DeleteMenu().pack())],
             [InlineKeyboardButton(text=_("📂 Categories"), callback_data=CategoryMenu().pack())],
+            [InlineKeyboardButton(text=_("📡 RSS"), callback_data=RssMenu().pack())],
             [InlineKeyboardButton(text=_("⚙️ Settings"), callback_data=SettingsMenu().pack())]
         ]
 

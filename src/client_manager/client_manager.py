@@ -106,6 +106,10 @@ class ClientManager(ABC):
         """Remove an RSS feed"""
         raise NotImplementedError
 
+    async def rss_mark_all_read(self, name: str) -> None:
+        """Mark every article currently in a feed as read"""
+        raise NotImplementedError
+
     async def rss_get_rules(self) -> dict:
         """Return all RSS auto-download rules as {name: rule definition}"""
         raise NotImplementedError

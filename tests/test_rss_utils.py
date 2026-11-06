@@ -64,6 +64,32 @@ def test_build_rule_def():
     assert d["affectedFeeds"] == ["https://a/rss"] and d["assignedCategory"] == "TV"
 
 
+def test_short_id_and_find_by_id():
+    from src.bot.handlers.rss_utils import find_by_id, short_id
+    names = ["Foo Show 1080p", "Another feed", "x" * 200]
+    for n in names:
+        assert len(short_id(n)) == 10 and short_id(n) == short_id(n)   # stable, fits in callback data
+    assert find_by_id(names, short_id("Another feed")) == "Another feed"
+    assert find_by_id(names, short_id("x" * 200)) == "x" * 200
+    assert find_by_id(names, "deadbeef00") is None
+
+
+def test_unique_name():
+    from src.bot.handlers.rss_utils import unique_name
+    assert unique_name("a", []) == "a"
+    assert unique_name("a", ["a"]) == "a (2)"
+    assert unique_name("a", ["a", "a (2)"]) == "a (3)"
+
+
+def test_callback_data_fits_telegram_limit():
+    from src.bot.filters.callbacks import RssDelete, RssItem, RssToggle, RssWatchCat, RssWatchFeed, RssAddFeed
+    from src.bot.handlers.rss_utils import short_id
+    i = short_id("x" * 200)
+    for packed in (RssItem(kind="feed", id=i).pack(), RssToggle(id=i).pack(), RssDelete(kind="rule", id=i, confirm=1).pack(),
+                   RssWatchCat(id=i).pack(), RssWatchFeed(id=i).pack(), RssAddFeed(watch=1).pack()):
+        assert len(packed.encode()) <= 64, packed
+
+
 def test_chunk_text():
     text = "\n".join(f"line {i}" for i in range(2000))
     chunks = chunk_text(text, limit=3900)
