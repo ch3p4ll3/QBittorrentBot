@@ -1,5 +1,7 @@
 """Pure helpers for the /rss commands (no Telegram or qBittorrent calls, easy to test)."""
 import hashlib
+import posixpath
+import re
 from typing import Optional
 from urllib.parse import urlparse
 
@@ -84,16 +86,53 @@ def parse_add_rule_args(args: Optional[str]):
     }
 
 
-def build_rule_def(feed_urls: list, must_contain: str, must_not_contain: str = "", category: str = "") -> dict:
-    return {
+def build_rule_def(feed_urls: list, must_contain: str, must_not_contain: str = "", category: str = "",
+                   save_path: str = "", smart_filter: bool = False) -> dict:
+    rule = {
         "enabled": True,
         "mustContain": must_contain,
         "mustNotContain": must_not_contain,
         "useRegex": False,
         "affectedFeeds": feed_urls,
         "assignedCategory": category,
+        "smartFilter": smart_filter,
         "addPaused": None,
     }
+    if save_path:
+        # an explicit save path switches qBittorrent's automatic torrent management off for this rule
+        rule["savePath"] = save_path
+    return rule
+
+
+# Categories treated as TV shows: their rules get the smart episode filter and a folder per show.
+SHOWS_CATEGORIES = {"shows", "tv", "series", "tv shows"}
+
+
+def is_shows_category(category: str) -> bool:
+    return (category or "").strip().lower() in SHOWS_CATEGORIES
+
+
+def show_folder_name(name: str) -> str:
+    """A safe folder name for a show: no path separators or characters that Windows/SMB refuse."""
+    cleaned = re.sub(r'[\\/:*?"<>|\x00-\x1f]', " ", name or "")
+    cleaned = re.sub(r"\s+", " ", cleaned).strip(" .")
+    return cleaned[:MAX_NAME_LEN]
+
+
+def show_rule_options(category: str, show_name: str, categories) -> dict:
+    """
+    Extra build_rule_def() arguments for TV shows: the smart episode filter (skips an episode that was already
+    downloaded, e.g. a re-release) and a folder named after the show inside the category's save path.
+    categories: {name: {"savePath": ...}} as returned by qBittorrent. Returns {} for any other category.
+    """
+    if not is_shows_category(category):
+        return {}
+    options = {"smart_filter": True}
+    base = ((categories or {}).get(category) or {}).get("savePath") or ""
+    folder = show_folder_name(show_name)
+    if base and folder:
+        options["save_path"] = posixpath.join(base, folder)
+    return options
 
 
 def resolve_feed_urls(feed: str, feeds: dict):

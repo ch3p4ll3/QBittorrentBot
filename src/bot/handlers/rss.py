@@ -12,6 +12,7 @@ from src.utils import get_user_from_config
 from ..filters import IsAuthorizedUser
 from .rss_utils import (
     build_rule_def, chunk_text, feed_host, parse_add_feed_args, parse_add_rule_args, resolve_feed_urls,
+    show_rule_options,
 )
 
 logger = logging.getLogger(__name__)
@@ -162,9 +163,11 @@ def get_router():
             if parsed["name"] in await qbt.rss_get_rules():
                 await reply(message, f"A rule named '{parsed['name']}' already exists. Remove it first with /rss_delrule.")
                 return
+            # TV shows (category "Shows"/"TV"): smart episode filter + a folder named after the rule
+            options = show_rule_options(parsed["category"], parsed["name"], await qbt.get_categories() or {})
             await qbt.rss_set_rule(
                 parsed["name"],
-                build_rule_def(urls, parsed["must_contain"], parsed["must_not_contain"], parsed["category"]),
+                build_rule_def(urls, parsed["must_contain"], parsed["must_not_contain"], parsed["category"], **options),
             )
         except Exception as e:
             logger.exception(e)

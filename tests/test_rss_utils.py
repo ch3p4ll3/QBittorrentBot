@@ -64,6 +64,37 @@ def test_build_rule_def():
     assert d["affectedFeeds"] == ["https://a/rss"] and d["assignedCategory"] == "TV"
 
 
+def test_build_rule_def_show_options():
+    d = build_rule_def(["https://a/rss"], "Foo")
+    assert d["smartFilter"] is False and "savePath" not in d          # default: nothing extra
+    d = build_rule_def(["https://a/rss"], "Foo", "", "Shows", save_path="/downloads/Shows/Foo", smart_filter=True)
+    assert d["smartFilter"] is True and d["savePath"] == "/downloads/Shows/Foo" and d["assignedCategory"] == "Shows"
+
+
+def test_show_folder_name():
+    from src.bot.handlers.rss_utils import show_folder_name
+    assert show_folder_name("Agatha All Along") == "Agatha All Along"
+    assert show_folder_name("  What  if...  ") == "What if"                 # trims spaces and trailing dots
+    assert show_folder_name("Law & Order: SVU?") == "Law & Order SVU"         # characters SMB/Windows refuse
+    assert "/" not in show_folder_name("../../etc/passwd") and ".." not in show_folder_name("../../etc/passwd")
+    assert show_folder_name("..") == "" and show_folder_name("") == ""
+    assert len(show_folder_name("x" * 300)) <= 80
+
+
+def test_show_rule_options():
+    from src.bot.handlers.rss_utils import is_shows_category, show_rule_options
+    cats = {"Shows": {"savePath": "/downloads/Shows"}, "Movies": {"savePath": "/downloads/Movies"}, "TV": {"savePath": ""}}
+    assert is_shows_category("Shows") and is_shows_category("shows") and is_shows_category("TV")
+    assert not is_shows_category("Movies") and not is_shows_category("")
+    assert show_rule_options("Shows", "Yaga", cats) == {"smart_filter": True, "save_path": "/downloads/Shows/Yaga"}
+    assert show_rule_options("shows", "Yaga", {"shows": {"savePath": "/x/"}}) == {"smart_filter": True, "save_path": "/x/Yaga"}
+    assert show_rule_options("TV", "Yaga", cats) == {"smart_filter": True}      # category without a save path: filter only
+    assert show_rule_options("Shows", "..", cats) == {"smart_filter": True}     # unusable folder name: no folder
+    assert show_rule_options("Movies", "Dune", cats) == {}                      # other categories untouched
+    assert show_rule_options("", "Dune", cats) == {}
+    assert show_rule_options("Shows", "Yaga", None) == {"smart_filter": True}
+
+
 def test_short_id_and_find_by_id():
     from src.bot.handlers.rss_utils import find_by_id, short_id
     names = ["Foo Show 1080p", "Another feed", "x" * 200]

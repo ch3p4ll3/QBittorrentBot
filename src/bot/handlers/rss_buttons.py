@@ -19,7 +19,7 @@ from src.settings.enums import UserRolesEnum
 from src.utils import get_user_from_config
 
 from .rss_utils import (
-    build_rule_def, feed_host, find_by_id, parse_add_feed_args, short_id, unique_name,
+    build_rule_def, feed_host, find_by_id, parse_add_feed_args, short_id, show_rule_options, unique_name,
 )
 
 logger = logging.getLogger(__name__)
@@ -311,7 +311,9 @@ def get_router():
             except Exception as e:
                 logger.warning(f"Could not mark existing articles as read: {e}")
             rule_name = unique_name(watch_name, (await qbt.rss_get_rules()).keys())
-            await qbt.rss_set_rule(rule_name, build_rule_def([feeds[feed]], watch_name, "", category))
+            # TV shows: smart episode filter + a folder named after the show
+            options = show_rule_options(category, watch_name, categories)
+            await qbt.rss_set_rule(rule_name, build_rule_def([feeds[feed]], watch_name, "", category, **options))
         except Exception as e:
             await failure(bot, uid, mid, e)
             return
@@ -319,6 +321,8 @@ def get_router():
         await show(bot, uid, mid,
                    f"👀 Watching '{watch_name}' on {feed}"
                    + (f" -> {category}" if category else "")
+                   + (f"\nSmart episode filter on, saving to {options['save_path']}" if options.get("save_path")
+                      else ("\nSmart episode filter on" if options else ""))
                    + ".\n\nNew uploads that match will be downloaded automatically and you'll get a notification "
                      "when they finish. qBittorrent checks the feed periodically.",
                    kb([btn("📋 Rules", RssList(kind="rules"))], [BACK_TO_RSS]))

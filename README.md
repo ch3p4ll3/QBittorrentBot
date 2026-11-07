@@ -231,6 +231,9 @@ Administrators can manage qBittorrent's RSS downloader from Telegram.
 
 * **👀 Watch for a name** - pick a feed, send the words to wait for (for example `Foo Show 1080p`), pick a category.
   Everything already in the feed is marked as read first, so only uploads that appear from now on are downloaded.
+  If the category is a TV one (`Shows`, `TV` or `Series`), the rule also gets qBittorrent's **smart episode filter**
+  (an episode that was already downloaded is not downloaded again) and saves into a **folder named after the show**
+  inside the category's save path (for example `Shows/Foo Show`). Other categories are left as they are.
 * **📡 Feeds / 📋 Rules** - tap an item to enable, disable or remove it (removal asks for confirmation).
 * **➕ Add feed** - send `name url`; your message is deleted afterwards because feed URLs often contain passkeys.
 
@@ -248,6 +251,7 @@ Administrators can manage qBittorrent's RSS downloader from Telegram.
 | `/rss_help` | Show this help in the chat |
 
 Example: `/rss_addrule shows | myfeed | Foo 1080p | 720p | TV`
+(for a `Shows`/`TV`/`Series` category the rule name is used as the show folder name, and the smart episode filter is turned on)
 
 Feed URLs are never printed back. Only users with the `administrator` role can use these commands.
 Tests for the parsing helpers: `python -m tests.test_rss_utils`.
