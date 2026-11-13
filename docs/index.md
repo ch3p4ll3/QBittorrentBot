@@ -22,6 +22,7 @@ Here are some of the things you can do with QBittorrentBot:
 - **Pause/Resume downloads**: You can pause or resume ongoing downloads with a single command.
 - **Delete torrents**: You can remove unwanted downloads from your queue with a single command.
 - **Add/Remove/Edit categories**: You can categorize your torrents for better organization and accessibility.
+- **RSS management**: Administrators can add RSS feeds and "watch for a name" rules from the bot, see [RSS management](rss_management).
 - **Edit settings**: You can edit torrent client settings directly from the bot
 - **Check client connection**: You can check the connection with the client directly from the bot
 

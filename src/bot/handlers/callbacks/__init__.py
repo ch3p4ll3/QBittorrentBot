@@ -6,3 +6,4 @@ from .category import get_category_router                                   # no
 from .pause_resume import get_pause_router, get_resume_router               # noqa: F401
 from .delete import get_delete_all_router, get_delete_one_router            # noqa: F401
 from .settings import get_settings_router                                   # noqa: F401
+from .rss import get_rss_buttons_router                                   # noqa: F401
