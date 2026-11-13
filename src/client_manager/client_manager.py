@@ -106,6 +106,10 @@ class ClientManager(ABC):
         """Remove an RSS feed"""
         raise NotImplementedError
 
+    async def rss_refresh_item(self, name: str) -> None:
+        """Ask the client to fetch a feed now"""
+        raise NotImplementedError
+
     async def rss_mark_all_read(self, name: str) -> None:
         """Mark every article currently in a feed as read"""
         raise NotImplementedError

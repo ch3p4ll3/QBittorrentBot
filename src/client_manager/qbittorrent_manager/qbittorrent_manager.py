@@ -177,7 +177,7 @@ class QbittorrentManager(ClientManager):
         feeds = {}
         for name, value in (items or {}).items():
             path = f"{prefix}{name}"
-            if isinstance(value, dict) and "url" in value:
+            if isinstance(value, dict) and isinstance(value.get("url"), str):
                 feeds[path] = value["url"]
             elif isinstance(value, dict):
                 feeds.update(QbittorrentManager._flatten_feeds(value, prefix=f"{path}\\"))
@@ -197,6 +197,10 @@ class QbittorrentManager(ClientManager):
         logger.debug(f"Removing RSS feed {name}")
         async with self._client() as qbt:
             await qbt.call(qbt.client.rss_remove_item, item_path=name)
+
+    async def rss_refresh_item(self, name: str) -> None:
+        async with self._client() as qbt:
+            await qbt.call(qbt.client.rss_refresh_item, item_path=name)
 
     async def rss_mark_all_read(self, name: str) -> None:
         async with self._client() as qbt:

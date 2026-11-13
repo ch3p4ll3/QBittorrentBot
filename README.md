@@ -222,36 +222,3 @@ This project follows the [all-contributors](https://github.com/all-contributors/
 ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=ch3p4ll3/QBittorrentBot&type=Date)](https://star-history.com/#ch3p4ll3/QBittorrentBot&Date)
-
-## RSS management (fork addition)
-
-Administrators can manage qBittorrent's RSS downloader from Telegram.
-
-**With buttons:** `/start` -> **📡 RSS**, or simply `/rss`:
-
-* **👀 Watch for a name** - pick a feed, send the words to wait for (for example `Foo Show 1080p`), pick a category.
-  Everything already in the feed is marked as read first, so only uploads that appear from now on are downloaded.
-  If the category is a TV one (`Shows`, `TV` or `Series`), the rule also gets qBittorrent's **smart episode filter**
-  (an episode that was already downloaded is not downloaded again) and saves into a **folder named after the show**
-  inside the category's save path (for example `Shows/Foo Show`). Other categories are left as they are.
-* **📡 Feeds / 📋 Rules** - tap an item to enable, disable or remove it (removal asks for confirmation).
-* **➕ Add feed** - send `name url`; your message is deleted afterwards because feed URLs often contain passkeys.
-
-**With commands:**
-
-| Command | What it does |
-|---|---|
-| `/rss` | Open the RSS button menu (same as `/start` -> RSS) |
-| `/rss_list` | Show feeds (host only) and download rules as text |
-| `/rss_addfeed <name> <url>` | Add a feed. Your message is deleted afterwards because feed URLs often contain passkeys |
-| `/rss_delfeed <name>` | Remove a feed |
-| `/rss_addrule <name> \| <feed or all> \| <must contain> \| [must not contain] \| [category]` | Add and enable a rule |
-| `/rss_delrule <name>` | Remove a rule |
-| `/rss_toggle <name>` | Enable or disable a rule |
-| `/rss_help` | Show this help in the chat |
-
-Example: `/rss_addrule shows | myfeed | Foo 1080p | 720p | TV`
-(for a `Shows`/`TV`/`Series` category the rule name is used as the show folder name, and the smart episode filter is turned on)
-
-Feed URLs are never printed back. Only users with the `administrator` role can use these commands.
-Tests for the parsing helpers: `python -m tests.test_rss_utils`.

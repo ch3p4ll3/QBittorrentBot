@@ -1,26 +1,27 @@
-"""Button-driven RSS downloader menu (administrators only), reachable from /start -> RSS or /rss_menu."""
+"""Button-driven RSS downloader menu (administrators only), reachable from /start -> RSS or /rss."""
 import json
 import logging
 from typing import Optional
 
-from aiogram import Bot, F
+from aiogram import Bot
 from aiogram.dispatcher.router import Router
 from aiogram.filters import Command, Filter
 from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, Message
+from aiogram.utils.i18n import gettext as _
 
 from src.bot.filters import HasRole, IsAuthorizedUser
 from src.bot.filters.callbacks import (
     Menu, RssAddFeed, RssDelete, RssItem, RssList, RssMenu, RssToggle, RssWatch, RssWatchCat, RssWatchFeed,
+    RssWatchShow,
+)
+from src.bot.handlers.rss_utils import (
+    build_rule_def, feed_host, find_by_id, parse_add_feed_args, short_id, show_rule_options, unique_name,
 )
 from src.client_manager.client_repo import ClientRepo
 from src.redis_helper.wrapper import RedisWrapper
 from src.settings import Settings
 from src.settings.enums import UserRolesEnum
 from src.utils import get_user_from_config
-
-from .rss_utils import (
-    build_rule_def, feed_host, find_by_id, parse_add_feed_args, short_id, show_rule_options, unique_name,
-)
 
 logger = logging.getLogger(__name__)
 
@@ -48,8 +49,12 @@ def btn(text: str, data) -> InlineKeyboardButton:
     return InlineKeyboardButton(text=text, callback_data=data.pack())
 
 
-BACK_TO_RSS = btn("🔙 RSS", RssMenu())
-BACK_TO_MENU = btn("🏠 Menu", Menu())
+def back_to_rss() -> InlineKeyboardButton:
+    return btn(_("🔙 RSS"), RssMenu())
+
+
+def back_to_menu() -> InlineKeyboardButton:
+    return btn(_("🏠 Menu"), Menu())
 
 
 def get_router():
@@ -80,7 +85,7 @@ def get_router():
 
     async def set_state(redis: RedisWrapper, uid: int, action: Optional[str], **state) -> None:
         if action:
-            await redis.set(f"action:{uid}", action)
+            await redis.set(f"action:{uid}", action, ex=STATE_TTL)
         await redis.set(f"rss_state:{uid}", json.dumps(state), ex=STATE_TTL)
 
     async def clear(redis: RedisWrapper, uid: int) -> None:
@@ -89,17 +94,18 @@ def get_router():
 
     async def failure(bot: Bot, uid: int, message_id: Optional[int], e: Exception) -> None:
         logger.exception(e)
-        await show(bot, uid, message_id, f"RSS error: {e}", kb([BACK_TO_RSS]))
+        await show(bot, uid, message_id, _("Something went wrong talking to qBittorrent. See the bot log for details."),
+                   kb([back_to_rss()]))
 
     # ---------------------------------------------------------------- main RSS menu
     async def show_menu(bot: Bot, redis: RedisWrapper, uid: int, message_id: Optional[int], note: str = "") -> None:
         await clear(redis, uid)
-        text = (note + "\n\n" if note else "") + "RSS downloader"
+        text = (note + "\n\n" if note else "") + _("RSS downloader")
         await show(bot, uid, message_id, text, kb(
-            [btn("👀 Watch for a name", RssWatch())],
-            [btn("📡 Feeds", RssList(kind="feeds")), btn("📋 Rules", RssList(kind="rules"))],
-            [btn("➕ Add feed", RssAddFeed(watch=0))],
-            [BACK_TO_MENU],
+            [btn(_("👀 Watch for a name"), RssWatch())],
+            [btn(_("📡 Feeds"), RssList(kind="feeds")), btn(_("📋 Rules"), RssList(kind="rules"))],
+            [btn(_("➕ Add feed"), RssAddFeed(watch=0))],
+            [back_to_menu()],
         ))
 
     @router.callback_query(RssMenu.filter(), ADMIN)
@@ -111,7 +117,7 @@ def get_router():
     async def on_menu_command(message: Message, bot: Bot, redis: RedisWrapper, settings: Settings) -> None:
         user = get_user_from_config(message.from_user.id, settings)
         if not user or user.role != UserRolesEnum.Administrator:
-            await message.reply("RSS management is for administrators only.", parse_mode=None)
+            await message.reply(_("RSS management is for administrators only."), parse_mode=None)
             return
         await show_menu(bot, redis, message.from_user.id, None)
 
@@ -125,18 +131,18 @@ def get_router():
             if callback_data.kind == "feeds":
                 feeds = await qbt.rss_get_feeds()
                 rows = [[btn(f"📡 {name[:40]}", RssItem(kind="feed", id=short_id(name)))] for name in feeds]
-                rows.append([btn("➕ Add feed", RssAddFeed(watch=0))])
-                text = f"Feeds ({len(feeds)}). Tap one to manage it." if feeds else "No feeds yet."
+                rows.append([btn(_("➕ Add feed"), RssAddFeed(watch=0))])
+                text = _("Feeds ({count}). Tap one to manage it.").format(count=len(feeds)) if feeds else _("No feeds yet.")
             else:
                 rules = await qbt.rss_get_rules()
                 rows = [[btn(f"{'✅' if r.get('enabled') else '⏸'} {name[:40]}", RssItem(kind="rule", id=short_id(name)))]
                         for name, r in rules.items()]
-                rows.append([btn("👀 Watch for a name", RssWatch())])
-                text = f"Rules ({len(rules)}). Tap one to manage it." if rules else "No rules yet."
+                rows.append([btn(_("👀 Watch for a name"), RssWatch())])
+                text = _("Rules ({count}). Tap one to manage it.").format(count=len(rules)) if rules else _("No rules yet.")
         except Exception as e:
             await failure(bot, uid, mid, e)
             return
-        rows.append([BACK_TO_RSS])
+        rows.append([back_to_rss()])
         await show(bot, uid, mid, text, kb(*rows))
 
     async def show_item(bot: Bot, settings: Settings, uid: int, mid: int, kind: str, item_id: str) -> None:
@@ -146,11 +152,11 @@ def get_router():
                 feeds = await qbt.rss_get_feeds()
                 name = find_by_id(feeds.keys(), item_id)
                 if not name:
-                    await show(bot, uid, mid, "That feed no longer exists.", kb([btn("🔙 Feeds", RssList(kind="feeds"))]))
+                    await show(bot, uid, mid, _("That feed no longer exists."), kb([btn(_("🔙 Feeds"), RssList(kind="feeds"))]))
                     return
-                await show(bot, uid, mid, f"Feed: {name}\nHost: {feed_host(feeds[name])}", kb(
-                    [btn("🗑 Remove", RssDelete(kind="feed", id=item_id, confirm=0))],
-                    [btn("🔙 Feeds", RssList(kind="feeds"))],
+                await show(bot, uid, mid, _("Feed: {name}\nHost: {host}").format(name=name, host=feed_host(feeds[name])), kb(
+                    [btn(_("🗑 Remove"), RssDelete(kind="feed", id=item_id, confirm=0))],
+                    [btn(_("🔙 Feeds"), RssList(kind="feeds"))],
                 ))
                 return
 
@@ -158,26 +164,26 @@ def get_router():
             feeds = await qbt.rss_get_feeds()
             name = find_by_id(rules.keys(), item_id)
             if not name:
-                await show(bot, uid, mid, "That rule no longer exists.", kb([btn("🔙 Rules", RssList(kind="rules"))]))
+                await show(bot, uid, mid, _("That rule no longer exists."), kb([btn(_("🔙 Rules"), RssList(kind="rules"))]))
                 return
             r = rules[name]
             url_to_name = {u: n for n, u in feeds.items()}
             on = bool(r.get("enabled"))
             lines = [
-                f"Rule: {name}",
-                f"Status: {'ENABLED' if on else 'DISABLED'}",
-                f"Feeds: {', '.join(url_to_name.get(u, '?') for u in r.get('affectedFeeds', [])) or '-'}",
-                f"Must contain: {r.get('mustContain') or '-'}",
+                _("Rule: {name}").format(name=name),
+                _("Status: ENABLED") if on else _("Status: DISABLED"),
+                _("Feeds: {value}").format(value=', '.join(url_to_name.get(u, '?') for u in r.get('affectedFeeds', [])) or '-'),
+                _("Must contain: {value}").format(value=r.get('mustContain') or '-'),
             ]
             if r.get("mustNotContain"):
-                lines.append(f"Must not contain: {r['mustNotContain']}")
+                lines.append(_("Must not contain: {value}").format(value=r['mustNotContain']))
             if r.get("assignedCategory"):
-                lines.append(f"Category: {r['assignedCategory']}")
-            lines.append(f"Last match: {r.get('lastMatch') or 'never'}")
+                lines.append(_("Category: {value}").format(value=r['assignedCategory']))
+            lines.append(_("Last match: {value}").format(value=r.get('lastMatch') or _("never")))
             await show(bot, uid, mid, "\n".join(lines), kb(
-                [btn("⏸ Disable" if on else "▶️ Enable", RssToggle(id=item_id))],
-                [btn("🗑 Delete", RssDelete(kind="rule", id=item_id, confirm=0))],
-                [btn("🔙 Rules", RssList(kind="rules"))],
+                [btn(_("⏸ Disable") if on else _("▶️ Enable"), RssToggle(id=item_id))],
+                [btn(_("🗑 Delete"), RssDelete(kind="rule", id=item_id, confirm=0))],
+                [btn(_("🔙 Rules"), RssList(kind="rules"))],
             ))
         except Exception as e:
             await failure(bot, uid, mid, e)
@@ -209,25 +215,27 @@ def get_router():
         await q.answer()
         uid, mid = q.from_user.id, q.message.message_id
         kind = callback_data.kind
-        back = btn("🔙 Feeds" if kind == "feed" else "🔙 Rules", RssList(kind="feeds" if kind == "feed" else "rules"))
+        back = btn(_("🔙 Feeds") if kind == "feed" else _("🔙 Rules"), RssList(kind="feeds" if kind == "feed" else "rules"))
         try:
             qbt = manager(settings)
             items = await (qbt.rss_get_feeds() if kind == "feed" else qbt.rss_get_rules())
             name = find_by_id(items.keys(), callback_data.id)
             if not name:
-                await show(bot, uid, mid, "It no longer exists.", kb([back]))
+                await show(bot, uid, mid, _("It no longer exists."), kb([back]))
                 return
             if not callback_data.confirm:
-                await show(bot, uid, mid, f"Remove the {kind} '{name}'?", kb(
-                    [btn("✅ Yes, remove", RssDelete(kind=kind, id=callback_data.id, confirm=1)),
-                     btn("Cancel", RssItem(kind=kind, id=callback_data.id))],
+                question = _("Remove the feed '{name}'?") if kind == "feed" else _("Remove the rule '{name}'?")
+                await show(bot, uid, mid, question.format(name=name), kb(
+                    [btn(_("✅ Yes, remove"), RssDelete(kind=kind, id=callback_data.id, confirm=1)),
+                     btn(_("Cancel"), RssItem(kind=kind, id=callback_data.id))],
                 ))
                 return
             await (qbt.rss_remove_feed(name) if kind == "feed" else qbt.rss_remove_rule(name))
         except Exception as e:
             await failure(bot, uid, mid, e)
             return
-        await show(bot, uid, mid, f"Removed the {kind} '{name}'.", kb([back], [BACK_TO_RSS]))
+        done = _("Removed the feed '{name}'.") if kind == "feed" else _("Removed the rule '{name}'.")
+        await show(bot, uid, mid, done.format(name=name), kb([back], [back_to_rss()]))
 
     # ---------------------------------------------------------------- add feed
     @router.callback_query(RssAddFeed.filter(), ADMIN)
@@ -235,9 +243,9 @@ def get_router():
         await q.answer()
         await set_state(redis, q.from_user.id, "rss_addfeed", watch=callback_data.watch)
         await show(bot, q.from_user.id, q.message.message_id,
-                   "Send the feed as:\n\nname url\n\nExample:\nmyfeed https://example.org/rss?key=...\n\n"
-                   "The name can't contain spaces. Your message is deleted afterwards because feed URLs often contain passkeys.",
-                   kb([BACK_TO_RSS]))
+                   _("Send the feed as:\n\nname url\n\nExample:\nmyfeed https://example.org/rss?key=...\n\n"
+                     "The name can't contain spaces. Your message is deleted afterwards because feed URLs often contain passkeys."),
+                   kb([back_to_rss()]))
 
     # ---------------------------------------------------------------- watch for a name
     @router.callback_query(RssWatch.filter(), ADMIN)
@@ -251,16 +259,16 @@ def get_router():
             await failure(bot, uid, mid, e)
             return
         rows = [[btn(f"📡 {name[:40]}", RssWatchFeed(id=short_id(name)))] for name in feeds]
-        rows.append([btn("➕ New feed", RssAddFeed(watch=1))])
-        rows.append([BACK_TO_RSS])
-        await show(bot, uid, mid, "Which feed should I watch?" if feeds else "No feeds yet. Add one first.", kb(*rows))
+        rows.append([btn(_("➕ New feed"), RssAddFeed(watch=1))])
+        rows.append([back_to_rss()])
+        await show(bot, uid, mid, _("Which feed should I watch?") if feeds else _("No feeds yet. Add one first."), kb(*rows))
 
     async def ask_name(bot: Bot, redis: RedisWrapper, uid: int, mid: Optional[int], feed: str) -> None:
         await set_state(redis, uid, "rss_watchname", feed=feed)
         await show(bot, uid, mid,
-                   f"Feed: {feed}\n\nSend the name to wait for.\nA new upload whose title contains all these words "
-                   f"will be downloaded.\n\nExample: Foo Show 1080p",
-                   kb([BACK_TO_RSS]))
+                   _("Feed: {feed}\n\nSend the name to wait for.\nA new upload whose title contains all these words "
+                     "will be downloaded.\n\nExample: Foo Show 1080p").format(feed=feed),
+                   kb([back_to_rss()]))
 
     @router.callback_query(RssWatchFeed.filter(), ADMIN)
     async def on_watch_feed(q: CallbackQuery, callback_data: RssWatchFeed, bot: Bot, redis: RedisWrapper, settings: Settings) -> None:
@@ -273,7 +281,7 @@ def get_router():
             return
         name = find_by_id(feeds.keys(), callback_data.id)
         if not name:
-            await show(bot, uid, mid, "That feed no longer exists.", kb([BACK_TO_RSS]))
+            await show(bot, uid, mid, _("That feed no longer exists."), kb([back_to_rss()]))
             return
         await ask_name(bot, redis, uid, mid, name)
 
@@ -281,12 +289,15 @@ def get_router():
         await set_state(redis, uid, "rss_watchcat", feed=feed, name=watch_name)
         try:
             categories = await manager(settings).get_categories() or {}
-        except Exception:
+        except Exception as e:
+            logger.warning(f"Could not read the categories: {e}")
             categories = {}
         rows = [[btn(c[:40], RssWatchCat(id=short_id(c)))] for c in categories]
-        rows.append([btn("No category", RssWatchCat(id="-"))])
-        rows.append([BACK_TO_RSS])
-        await show(bot, uid, None, f"Watching '{watch_name}' on {feed}.\n\nDownload new matches into which category?", kb(*rows))
+        rows.append([btn(_("No category"), RssWatchCat(id="-"))])
+        rows.append([back_to_rss()])
+        await show(bot, uid, None,
+                   _("Watching '{name}' on {feed}.\n\nDownload new matches into which category?").format(name=watch_name, feed=feed),
+                   kb(*rows))
 
     @router.callback_query(RssWatchCat.filter(), ADMIN)
     async def on_watch_cat(q: CallbackQuery, callback_data: RssWatchCat, bot: Bot, redis: RedisWrapper, settings: Settings) -> None:
@@ -295,40 +306,78 @@ def get_router():
         state = await get_state(redis, uid)
         feed, watch_name = state.get("feed"), state.get("name")
         if not feed or not watch_name:
-            await show(bot, uid, mid, "That took too long, please start again.", kb([BACK_TO_RSS]))
+            await show(bot, uid, mid, _("That took too long, please start again."), kb([back_to_rss()]))
             return
+        category = ""
+        if callback_data.id != "-":
+            try:
+                categories = await manager(settings).get_categories() or {}
+            except Exception as e:
+                await failure(bot, uid, mid, e)
+                return
+            category = find_by_id(categories.keys(), callback_data.id) or ""
+        # TV options are opt-in: ask, whatever the category is called
+        await set_state(redis, uid, "rss_watchshow", feed=feed, name=watch_name, category=category)
+        await show(bot, uid, mid,
+                   _("Is '{name}' a TV show?\n\nIf so, the smart episode filter is turned on (an episode that was already "
+                     "downloaded is not downloaded again)"
+                     " and, if the category has a save path, the downloads go into a folder named after the show.\n\n"
+                     "If not, the rule is created without any extra options.").format(name=watch_name),
+                   kb([btn(_("📺 Yes, a TV show"), RssWatchShow(on=1)), btn(_("No"), RssWatchShow(on=0))],
+                      [back_to_rss()]))
+
+    @router.callback_query(RssWatchShow.filter(), ADMIN)
+    async def on_watch_show(q: CallbackQuery, callback_data: RssWatchShow, bot: Bot, redis: RedisWrapper, settings: Settings) -> None:
+        await q.answer()
+        uid, mid = q.from_user.id, q.message.message_id
+        state = await get_state(redis, uid)
+        feed, watch_name, category = state.get("feed"), state.get("name"), state.get("category") or ""
+        if not feed or not watch_name:
+            await show(bot, uid, mid, _("That took too long, please start again."), kb([back_to_rss()]))
+            return
+        options = {}
+        marked = True
         try:
             qbt = manager(settings)
-            categories = await qbt.get_categories() or {}
-            category = "" if callback_data.id == "-" else (find_by_id(categories.keys(), callback_data.id) or "")
             feeds = await qbt.rss_get_feeds()
             if feed not in feeds:
-                await show(bot, uid, mid, "That feed no longer exists.", kb([BACK_TO_RSS]))
+                await show(bot, uid, mid, _("That feed no longer exists."), kb([back_to_rss()]))
                 return
-            # only uploads that appear from now on should match: mark what the feed already holds as read
+            # only uploads that appear from now on should match: fetch the feed, then mark what it holds as read
             try:
+                await qbt.rss_refresh_item(feed)
                 await qbt.rss_mark_all_read(feed)
             except Exception as e:
-                logger.warning(f"Could not mark existing articles as read: {e}")
+                marked = False
+                logger.warning(f"Could not refresh the feed and mark its articles as read: {e}")
             rule_name = unique_name(watch_name, (await qbt.rss_get_rules()).keys())
-            # TV shows: smart episode filter + a folder named after the show
-            options = show_rule_options(category, watch_name, categories)
+            if callback_data.on:
+                options = show_rule_options(category, watch_name, await qbt.get_categories() or {})
             await qbt.rss_set_rule(rule_name, build_rule_def([feeds[feed]], watch_name, "", category, **options))
         except Exception as e:
             await failure(bot, uid, mid, e)
             return
         await clear(redis, uid)
-        await show(bot, uid, mid,
-                   f"👀 Watching '{watch_name}' on {feed}"
-                   + (f" -> {category}" if category else "")
-                   + (f"\nSmart episode filter on, saving to {options['save_path']}" if options.get("save_path")
-                      else ("\nSmart episode filter on" if options else ""))
-                   + ".\n\nNew uploads that match will be downloaded automatically and you'll get a notification "
-                     "when they finish. qBittorrent checks the feed periodically.",
-                   kb([btn("📋 Rules", RssList(kind="rules"))], [BACK_TO_RSS]))
+
+        text = _("👀 Watching '{name}' on {feed}").format(name=watch_name, feed=feed)
+        if category:
+            text += f" -> {category}"
+        if options.get("save_path"):
+            text += "\n" + _("Smart episode filter on, saving to {path}").format(path=options["save_path"])
+        elif options:
+            text += "\n" + _("Smart episode filter on")
+        text += ".\n\n"
+        if marked:
+            text += _("Only uploads that appear from now on will match. ")
+        else:
+            text += _("⚠️ I could not mark the existing items of the feed as read (the feed may be slow or unreachable), "
+                      "so older uploads that match may be downloaded too. ")
+        text += _("New uploads that match will be downloaded automatically and you'll get a notification "
+                  "when they finish. qBittorrent checks the feed periodically.")
+        await show(bot, uid, mid, text, kb([btn(_("📋 Rules"), RssList(kind="rules"))], [back_to_rss()]))
 
     # ---------------------------------------------------------------- text input for the flows above
-    @router.message(HasRssAction(), IsAuthorizedUser())
+    @router.message(IsAuthorizedUser(), HasRssAction())
     async def on_text(message: Message, rss_action: str, bot: Bot, redis: RedisWrapper, settings: Settings) -> None:
         uid = message.from_user.id
         user = get_user_from_config(uid, settings)
@@ -338,35 +387,37 @@ def get_router():
 
         if rss_action == "rss_addfeed":
             parsed = parse_add_feed_args(message.text)
+            # the message contains the feed URL (may include a passkey): delete it right after parsing, whatever
+            # happens next, and answer with new messages since replying to a deleted message can fail
+            try:
+                await message.delete()
+            except Exception as e:
+                logger.debug(f"Could not delete the message: {e}")
             if not parsed:
-                await message.reply("I couldn't read that. Send: name url\n(name without spaces, url starting with http:// or https://)",
-                                    parse_mode=None)
+                await message.answer(_("I couldn't read that. Send: name url\n(name without spaces, url starting with http:// or https://)"),
+                                     parse_mode=None)
                 return
             name, url = parsed
             try:
                 qbt = manager(settings)
                 if name in await qbt.rss_get_feeds():
-                    await message.reply(f"A feed named '{name}' already exists. Send a different name.", parse_mode=None)
+                    await message.answer(_("A feed named '{name}' already exists. Send a different name.").format(name=name), parse_mode=None)
                     return
                 await qbt.rss_add_feed(name, url)
             except Exception as e:
                 logger.exception(e)
-                await message.reply(f"Could not add the feed: {e}", parse_mode=None)
+                await message.answer(_("Could not add the feed. See the bot log for details."), parse_mode=None)
                 return
-            try:  # the message contained the URL (may include a passkey)
-                await message.delete()
-            except Exception:
-                pass
             if state.get("watch"):
                 await ask_name(bot, redis, uid, None, name)
             else:
-                await show_menu(bot, redis, uid, None, note=f"Feed '{name}' added ({feed_host(url)}).")
+                await show_menu(bot, redis, uid, None, note=_("Feed '{name}' added ({host}).").format(name=name, host=feed_host(url)))
             return
 
         if rss_action == "rss_watchname":
             watch_name = message.text.strip()
             if not watch_name or len(watch_name) > 120:
-                await message.reply("Send the words to wait for (up to 120 characters).", parse_mode=None)
+                await message.reply(_("Send the words to wait for (up to 120 characters)."), parse_mode=None)
                 return
             await ask_category(bot, redis, settings, uid, state.get("feed", ""), watch_name)
             return

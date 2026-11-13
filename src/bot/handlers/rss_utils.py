@@ -33,7 +33,7 @@ def feed_host(url: str) -> str:
     """Return only the host of a feed URL. Feed URLs often embed passkeys, so never show the full URL."""
     try:
         return urlparse(url).netloc or "?"
-    except ValueError:
+    except (ValueError, AttributeError):
         return "?"
 
 
@@ -63,19 +63,26 @@ def parse_add_feed_args(args: Optional[str]):
     return name, url
 
 
+RULE_DELIMITER = ";"   # not "|": qBittorrent itself uses "|" inside a must-contain field to mean "or"
+SHOW_FLAG = "show"
+
+
 def parse_add_rule_args(args: Optional[str]):
     """
-    '/rss_addrule name | feed | must contain | [must not contain] | [category]'
-    -> dict(name, feed, must_contain, must_not_contain, category) or None.
+    '/rss_addrule name ; feed ; must contain ; [must not contain] ; [category] ; [show]'
+    -> dict(name, feed, must_contain, must_not_contain, category, show) or None.
+    The optional last field must be the word "show": it turns on the TV options (see show_rule_options).
     """
     if not args:
         return None
-    parts = [p.strip() for p in args.split("|")]
-    if len(parts) < 3 or len(parts) > 5:
+    parts = [p.strip() for p in args.split(RULE_DELIMITER)]
+    if len(parts) < 3 or len(parts) > 6:
         return None
-    parts += [""] * (5 - len(parts))
-    name, feed, must_contain, must_not_contain, category = parts
+    parts += [""] * (6 - len(parts))
+    name, feed, must_contain, must_not_contain, category, flag = parts
     if not is_valid_name(name) or not feed or not must_contain:
+        return None
+    if flag and flag.lower() != SHOW_FLAG:
         return None
     return {
         "name": name,
@@ -83,6 +90,7 @@ def parse_add_rule_args(args: Optional[str]):
         "must_contain": must_contain,
         "must_not_contain": must_not_contain,
         "category": category,
+        "show": bool(flag),
     }
 
 
@@ -104,12 +112,15 @@ def build_rule_def(feed_urls: list, must_contain: str, must_not_contain: str = "
     return rule
 
 
-# Categories treated as TV shows: their rules get the smart episode filter and a folder per show.
-SHOWS_CATEGORIES = {"shows", "tv", "series", "tv shows"}
-
-
-def is_shows_category(category: str) -> bool:
-    return (category or "").strip().lower() in SHOWS_CATEGORIES
+def resolve_category(category: str, categories) -> str:
+    """
+    Return the real name of a category from qBittorrent's list ({name: {...}}), matching case-insensitively
+    ('tv' -> 'TV'). Returns the text unchanged when there is no match.
+    """
+    category = (category or "").strip()
+    if category in (categories or {}):
+        return category
+    return next((c for c in (categories or {}) if c.lower() == category.lower()), category)
 
 
 def show_folder_name(name: str) -> str:
@@ -121,14 +132,13 @@ def show_folder_name(name: str) -> str:
 
 def show_rule_options(category: str, show_name: str, categories) -> dict:
     """
-    Extra build_rule_def() arguments for TV shows: the smart episode filter (skips an episode that was already
-    downloaded, e.g. a re-release) and a folder named after the show inside the category's save path.
-    categories: {name: {"savePath": ...}} as returned by qBittorrent. Returns {} for any other category.
+    Extra build_rule_def() arguments for a rule the user explicitly marked as a TV show: the smart episode filter
+    (skips an episode that was already downloaded, e.g. a re-release) and, when the category has a save path, a folder
+    named after the show inside it. categories: {name: {"savePath": ...}} as returned by qBittorrent; the category
+    is looked up by its real name, ignoring case.
     """
-    if not is_shows_category(category):
-        return {}
     options = {"smart_filter": True}
-    base = ((categories or {}).get(category) or {}).get("savePath") or ""
+    base = ((categories or {}).get(resolve_category(category, categories)) or {}).get("savePath") or ""
     folder = show_folder_name(show_name)
     if base and folder:
         options["save_path"] = posixpath.join(base, folder)

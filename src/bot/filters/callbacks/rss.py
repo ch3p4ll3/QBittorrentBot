@@ -38,3 +38,7 @@ class RssWatchFeed(CallbackData, prefix="rss_wfeed"):
 
 class RssWatchCat(CallbackData, prefix="rss_wcat"):
     id: str  # short hash of the category name, or "-" for none
+
+
+class RssWatchShow(CallbackData, prefix="rss_wshow"):
+    on: int  # 1 when the user says the watched name is a TV show (smart filter + show folder)

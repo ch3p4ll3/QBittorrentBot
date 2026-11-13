@@ -37,15 +37,25 @@ def test_parse_add_feed_args():
 
 
 def test_parse_add_rule_args():
-    r = parse_add_rule_args("shows | myfeed | Foo 1080p | 720p | TV")
+    r = parse_add_rule_args("shows ; myfeed ; Foo 1080p ; 720p ; TV")
     assert r == {"name": "shows", "feed": "myfeed", "must_contain": "Foo 1080p",
-                 "must_not_contain": "720p", "category": "TV"}
-    r = parse_add_rule_args("shows | myfeed | Foo")
-    assert r["must_not_contain"] == "" and r["category"] == ""
-    assert parse_add_rule_args("shows | myfeed") is None          # missing must-contain
-    assert parse_add_rule_args("shows | | Foo") is None            # missing feed
-    assert parse_add_rule_args("a|b|c|d|e|f") is None              # too many fields
+                 "must_not_contain": "720p", "category": "TV", "show": False}
+    r = parse_add_rule_args("shows ; myfeed ; Foo")
+    assert r["must_not_contain"] == "" and r["category"] == "" and r["show"] is False
+    assert parse_add_rule_args("shows ; myfeed") is None          # missing must-contain
+    assert parse_add_rule_args("shows ; ; Foo") is None            # missing feed
+    assert parse_add_rule_args("a;b;c;d;e;show;g") is None         # too many fields
     assert parse_add_rule_args(None) is None
+
+
+def test_parse_add_rule_args_keeps_pipe_and_show_flag():
+    # a "|" is part of the field, not a delimiter: qBittorrent reads it as "or" in must-contain
+    r = parse_add_rule_args("r ; myfeed ; Foo|Bar")
+    assert r["must_contain"] == "Foo|Bar" and r["must_not_contain"] == ""
+    r = parse_add_rule_args("Foo ; myfeed ; Foo 1080p ; 720p ; TV ; show")
+    assert r["show"] is True and r["category"] == "TV"
+    assert parse_add_rule_args("Foo ; myfeed ; Foo ; ; ; SHOW")["show"] is True
+    assert parse_add_rule_args("Foo ; myfeed ; Foo ; ; TV ; tv") is None   # only the word "show" is accepted
 
 
 def test_resolve_feed_urls():
@@ -82,17 +92,34 @@ def test_show_folder_name():
 
 
 def test_show_rule_options():
-    from src.bot.handlers.rss_utils import is_shows_category, show_rule_options
+    from src.bot.handlers.rss_utils import show_rule_options
     cats = {"Shows": {"savePath": "/downloads/Shows"}, "Movies": {"savePath": "/downloads/Movies"}, "TV": {"savePath": ""}}
-    assert is_shows_category("Shows") and is_shows_category("shows") and is_shows_category("TV")
-    assert not is_shows_category("Movies") and not is_shows_category("")
     assert show_rule_options("Shows", "Yaga", cats) == {"smart_filter": True, "save_path": "/downloads/Shows/Yaga"}
+    assert show_rule_options("shows", "Yaga", cats) == {"smart_filter": True, "save_path": "/downloads/Shows/Yaga"}  # ignores case
     assert show_rule_options("shows", "Yaga", {"shows": {"savePath": "/x/"}}) == {"smart_filter": True, "save_path": "/x/Yaga"}
-    assert show_rule_options("TV", "Yaga", cats) == {"smart_filter": True}      # category without a save path: filter only
+    assert show_rule_options("tv", "Yaga", cats) == {"smart_filter": True}      # category without a save path: filter only
     assert show_rule_options("Shows", "..", cats) == {"smart_filter": True}     # unusable folder name: no folder
-    assert show_rule_options("Movies", "Dune", cats) == {}                      # other categories untouched
-    assert show_rule_options("", "Dune", cats) == {}
+    assert show_rule_options("", "Dune", cats) == {"smart_filter": True}        # no category: filter only
     assert show_rule_options("Shows", "Yaga", None) == {"smart_filter": True}
+
+
+def test_resolve_category():
+    from src.bot.handlers.rss_utils import resolve_category
+    cats = {"TV": {}, "Movies": {}}
+    assert resolve_category("tv", cats) == "TV"
+    assert resolve_category("TV", cats) == "TV"
+    assert resolve_category(" movies ", cats) == "Movies"
+    assert resolve_category("Anime", cats) == "Anime"      # unknown: unchanged
+    assert resolve_category("", cats) == "" and resolve_category("tv", None) == "tv"
+
+
+def test_flatten_feeds_and_feed_host():
+    from src.bot.handlers.rss_utils import feed_host
+    from src.client_manager.qbittorrent_manager.qbittorrent_manager import QbittorrentManager
+    items = {"a": {"uid": "x", "url": "https://a/rss"},
+             "folder": {"url": {"b": {"url": "https://b/rss"}}}}      # a feed named "url" inside a folder
+    assert QbittorrentManager._flatten_feeds(items) == {"a": "https://a/rss", "folder\\url\\b": "https://b/rss"}
+    assert feed_host(None) == "?" and feed_host({"x": 1}) == "?"
 
 
 def test_short_id_and_find_by_id():
@@ -113,11 +140,11 @@ def test_unique_name():
 
 
 def test_callback_data_fits_telegram_limit():
-    from src.bot.filters.callbacks import RssDelete, RssItem, RssToggle, RssWatchCat, RssWatchFeed, RssAddFeed
+    from src.bot.filters.callbacks import RssDelete, RssItem, RssToggle, RssWatchCat, RssWatchFeed, RssAddFeed, RssWatchShow
     from src.bot.handlers.rss_utils import short_id
     i = short_id("x" * 200)
     for packed in (RssItem(kind="feed", id=i).pack(), RssToggle(id=i).pack(), RssDelete(kind="rule", id=i, confirm=1).pack(),
-                   RssWatchCat(id=i).pack(), RssWatchFeed(id=i).pack(), RssAddFeed(watch=1).pack()):
+                   RssWatchCat(id=i).pack(), RssWatchFeed(id=i).pack(), RssAddFeed(watch=1).pack(), RssWatchShow(on=1).pack()):
         assert len(packed.encode()) <= 64, packed
 
 

@@ -5,4 +5,4 @@ from .torrent_info import TorrentInfo, Export, EditTorrentCategory              
 from .pause_resume import PauseResumeMenu, Pause, PauseAll, Resume, ResumeAll                                                           # noqa: F401
 from .delete import DeleteAll, DeleteAllData, DeleteAllNoData, DeleteMenu, DeleteOne, DeleteOneData, DeleteOneNoData                    # noqa: F401
 from .settings import SettingsMenu, EditClientMenu, ReloadSettingsMenu, ToggleSpeedLimit, CheckConnection                               # noqa: F401
-from .rss import RssMenu, RssList, RssItem, RssToggle, RssDelete, RssAddFeed, RssWatch, RssWatchFeed, RssWatchCat                      # noqa: F401
+from .rss import RssMenu, RssList, RssItem, RssToggle, RssDelete, RssAddFeed, RssWatch, RssWatchFeed, RssWatchCat, RssWatchShow                      # noqa: F401
