@@ -15,6 +15,6 @@ The Manager role extends the Reader role with additional permissions, allowing u
 
 ## Admin
 
-The Admin role, the most privileged, grants the user full control over the bot's functionalities. In addition to the capabilities of the Manager role, Admin users can remove torrents from their download lists, eliminating unwanted downloads. They can also remove categories, streamlining their torrent organization structure. And, as the highest-level role, Admin users have the authority to edit the bot's configuration files, modifying its settings and behavior.
+The Admin role, the most privileged, grants the user full control over the bot's functionalities. In addition to the capabilities of the Manager role, Admin users can remove torrents from their download lists, eliminating unwanted downloads. They can also manage qBittorrent's RSS feeds and auto-download rules (see [RSS management](../rss_management)) and remove categories, streamlining their torrent organization structure. And, as the highest-level role, Admin users have the authority to edit the bot's configuration files, modifying its settings and behavior.
 
 This role management system ensures that users are granted access appropriate to their needs and responsibilities. Readers can observe and manage their torrent activity, Managers can perform more extensive actions, and Admins have full control over the bot's operation. This structure enhances security and prevents unauthorized users from modifying configuration files or deleting torrents.
