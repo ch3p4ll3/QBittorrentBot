@@ -890,7 +890,7 @@ wheels = [
 
 [[package]]
 name = "qbittorrentbot"
-version = "3.1.4"
+version = "3.1.6"
 source = { virtual = "." }
 dependencies = [
     { name = "aiogram", extra = ["i18n"] },
